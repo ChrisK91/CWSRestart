@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.configGroupBox = new System.Windows.Forms.GroupBox();
-            this.ignoreLoopback = new System.Windows.Forms.CheckBox();
-            this.ignoreLAN = new System.Windows.Forms.CheckBox();
-            this.ignoreInternet = new System.Windows.Forms.CheckBox();
+            this.CheckLoopbackCheckBox = new System.Windows.Forms.CheckBox();
+            this.checkLANCheckBox = new System.Windows.Forms.CheckBox();
+            this.checkInternetCheckBox = new System.Windows.Forms.CheckBox();
             this.actionTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -59,9 +59,9 @@
             // 
             this.configGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.configGroupBox.Controls.Add(this.ignoreLoopback);
-            this.configGroupBox.Controls.Add(this.ignoreLAN);
-            this.configGroupBox.Controls.Add(this.ignoreInternet);
+            this.configGroupBox.Controls.Add(this.CheckLoopbackCheckBox);
+            this.configGroupBox.Controls.Add(this.checkLANCheckBox);
+            this.configGroupBox.Controls.Add(this.checkInternetCheckBox);
             this.configGroupBox.Controls.Add(this.actionTextBox);
             this.configGroupBox.Controls.Add(this.label3);
             this.configGroupBox.Controls.Add(this.label2);
@@ -79,35 +79,41 @@
             this.configGroupBox.TabStop = false;
             this.configGroupBox.Text = "Configuration";
             // 
-            // ignoreLoopback
+            // CheckLoopbackCheckBox
             // 
-            this.ignoreLoopback.AutoSize = true;
-            this.ignoreLoopback.Location = new System.Drawing.Point(424, 92);
-            this.ignoreLoopback.Name = "ignoreLoopback";
-            this.ignoreLoopback.Size = new System.Drawing.Size(129, 17);
-            this.ignoreLoopback.TabIndex = 9;
-            this.ignoreLoopback.Text = "Loopback (Localhost)";
-            this.ignoreLoopback.UseVisualStyleBackColor = true;
+            this.CheckLoopbackCheckBox.AutoSize = true;
+            this.CheckLoopbackCheckBox.Checked = true;
+            this.CheckLoopbackCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckLoopbackCheckBox.Location = new System.Drawing.Point(424, 92);
+            this.CheckLoopbackCheckBox.Name = "CheckLoopbackCheckBox";
+            this.CheckLoopbackCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.CheckLoopbackCheckBox.TabIndex = 9;
+            this.CheckLoopbackCheckBox.Text = "Loopback (Localhost)";
+            this.CheckLoopbackCheckBox.UseVisualStyleBackColor = true;
             // 
-            // ignoreLAN
+            // checkLANCheckBox
             // 
-            this.ignoreLAN.AutoSize = true;
-            this.ignoreLAN.Location = new System.Drawing.Point(316, 92);
-            this.ignoreLAN.Name = "ignoreLAN";
-            this.ignoreLAN.Size = new System.Drawing.Size(95, 17);
-            this.ignoreLAN.TabIndex = 8;
-            this.ignoreLAN.Text = "Local Network";
-            this.ignoreLAN.UseVisualStyleBackColor = true;
+            this.checkLANCheckBox.AutoSize = true;
+            this.checkLANCheckBox.Checked = true;
+            this.checkLANCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkLANCheckBox.Location = new System.Drawing.Point(316, 92);
+            this.checkLANCheckBox.Name = "checkLANCheckBox";
+            this.checkLANCheckBox.Size = new System.Drawing.Size(95, 17);
+            this.checkLANCheckBox.TabIndex = 8;
+            this.checkLANCheckBox.Text = "Local Network";
+            this.checkLANCheckBox.UseVisualStyleBackColor = true;
             // 
-            // ignoreInternet
+            // checkInternetCheckBox
             // 
-            this.ignoreInternet.AutoSize = true;
-            this.ignoreInternet.Location = new System.Drawing.Point(241, 92);
-            this.ignoreInternet.Name = "ignoreInternet";
-            this.ignoreInternet.Size = new System.Drawing.Size(62, 17);
-            this.ignoreInternet.TabIndex = 7;
-            this.ignoreInternet.Text = "Internet";
-            this.ignoreInternet.UseVisualStyleBackColor = true;
+            this.checkInternetCheckBox.AutoSize = true;
+            this.checkInternetCheckBox.Checked = true;
+            this.checkInternetCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkInternetCheckBox.Location = new System.Drawing.Point(241, 92);
+            this.checkInternetCheckBox.Name = "checkInternetCheckBox";
+            this.checkInternetCheckBox.Size = new System.Drawing.Size(62, 17);
+            this.checkInternetCheckBox.TabIndex = 7;
+            this.checkInternetCheckBox.Text = "Internet";
+            this.checkInternetCheckBox.UseVisualStyleBackColor = true;
             // 
             // actionTextBox
             // 
@@ -124,9 +130,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 93);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(155, 13);
+            this.label3.Size = new System.Drawing.Size(166, 13);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Ignore timeouts from (Watcher):";
+            this.label3.Text = "Server should be accessible from:";
             // 
             // label2
             // 
@@ -176,6 +182,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lanIPTextBox.Location = new System.Drawing.Point(70, 39);
             this.lanIPTextBox.Name = "lanIPTextBox";
+            this.lanIPTextBox.ReadOnly = true;
             this.lanIPTextBox.Size = new System.Drawing.Size(403, 20);
             this.lanIPTextBox.TabIndex = 3;
             // 
@@ -185,6 +192,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.externalIPTextBox.Location = new System.Drawing.Point(70, 13);
             this.externalIPTextBox.Name = "externalIPTextBox";
+            this.externalIPTextBox.ReadOnly = true;
             this.externalIPTextBox.Size = new System.Drawing.Size(403, 20);
             this.externalIPTextBox.TabIndex = 1;
             // 
@@ -222,8 +230,10 @@
             this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ReadOnly = true;
+            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.logTextBox.Size = new System.Drawing.Size(430, 216);
             this.logTextBox.TabIndex = 1000;
+            this.logTextBox.WordWrap = false;
             // 
             // singleCheckButton
             // 
@@ -324,9 +334,9 @@
         private System.Windows.Forms.TextBox actionTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button selectActionButton;
-        private System.Windows.Forms.CheckBox ignoreLoopback;
-        private System.Windows.Forms.CheckBox ignoreLAN;
-        private System.Windows.Forms.CheckBox ignoreInternet;
+        private System.Windows.Forms.CheckBox CheckLoopbackCheckBox;
+        private System.Windows.Forms.CheckBox checkLANCheckBox;
+        private System.Windows.Forms.CheckBox checkInternetCheckBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Timer Watcher;
         private System.Windows.Forms.ProgressBar timerCountdown;

@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,46 +21,32 @@ namespace CWSRestartGUI
         public FrontEnd()
         {
             InitializeComponent();
+            ServerService.Logging.LogMessage += Logging_LogMessage;
+        }
+
+        void Logging_LogMessage(string message, ServerService.Logging.MessageType type)
+        {
+            log(String.Format("{0}: {1}", type.ToString(), message));
         }
 
         private async void refreshExternalIp_Click(object sender, EventArgs e)
         {
             externalIPTextBox.Text = (await ServerService.Helper.GetExternalIp()).ToString();
+            ServerService.Settings.Internet = IPAddress.Parse(externalIPTextBox.Text);
         }
 
         private async void refreshLanIp_Click(object sender, EventArgs e)
         {
            lanIPTextBox.Text = (await ServerService.Helper.GetLocalIP()).ToString();
+           ServerService.Settings.LAN = IPAddress.Parse(lanIPTextBox.Text);
         }
 
         private async void singleCheckButton_Click(object sender, EventArgs e)
         {
             singleCheckButton.Enabled = false;
 
-            log("Checking server access. This might take one or two minutes. Please be patient");
-
-            try
-            {
-                if (ServerService.Validator.ProcessRunning())
-                    log("The server is running");
-                else
-                    log("Warning: The process is not running");
-
-                ServerService.Validator.AccessType access = await ServerService.Validator.GetAccessType(lanIPTextBox.Text, externalIPTextBox.Text);
-
-                if (access == 0)
-                {
-                    log("The server can't be accessed. Please check your firewall configuration");
-                }
-                else
-                {
-                    log("The server can be accessed from: " + access.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                log(ex.Message);
-            }
+            await ServerService.Validator.Validates(getAccessScheme());
+            
             singleCheckButton.Enabled = true;
         }
 
@@ -71,14 +58,17 @@ namespace CWSRestartGUI
             }
             else
             {
-                logTextBox.Text += text + Environment.NewLine;
+                logTextBox.Text = String.Format("{0:HH:mm:ss} - {1}", DateTime.Now, text) + Environment.NewLine + logTextBox.Text;
             }
         }
 
         private void selectActionButton_Click(object sender, EventArgs e)
         {
             if (SelectServerDialog.ShowDialog() == DialogResult.OK)
+            {
                 actionTextBox.Text = SelectServerDialog.FileName;
+                ServerService.Settings.ServerPath = SelectServerDialog.FileName;
+            }
         }
 
         private void setIntervalButton_Click(object sender, EventArgs e)
@@ -132,105 +122,77 @@ namespace CWSRestartGUI
 
         private async void Watcher_Tick(object sender, EventArgs e)
         {
-            //worse than stopwatch, but better on the CPU
-            TimeSpan elapsed = DateTime.Now - lastRun;
-
-            timerCountdown.Value = (elapsed.TotalMilliseconds >= timerCountdown.Maximum) ? timerCountdown.Maximum : (int)elapsed.TotalMilliseconds;
-
-            if (elapsed.TotalMilliseconds >= scheduleIntervall)
+            if (ServerService.Helper.Working)
             {
-                //stop the timer so we only have one check
-                Watcher.Enabled = false;
-                toggleServerWatcher.Enabled = false;
-                setIntervalButton.Enabled = false;
-                timerCountdown.Style = ProgressBarStyle.Marquee;
+                if (timerCountdown.Style != ProgressBarStyle.Marquee)
+                    timerCountdown.Style = ProgressBarStyle.Marquee;
+                lastRun = DateTime.Now;
+            }
+            else
+            {
+                //worse than stopwatch, but better on the CPU
+                if(timerCountdown.Style != ProgressBarStyle.Continuous)
+                    timerCountdown.Style = ProgressBarStyle.Continuous;
 
-                log("Time to check if the server is still running");
+                TimeSpan elapsed = DateTime.Now - lastRun;
 
-                bool restartRequired = false;
-                bool tryquit = false;
+                timerCountdown.Value = (elapsed.TotalMilliseconds >= timerCountdown.Maximum) ? timerCountdown.Maximum : (int)elapsed.TotalMilliseconds;
 
-                if (ServerService.Validator.ProcessRunning())
+                toggleServerWatcher.Enabled = true;
+                setIntervalButton.Enabled = true;
+
+
+                if (elapsed.TotalMilliseconds >= scheduleIntervall)
                 {
-                    log("The process is still running. Let's see if it still responds. This might take a while.");
+                    //stop the timer so we only have one check
+                    Watcher.Enabled = false;
+                    toggleServerWatcher.Enabled = false;
+                    setIntervalButton.Enabled = false;
+                    timerCountdown.Style = ProgressBarStyle.Marquee;
 
-                    try
+                    log("Time to check if the server is still running");
+
+                    ServerService.Validator.ServerErrors access = await ServerService.Validator.Validates(getAccessScheme());
+
+                    //do the magic
+                    if (access != 0)
                     {
-                        ServerService.Validator.AccessType access = await ServerService.Validator.GetAccessType(lanIPTextBox.Text, externalIPTextBox.Text);
-                        ServerService.Validator.AccessType ignoreFlags = 0;
+                        log("A restart is required.");
 
-                        if (ignoreLoopback.Checked)
-                            ignoreFlags |= ServerService.Validator.AccessType.Loopback;
-
-                        if (ignoreInternet.Checked)
-                            ignoreFlags |= ServerService.Validator.AccessType.Internet;
-
-                        if (ignoreLAN.Checked)
-                            ignoreFlags |= ServerService.Validator.AccessType.LAN;
-
-                        log("The access to the following connections will be ignored:");
-                        log((ignoreFlags == 0) ? "none" : ignoreFlags.ToString());
-
-                        access = access | ignoreFlags;
-                        ServerService.Validator.AccessType required = ServerService.Validator.AccessType.Internet | ServerService.Validator.AccessType.LAN | ServerService.Validator.AccessType.Loopback;
-
-                        if (access != required)
+                        if (!access.HasFlag(ServerService.Validator.ServerErrors.ProcessDead))
                         {
-                            log("The following connections were not available:");
-                            log((required ^ access).ToString());
-                            restartRequired = true;
-                            tryquit = true;
+                            ServerService.Helper.RestartServer();
                         }
                         else
                         {
-                            log("Everything looks great :)");
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        log(ex.Message);
-                    }
-                }
-                else
-                {
-                    log("The process has gone :(");
-                    restartRequired = true;
-                }
-
-                //do the magic
-                if (restartRequired)
-                {
-                    log("A restart is required.");
-
-                    if (tryquit)
-                    {
-                        log("Trying to send the q key to the server");
-                        ServerService.Helper.SendQuit();
-                        log("Waiting for 10 seconds to see if the server is shutting down");
-                        Thread.Sleep(10000);
-
-                        if(ServerService.Validator.ProcessRunning())
-                        {
-                            log("The server is still running. Let's force it to quite.");
-                            ServerService.Helper.KillServer();
-                            log("Waiting for 5 seconds");
-                            Thread.Sleep(5000);
+                            ServerService.Helper.StartServer();
                         }
                     }
 
-                    log("Starting server");
-                    Process.Start(actionTextBox.Text);
+                    lastRun = DateTime.Now;
+                    timerCountdown.Value = 0;
+
+
+                    //resume the timer
+                    Watcher.Enabled = true;
                 }
-
-                lastRun = DateTime.Now;
-                timerCountdown.Value = 0;
-
-                //resume the timer
-                Watcher.Enabled = true;
-                toggleServerWatcher.Enabled = true;
-                setIntervalButton.Enabled = true;
-                timerCountdown.Style = ProgressBarStyle.Continuous;
             }
+        }
+
+        private ServerService.Settings.AccessType getAccessScheme()
+        {
+            ServerService.Settings.AccessType scheme = 0;
+
+            if (checkInternetCheckBox.Checked)
+                scheme |= ServerService.Settings.AccessType.Internet;
+
+            if (checkLANCheckBox.Checked)
+                scheme |= ServerService.Settings.AccessType.LAN;
+
+            if (CheckLoopbackCheckBox.Checked)
+                scheme |= ServerService.Settings.AccessType.Loopback;
+
+            return scheme;
         }
     }
 }
