@@ -70,19 +70,26 @@ namespace ServerService
 
         public static void SendQuit()
         {
-            if(server == null)
-                server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
-
-            try
+            if (Validator.IsRunning())
             {
-                server.StandardInput.WriteLine("q");
+                if(server == null)
+                    server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
 
-                if (output != null)
-                    output.Stop();
+                try
+                {
+                    server.StandardInput.WriteLine("q");
+
+                    if (output != null)
+                        output.Stop();
+                }
+                catch
+                {
+                    Logging.OnLogMessage("Unable to send keypress...", Logging.MessageType.Warning);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Logging.OnLogMessage("Unable to send keypress...", Logging.MessageType.Warning);
+                Logging.OnLogMessage("Process not found", Logging.MessageType.Error);
             }
         }
 

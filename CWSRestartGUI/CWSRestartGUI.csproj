@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Updater.cs" />
     <EmbeddedResource Include="FrontEnd.resx">
       <DependentUpon>FrontEnd.cs</DependentUpon>
     </EmbeddedResource>

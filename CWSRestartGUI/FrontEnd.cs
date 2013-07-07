@@ -24,9 +24,29 @@ namespace CWSRestartGUI
             ServerService.Logging.LogMessage += Logging_LogMessage;
         }
 
-        void Logging_LogMessage(string message, ServerService.Logging.MessageType type)
+        void Logging_LogMessage(object sender, ServerService.Logging.LogMessageEventArgs e)
         {
-            log(String.Format("{0}: {1}", type.ToString(), message));
+            ServerService.Logging.MessageType type = e.type;
+            string message = e.message;
+
+            switch(type)
+            {
+                case ServerService.Logging.MessageType.Error:
+                    log(String.Format("{0}: {1}", type.ToString(), message), Color.Red);
+                    break;
+                case ServerService.Logging.MessageType.Info:
+                    log(String.Format("{0}: {1}", type.ToString(), message), Color.Gray);
+                    break;
+                case ServerService.Logging.MessageType.Warning:
+                    log(String.Format("{0}: {1}", type.ToString(), message), Color.Orange);
+                    break;
+                case ServerService.Logging.MessageType.Server:
+                    log(String.Format("{0}: {1}", type.ToString(), message), Color.Green);
+                    break;
+                default:
+                    log(String.Format("{0}: {1}", type.ToString(), message));
+                    break;
+            }
         }
 
         private async void refreshExternalIp_Click(object sender, EventArgs e)
@@ -43,22 +63,37 @@ namespace CWSRestartGUI
 
         private async void singleCheckButton_Click(object sender, EventArgs e)
         {
-            singleCheckButton.Enabled = false;
+            if (ServerService.Settings.Validate())
+            {
+                singleCheckButton.Enabled = false;
 
-            await ServerService.Validator.Validates(getAccessScheme());
-            
-            singleCheckButton.Enabled = true;
+                await ServerService.Validator.Validates(getAccessScheme());
+
+                singleCheckButton.Enabled = true;
+            }
+            else
+            {
+                log("Not all settings are set. Please refresh both of your IPs and select the executable/bat that should be run when the server is dead");
+            }
         }
 
         private void log(string text)
         {
+            log(text, SystemColors.WindowText);
+        }
+
+        private void log(string text, Color foreground)
+        {
             if (InvokeRequired)
             {
-                BeginInvoke(new Action<string>(log), text);
+                BeginInvoke(new Action<string, Color>(log), text, foreground);
             }
             else
             {
-                logTextBox.Text = String.Format("{0:HH:mm:ss} - {1}", DateTime.Now, text) + Environment.NewLine + logTextBox.Text;
+                logTextBox.SelectionColor = foreground;
+                logTextBox.AppendText(String.Format("{0:HH:mm:ss} - {1}{2}", DateTime.Now, text,Environment.NewLine));
+                logTextBox.SelectionColor = SystemColors.WindowText;
+                logTextBox.ScrollToCaret();
             }
         }
 
@@ -95,9 +130,9 @@ namespace CWSRestartGUI
 
         private void toggleServerWatcher_Click(object sender, EventArgs e)
         {
-            if (lanIPTextBox.Text == "" || externalIPTextBox.Text == "" || actionTextBox.Text == "")
+            if (!ServerService.Settings.Validate())
             {
-                log("Please enter both IPs (you can also use the refresh buttons) and select a file that should be run when the server wont respond");
+                log("Not all settings are set. Please refresh both of your IPs and select the executable/bat that should be run when the server is dead");
     
             }
             else
@@ -193,6 +228,34 @@ namespace CWSRestartGUI
                 scheme |= ServerService.Settings.AccessType.Loopback;
 
             return scheme;
+        }
+
+        private async void checkUpdate_Click(object sender, EventArgs e)
+        {
+            if (await Updater.UpdateAvailable())
+                log("An update is available. Please visit http://chrisk91.github.io/CWSRestart/ to update");
+            else
+                log("No updates found");
+        }
+
+        private void logTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
+        }
+
+        private void stopServerButton_Click(object sender, EventArgs e)
+        {
+            ServerService.Helper.SendQuit();
+        }
+
+        private void intervalTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && setIntervalButton.Enabled)
+            {
+                setIntervalButton_Click(sender, null);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
     }
 }

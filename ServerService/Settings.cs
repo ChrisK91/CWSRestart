@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -28,7 +29,13 @@ namespace ServerService
         /// </summary>
         /// <param name="message">The content of the log message</param>
         /// <param name="type">The type of the message</param>
-        public delegate void LogMessageEventHandler(string message, MessageType type);
+        public delegate void LogMessageEventHandler(object sender, LogMessageEventArgs e);
+
+        public class LogMessageEventArgs : EventArgs
+        {
+            public string message;
+            public MessageType type;
+        }
 
         /// <summary>
         /// Is used to relay logging messages to the hosting application
@@ -43,7 +50,13 @@ namespace ServerService
         internal static void OnLogMessage(string message, MessageType type)
         {
             if (LogMessage != null)
-                LogMessage(message, type);
+                LogMessage(
+                    null,
+                    new LogMessageEventArgs
+                    {
+                        message = message,
+                        type = type
+                    });
         }
     }
 
@@ -111,6 +124,19 @@ namespace ServerService
             /// Access from the world wide web
             /// </summary>
             Internet = 0x4
+        }
+
+
+        /// <summary>
+        /// Check if all settings are set
+        /// </summary>
+        /// <returns>True if everything is fine</returns>
+        public static bool Validate()
+        {
+            if(File.Exists(ServerPath) && (LAN != null) && (Internet != null))
+                return true;
+
+            return false;
         }
     }
 }

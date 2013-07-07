@@ -44,7 +44,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ipLabel = new System.Windows.Forms.Label();
             this.SelectServerDialog = new System.Windows.Forms.OpenFileDialog();
-            this.logTextBox = new System.Windows.Forms.TextBox();
+            this.logTextBox = new System.Windows.Forms.RichTextBox();
             this.singleCheckButton = new System.Windows.Forms.Button();
             this.toggleServerWatcher = new System.Windows.Forms.Button();
             this.Watcher = new System.Windows.Forms.Timer(this.components);
@@ -52,6 +52,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.intervalTextBox = new System.Windows.Forms.TextBox();
             this.setIntervalButton = new System.Windows.Forms.Button();
+            this.checkUpdate = new System.Windows.Forms.Button();
+            this.stopServerButton = new System.Windows.Forms.Button();
             this.configGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -227,13 +229,13 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.logTextBox.Location = new System.Drawing.Point(142, 133);
-            this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ReadOnly = true;
-            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.logTextBox.Size = new System.Drawing.Size(430, 216);
             this.logTextBox.TabIndex = 1000;
+            this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
+            this.logTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.logTextBox_LinkClicked);
             // 
             // singleCheckButton
             // 
@@ -284,6 +286,7 @@
             this.intervalTextBox.Size = new System.Drawing.Size(81, 20);
             this.intervalTextBox.TabIndex = 13;
             this.intervalTextBox.Text = "60";
+            this.intervalTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.intervalTextBox_KeyDown);
             // 
             // setIntervalButton
             // 
@@ -295,11 +298,35 @@
             this.setIntervalButton.UseVisualStyleBackColor = true;
             this.setIntervalButton.Click += new System.EventHandler(this.setIntervalButton_Click);
             // 
+            // checkUpdate
+            // 
+            this.checkUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkUpdate.Location = new System.Drawing.Point(12, 326);
+            this.checkUpdate.Name = "checkUpdate";
+            this.checkUpdate.Size = new System.Drawing.Size(121, 23);
+            this.checkUpdate.TabIndex = 1001;
+            this.checkUpdate.Text = "Check for updates";
+            this.checkUpdate.UseVisualStyleBackColor = true;
+            this.checkUpdate.Click += new System.EventHandler(this.checkUpdate_Click);
+            // 
+            // stopServerButton
+            // 
+            this.stopServerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.stopServerButton.Location = new System.Drawing.Point(12, 297);
+            this.stopServerButton.Name = "stopServerButton";
+            this.stopServerButton.Size = new System.Drawing.Size(121, 23);
+            this.stopServerButton.TabIndex = 1001;
+            this.stopServerButton.Text = "Stop server";
+            this.stopServerButton.UseVisualStyleBackColor = true;
+            this.stopServerButton.Click += new System.EventHandler(this.stopServerButton_Click);
+            // 
             // FrontEnd
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 361);
+            this.Controls.Add(this.stopServerButton);
+            this.Controls.Add(this.checkUpdate);
             this.Controls.Add(this.setIntervalButton);
             this.Controls.Add(this.intervalTextBox);
             this.Controls.Add(this.label4);
@@ -328,7 +355,7 @@
         private System.Windows.Forms.TextBox lanIPTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.OpenFileDialog SelectServerDialog;
-        private System.Windows.Forms.TextBox logTextBox;
+        private System.Windows.Forms.RichTextBox logTextBox;
         private System.Windows.Forms.Button singleCheckButton;
         private System.Windows.Forms.Button toggleServerWatcher;
         private System.Windows.Forms.TextBox actionTextBox;
@@ -343,5 +370,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox intervalTextBox;
         private System.Windows.Forms.Button setIntervalButton;
+        private System.Windows.Forms.Button checkUpdate;
+        private System.Windows.Forms.Button stopServerButton;
     }
 }
