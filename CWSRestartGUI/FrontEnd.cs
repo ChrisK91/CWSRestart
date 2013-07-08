@@ -328,5 +328,18 @@ namespace CWSRestartGUI
         {
             ServerService.Helper.RestartServer();
         }
+
+        private void UPnPButton_Click(object sender, EventArgs e)
+        {
+            if (lanIPTextBox.Text != "")
+            {
+                PortManager pm = new PortManager(lanIPTextBox.Text);
+                pm.ShowDialog();
+            }
+            else
+            {
+                log("You need to refresh your LAN IP, in order to use the UPnP wizzard.");
+            }
+        }
     }
 }

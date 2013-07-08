@@ -65,6 +65,7 @@
             this.startServerButton = new System.Windows.Forms.Button();
             this.logFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.restartServerButton = new System.Windows.Forms.Button();
+            this.UPnPButton = new System.Windows.Forms.Button();
             this.configGroupBox.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -73,6 +74,7 @@
             // 
             this.configGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.configGroupBox.Controls.Add(this.UPnPButton);
             this.configGroupBox.Controls.Add(this.CheckLoopbackCheckBox);
             this.configGroupBox.Controls.Add(this.checkLANCheckBox);
             this.configGroupBox.Controls.Add(this.checkInternetCheckBox);
@@ -420,6 +422,16 @@
             this.restartServerButton.UseVisualStyleBackColor = true;
             this.restartServerButton.Click += new System.EventHandler(this.restartServerButton_Click);
             // 
+            // UPnPButton
+            // 
+            this.UPnPButton.Location = new System.Drawing.Point(579, 88);
+            this.UPnPButton.Name = "UPnPButton";
+            this.UPnPButton.Size = new System.Drawing.Size(75, 23);
+            this.UPnPButton.TabIndex = 9;
+            this.UPnPButton.Text = "UPnP";
+            this.UPnPButton.UseVisualStyleBackColor = true;
+            this.UPnPButton.Click += new System.EventHandler(this.UPnPButton_Click);
+            // 
             // FrontEnd
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -487,5 +499,6 @@
         private System.Windows.Forms.Button startServerButton;
         private System.Windows.Forms.FolderBrowserDialog logFolderDialog;
         private System.Windows.Forms.Button restartServerButton;
+        private System.Windows.Forms.Button UPnPButton;
     }
 }
