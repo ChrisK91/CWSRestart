@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Windows.Forms;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace ServerService
@@ -16,6 +13,10 @@ namespace ServerService
     public class Helper
     {
         private static System.Timers.Timer timeout;
+
+        /// <summary>
+        /// Indicates if the helper is working (for instance restarting the server)
+        /// </summary>
         public static bool Working
         {
             get
@@ -24,9 +25,13 @@ namespace ServerService
             }
         }
 
-        private static System.Timers.Timer output;
-        static Process server;
+        private static BackgroundWorker output;
+        internal static Process Server;
 
+        /// <summary>
+        /// Retrieves the external IP
+        /// </summary>
+        /// <returns>The external IP</returns>
         public async static Task<IPAddress> GetExternalIp()
         {
             WebRequest request = WebRequest.Create(Settings.IPService);
@@ -52,6 +57,10 @@ namespace ServerService
             }
         }
 
+        /// <summary>
+        /// Retrieves the LAN ip
+        /// </summary>
+        /// <returns>The LAN ip</returns>
         public static async Task<IPAddress> GetLocalIP()
         {
             IPHostEntry host;
@@ -68,19 +77,19 @@ namespace ServerService
             return localIP;
         }
 
+        /// <summary>
+        /// Attempts to send the "q" Key to the StandardInput of the server
+        /// </summary>
         public static void SendQuit()
         {
             if (Validator.IsRunning())
             {
-                if(server == null)
-                    server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
+                if(Server == null)
+                    Server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
 
                 try
                 {
-                    server.StandardInput.WriteLine("q");
-
-                    if (output != null)
-                        output.Stop();
+                    Server.StandardInput.WriteLine("q");
                 }
                 catch
                 {
@@ -93,12 +102,24 @@ namespace ServerService
             }
         }
 
+        /// <summary>
+        /// Kills the
+        /// </summary>
         public static void KillServer()
         {
-            Process server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
-            server.Kill();
+            if(Server == null)
+                Server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
+
+            if(Server != null)
+                Server.Kill();
+
+            if (output != null)
+                output.CancelAsync();
         }
 
+        /// <summary>
+        /// Will restart the server
+        /// </summary>
         public static void RestartServer()
         {
             if (Validator.IsRunning())
@@ -128,6 +149,9 @@ namespace ServerService
             StartServer();
         }
 
+        /// <summary>
+        /// Will start the server and allow us to use the StandardInput/Output
+        /// </summary>
         public static void StartServer()
         {
             Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
@@ -136,18 +160,18 @@ namespace ServerService
             pStart.RedirectStandardInput = true;
             pStart.RedirectStandardOutput = true;
 
-            output = new System.Timers.Timer(500);
-            output.Elapsed += output_Elapsed;
-            output.Start();
+            output = new BackgroundWorker();
+            output.DoWork += output_DoWork;
 
-            server = Process.Start(pStart);
+            Server = Process.Start(pStart);
+            output.RunWorkerAsync();
         }
 
-        static void output_Elapsed(object sender, ElapsedEventArgs e)
+        static void output_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (server != null)
+            if (Server != null)
             {
-                StreamReader tmp = server.StandardOutput;
+                StreamReader tmp = Server.StandardOutput;
 
                 string line;
                 while((line = tmp.ReadLine()) != null)

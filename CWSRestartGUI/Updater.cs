@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CWSRestartGUI
 {
     class Updater
     {
-        public static DateTime BuildDate = new DateTime(2013, 7, 6);
+        /// <summary>
+        /// Build date in Year, Month, Day
+        /// </summary>
+        public static DateTime BuildDate = new DateTime(2013, 7, 8);
         public static string VersionLocation = "http://chrisk91.github.io/CWSRestart/last-update";
         
         public static async Task<bool> UpdateAvailable()
