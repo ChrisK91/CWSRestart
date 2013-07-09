@@ -1,0 +1,32 @@
+﻿<Window x:Class="CWSRestart.FrontEnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ss="clr-namespace:ServerService;assembly=ServerService"
+        Title="MainWindow" Height="450" Width="700" MinHeight="450" MinWidth="700">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="115" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Header="Configuration" HorizontalAlignment="Stretch">
+            <StackPanel Orientation="Vertical">
+                <DockPanel Margin="2,1">
+                    <Label Width="70" DockPanel.Dock="Left">External IP:</Label>
+                    <Button Width="75" DockPanel.Dock="Right">Refresh</Button>
+                    <TextBox Text="{Binding Source={x:Static ss:Settings.Instance}, Path=LoopbackAddress, Mode=TwoWay}" Margin="2,0"/>
+                </DockPanel >
+                <DockPanel Margin="2,1">
+                    <Label Width="70" DockPanel.Dock="Left">LAN IP:</Label>
+                    <Button Width="75" DockPanel.Dock="Right">Refresh</Button>
+                    <TextBox Text="{Binding Source={x:Static ss:Settings.Instance}, Path=LoopbackAddress, Mode=TwoWay}" Margin="2,0" />
+                </DockPanel >
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</Window>

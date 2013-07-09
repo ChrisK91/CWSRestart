@@ -69,18 +69,18 @@ namespace CWSRestartGUI
         private async void refreshExternalIp_Click(object sender, EventArgs e)
         {
             externalIPTextBox.Text = (await ServerService.Helper.GetExternalIp()).ToString();
-            ServerService.Settings.Internet = IPAddress.Parse(externalIPTextBox.Text);
+            ServerService.Settings.Instance.Internet = IPAddress.Parse(externalIPTextBox.Text);
         }
 
         private async void refreshLanIp_Click(object sender, EventArgs e)
         {
             lanIPTextBox.Text = (await ServerService.Helper.GetLocalIP()).ToString();
-            ServerService.Settings.LAN = IPAddress.Parse(lanIPTextBox.Text);
+            ServerService.Settings.Instance.LAN = IPAddress.Parse(lanIPTextBox.Text);
         }
 
         private async void singleCheckButton_Click(object sender, EventArgs e)
         {
-            if (ServerService.Settings.Validate())
+            if (ServerService.Settings.Instance.Validate())
             {
                 singleCheckButton.Enabled = false;
 
@@ -119,7 +119,7 @@ namespace CWSRestartGUI
             if (SelectServerDialog.ShowDialog() == DialogResult.OK)
             {
                 actionTextBox.Text = SelectServerDialog.FileName;
-                ServerService.Settings.ServerPath = SelectServerDialog.FileName;
+                ServerService.Settings.Instance.ServerPath = SelectServerDialog.FileName;
             }
         }
 
@@ -147,7 +147,7 @@ namespace CWSRestartGUI
 
         private void toggleServerWatcher_Click(object sender, EventArgs e)
         {
-            if (!ServerService.Settings.Validate())
+            if (!ServerService.Settings.Instance.Validate())
             {
                 log("Not all settings are set. Please refresh both of your IPs and select the executable/bat that should be run when the server is dead");
 

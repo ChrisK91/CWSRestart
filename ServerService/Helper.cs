@@ -34,7 +34,7 @@ namespace ServerService
         /// <returns>The external IP</returns>
         public async static Task<IPAddress> GetExternalIp()
         {
-            WebRequest request = WebRequest.Create(Settings.IPService);
+            WebRequest request = WebRequest.Create(Settings.Instance.IPService);
             WebResponse response = await request.GetResponseAsync();
             string html;
 
@@ -57,12 +57,16 @@ namespace ServerService
             }
         }
 
+        public static bool LocalIpWorking = false;
+
         /// <summary>
         /// Retrieves the LAN ip
         /// </summary>
         /// <returns>The LAN ip</returns>
         public static async Task<IPAddress> GetLocalIP()
         {
+            LocalIpWorking = true;
+
             IPHostEntry host;
             IPAddress localIP = null;
             host = await Dns.GetHostEntryAsync(Dns.GetHostName());
@@ -74,6 +78,9 @@ namespace ServerService
                     break;
                 }
             }
+
+            LocalIpWorking = false;
+
             return localIP;
         }
 
@@ -85,7 +92,7 @@ namespace ServerService
             if (Validator.IsRunning())
             {
                 if(Server == null)
-                    Server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
+                    Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
                 try
                 {
@@ -108,7 +115,7 @@ namespace ServerService
         public static void KillServer()
         {
             if(Server == null)
-                Server = Process.GetProcessesByName(Settings.ServerProcessName)[0];
+                Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
             if(Server != null)
                 Server.Kill();
@@ -126,8 +133,8 @@ namespace ServerService
             {
                 Logging.OnLogMessage("Sending the q-Key", Logging.MessageType.Info);
                 SendQuit();
-                Logging.OnLogMessage(String.Format("Waiting {0} seconds to see if the server is able to quit", Settings.Timeout / 1000), Logging.MessageType.Info);
-                timeout = new System.Timers.Timer(Settings.Timeout);
+                Logging.OnLogMessage(String.Format("Waiting {0} seconds to see if the server is able to quit", Settings.Instance.Timeout / 1000), Logging.MessageType.Info);
+                timeout = new System.Timers.Timer(Settings.Instance.Timeout);
                 timeout.AutoReset = false;
                 timeout.Elapsed += timeout_Elapsed;
                 timeout.Start();
@@ -155,7 +162,7 @@ namespace ServerService
         public static void StartServer()
         {
             Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
-            ProcessStartInfo pStart = new ProcessStartInfo(Settings.ServerPath);
+            ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);
             pStart.UseShellExecute = false;
             pStart.RedirectStandardInput = true;
             pStart.RedirectStandardOutput = true;

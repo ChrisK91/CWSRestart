@@ -30,7 +30,7 @@ namespace ServerService
         /// <returns>true if the process is running, otherwise false</returns>
         public static bool IsRunning()
         {
-            return Process.GetProcessesByName(Settings.ServerProcessName).Length != 0;
+            return Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length != 0;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ServerService
             {
                 Logging.OnLogMessage("Checking access from the internet", Logging.MessageType.Info);
 
-                if (await ServerIsListening(Settings.Internet, Settings.Port))
+                if (await ServerIsListening(Settings.Instance.Internet, Settings.Instance.Port))
                     Logging.OnLogMessage("Access is possible through the internet", Logging.MessageType.Info);
                 else
                     accessFailed = true;
@@ -76,7 +76,7 @@ namespace ServerService
             {
                 Logging.OnLogMessage("Checking access from the local network", Logging.MessageType.Info);
 
-                if (await ServerIsListening(Settings.LAN, Settings.Port))
+                if (await ServerIsListening(Settings.Instance.LAN, Settings.Instance.Port))
                     Logging.OnLogMessage("Access is possible through the local network", Logging.MessageType.Info);
                 else
                     accessFailed = true;
@@ -86,7 +86,7 @@ namespace ServerService
             {
                 Logging.OnLogMessage("Checking access via loopback", Logging.MessageType.Info);
 
-                if (await ServerIsListening(Settings.Loopback, Settings.Port))
+                if (await ServerIsListening(Settings.Instance.Loopback, Settings.Instance.Port))
                     Logging.OnLogMessage("Access is possible through loopback", Logging.MessageType.Info);
                 else
                     accessFailed = true;
