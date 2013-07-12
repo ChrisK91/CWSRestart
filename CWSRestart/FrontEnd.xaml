@@ -1,32 +1,54 @@
-﻿<Window x:Class="CWSRestart.FrontEnd"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ss="clr-namespace:ServerService;assembly=ServerService"
-        Title="MainWindow" Height="450" Width="700" MinHeight="450" MinWidth="700">
-    
+        xmlns:Helper="clr-namespace:CWSRestart.Helper" x:Class="CWSRestart.FrontEnd"
+        Title="CWS Restart" Height="450" Width="700" MinHeight="450" MinWidth="700">
+
+    <Window.Resources>
+        <Helper:IPAddressToStringConverter x:Key="IPAddressToStringConverter"/>
+        <Helper:BooleanToInverseBooleanConverter x:Key="BooleanToInverseBooleanConverter" />
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="115" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Header="Configuration" HorizontalAlignment="Stretch">
             <StackPanel Orientation="Vertical">
-                <DockPanel Margin="2,1">
-                    <Label Width="70" DockPanel.Dock="Left">External IP:</Label>
-                    <Button Width="75" DockPanel.Dock="Right">Refresh</Button>
-                    <TextBox Text="{Binding Source={x:Static ss:Settings.Instance}, Path=LoopbackAddress, Mode=TwoWay}" Margin="2,0"/>
-                </DockPanel >
-                <DockPanel Margin="2,1">
-                    <Label Width="70" DockPanel.Dock="Left">LAN IP:</Label>
-                    <Button Width="75" DockPanel.Dock="Right">Refresh</Button>
-                    <TextBox Text="{Binding Source={x:Static ss:Settings.Instance}, Path=LoopbackAddress, Mode=TwoWay}" Margin="2,0" />
-                </DockPanel >
+                <DockPanel>
+                    <Label VerticalAlignment="Center" Width="70" DockPanel.Dock="Left" Content="External IP:"/>
+                    <Button VerticalAlignment="Center" x:Name="RefreshExternalButton" Width="75" DockPanel.Dock="Right" Content="Refresh" Click="RefreshExternalButton_Click"/>
+                    <TextBox VerticalAlignment="Center" Text="{Binding Internet, Source={x:Static ss:Settings.Instance}, Converter={StaticResource IPAddressToStringConverter}, Mode=TwoWay}" Margin="0,0,2,0"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label VerticalAlignment="Center" Width="70" DockPanel.Dock="Left" Content="LAN IP:"/>
+                    <Button VerticalAlignment="Center" x:Name="RefreshLanButton" Width="75" DockPanel.Dock="Right" Content="Refresh" Click="RefreshLanButton_Click"/>
+                    <TextBox VerticalAlignment="Center" Text="{Binding LAN, Source={x:Static ss:Settings.Instance}, Converter={StaticResource IPAddressToStringConverter}, Mode=TwoWay}" Margin="0,0,2,0" />
+                </DockPanel>
+                <DockPanel>
+                    <Label VerticalAlignment="Center" DockPanel.Dock="Left">When the server is not responding, restart with:</Label>
+                    <Button VerticalAlignment="Center" x:Name="SelectServerButton" Content="Select..." Width="75" DockPanel.Dock="Right" Click="SelectServerButton_Click" />
+                    <TextBox VerticalAlignment="Center" Text="{Binding ServerPath, Source={x:Static ss:Settings.Instance}, Mode=TwoWay}" Margin="0,0,2,0" />
+                </DockPanel>
+                <DockPanel>
+                    <Label VerticalAlignment="Center" DockPanel.Dock="Left">Do not check access from:</Label>
+                    <CheckBox IsChecked="{Binding IgnoreInternet, Source={x:Static ss:Settings.Instance}, Mode=TwoWay, Converter={StaticResource BooleanToInverseBooleanConverter}}" DockPanel.Dock="Left" VerticalAlignment="Center" Width="90">Internet</CheckBox>
+                    <CheckBox IsChecked="{Binding IgnoreLAN, Source={x:Static ss:Settings.Instance}, Mode=TwoWay, Converter={StaticResource BooleanToInverseBooleanConverter}}" DockPanel.Dock="Left" VerticalAlignment="Center" Width="90">LAN</CheckBox>
+                    <CheckBox IsChecked="{Binding IgnoreLoopback, Source={x:Static ss:Settings.Instance}, Mode=TwoWay, Converter={StaticResource BooleanToInverseBooleanConverter}}" DockPanel.Dock="Left" VerticalAlignment="Center" Width="90">Loopback</CheckBox>
+                    <Label VerticalAlignment="Center"></Label>
+                </DockPanel>
             </StackPanel>
         </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Header="Watcher">
+            <Button IsEnabled="{Binding Validates, Source={x:Static ss:Settings.Instance}}" Width="100">Start Watcher</Button>
+        </GroupBox>
+        <TextBox Grid.Column="1" Grid.Row="1" Width="Auto" Height="Auto" AcceptsReturn="True"></TextBox>
     </Grid>
 </Window>

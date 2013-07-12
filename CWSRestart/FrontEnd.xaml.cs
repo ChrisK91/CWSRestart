@@ -25,5 +25,29 @@ namespace CWSRestart
         {
             InitializeComponent();
         }
+
+        private async void RefreshExternalButton_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.Settings.Instance.Internet = await ServerService.Helper.GetExternalIp();
+        }
+
+        private async void RefreshLanButton_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.Settings.Instance.LAN = await ServerService.Helper.GetLocalIP();
+        }
+
+        private void SelectServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog selectServer = new Microsoft.Win32.OpenFileDialog();
+
+            selectServer.Filter = "Executables|*.exe|Batch Files|*.bat|All Files|*.*";
+
+            Nullable<bool> result = selectServer.ShowDialog();
+
+            if (result == true)
+            {
+                ServerService.Settings.Instance.ServerPath = selectServer.FileName;
+            }
+        }
     }
 }

@@ -26,8 +26,8 @@ namespace ServerService
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        #region IPService
         private Uri ipservice = new Uri("http://bot.whatismyipaddress.com/");
-
         /// <summary>
         /// A service that can be used to retrieve the current (global) IP
         /// </summary>
@@ -43,11 +43,14 @@ namespace ServerService
                 notifyPropertyChanged();
             }
         }
+        #endregion
+
+        #region Loopback
+        private IPAddress loopback = IPAddress.Loopback;
 
         /// <summary>
-        /// The Loopback IP
+        /// The Loopback Network IP
         /// </summary>
-        private IPAddress loopback = IPAddress.Loopback;
         public IPAddress Loopback
         {
             get
@@ -58,42 +61,72 @@ namespace ServerService
             {
                 loopback = value;
                 notifyPropertyChanged();
-                notifyPropertyChanged("LoopbackAddress");
             }
         }
+        #endregion
 
-        public string LoopbackAddress
-        {
-            get
-            {
-                return Loopback.ToString();
-            }
-            set
-            {
-                IPAddress tmp;
-                if(IPAddress.TryParse(value, out tmp))
-                    Loopback = tmp;
-
-                notifyPropertyChanged();
-            }
-        }
-
+        #region Port
+        private int port = 12345;
         /// <summary>
         /// The port on which the server is listening
         /// </summary>
-        public int Port = 12345;
+        public int Port
+        {
+            get
+            {
+                return port;
+            }
+            set
+            {
+                port = value;
+                notifyPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region LAN
+        private IPAddress lan;
 
         /// <summary>
         /// The local network IP
         /// </summary>
-        public IPAddress LAN;
+        public IPAddress LAN
+        {
+            get
+            {
+                return lan;
+            }
+            set
+            {
+                lan = value;
+                notifyPropertyChanged();
+                Revalidate();
+            }
+        }
+        #endregion
+
+        #region Internet
+        private IPAddress internet;
 
         /// <summary>
         /// The global IP
         /// </summary>
-        public IPAddress Internet;
+        public IPAddress Internet
+        {
+            get
+            {
+                return internet;
+            }
+            set
+            {
+                internet = value;
+                notifyPropertyChanged();
+                Revalidate();
+            }
+        }
+        #endregion
 
-
+        #region ServerProcessName
         private string serverProcessName = "Server";
         /// <summary>
         /// The server process name
@@ -110,17 +143,123 @@ namespace ServerService
                 notifyPropertyChanged();
             }
         }
+        #endregion
 
+        #region Timeout
+        private int timeout = 10000;
         /// <summary>
         /// The timeout to wait for the server to quit, before we try killing it
         /// </summary>
-        public int Timeout = 10000;
+        public int Timeout
+        {
+            get
+            {
+                return timeout;
+            }
+            set
+            {
+                timeout = value;
+                notifyPropertyChanged();
+            }
+        }
+        #endregion
 
-
+        #region ServerPath
+        private string serverPath = "";
         /// <summary>
         /// The location of the server exectuable
         /// </summary>
-        public string ServerPath = "";
+        public string ServerPath
+        {
+            get
+            {
+                return serverPath;
+            }
+            set
+            {
+                serverPath = value;
+                notifyPropertyChanged();
+                Revalidate();
+            }
+        }
+        #endregion
+
+        #region IgnoreAccessSettings
+
+        private bool ignoreLoopback = false;
+        private bool ignoreInternet = false;
+        private bool ignoreLAN = false;
+        private AccessType ignoreAccess = 0;
+
+        public bool IgnoreLoopback
+        {
+            get
+            {
+                return ignoreLoopback;
+            }
+            set
+            {
+                ignoreLoopback = value;
+                if (ignoreLoopback)
+                    ignoreAccess |= AccessType.Loopback;
+                else
+                    ignoreAccess ^= AccessType.Loopback;
+                notifyPropertyChanged();
+            }
+        }
+
+        public bool IgnoreInternet
+        {
+            get
+            {
+                return ignoreInternet;
+            }
+            set
+            {
+                ignoreInternet = value;
+                if (ignoreInternet)
+                    ignoreAccess |= AccessType.Internet;
+                else
+                    ignoreAccess ^= AccessType.Internet;
+                notifyPropertyChanged();
+            }
+        }
+
+        public bool IgnoreLAN
+        {
+            get
+            {
+                return ignoreLAN;
+            }
+            set
+            {
+                ignoreLAN = value;
+                if (ignoreLAN)
+                    ignoreAccess |= AccessType.LAN;
+                else
+                    ignoreAccess ^= AccessType.LAN;
+                notifyPropertyChanged();
+            }
+        }
+
+        public AccessType IgnoreAccess
+        {
+            get
+            {
+                return ignoreAccess;
+            }
+            set
+            {
+                IgnoreInternet = (value.HasFlag(AccessType.Internet)) ? true : false;
+                IgnoreLAN = (value.HasFlag(AccessType.LAN)) ? true : false;
+                IgnoreLoopback = (value.HasFlag(AccessType.Loopback)) ? true : false;
+
+                ignoreAccess = value;
+                notifyPropertyChanged();
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Describes some access locations
@@ -142,17 +281,32 @@ namespace ServerService
             Internet = 0x4
         }
 
+        private bool validates = false;
+        public bool Validates
+        {
+            get
+            {
+                return validates;
+            }
+            private set
+            {
+                validates = value;
+                notifyPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Check if all settings are set
         /// </summary>
         /// <returns>True if everything is fine</returns>
-        public bool Validate()
+        public bool Revalidate()
         {
-            if (File.Exists(ServerPath) && (LAN != null) && (Internet != null))
-                return true;
+            Validates = false;
 
-            return false;
+            if (File.Exists(ServerPath) && (LAN != null) && (Internet != null))
+                Validates = true;
+
+            return Validates;
         }
 
         private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
