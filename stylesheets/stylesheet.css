@@ -29,6 +29,10 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
+i {
+    font-style: italic;
+}
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
@@ -85,14 +89,17 @@ h3 {
 }
 
 h4 {
+  color: #6f6f6f;
   font-size: 21px;
 }
 
 h5 {
+  color: #6f6f6f;
   font-size: 18px;
 }
 
 h6 {
+  color: #6f6f6f;
   font-size: 16px;
 }
 
@@ -319,7 +326,7 @@ Full-Width Styles
 
 #downloads {
   position: absolute;
-  width: 210px;
+  width: 115px;
   z-index: 10;
   bottom: -40px;
   right: 0;
@@ -407,14 +414,17 @@ Small Device Styles
   }
 
   h4 {
+  color: #6f6f6f;
     font-size: 18px;
   }
 
   h5 {
+  color: #6f6f6f;
     font-size: 14px;
   }
 
   h6 {
+  color: #6f6f6f;
     font-size: 12px;
   }
 
