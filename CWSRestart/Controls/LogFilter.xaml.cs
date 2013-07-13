@@ -99,10 +99,13 @@ namespace CWSRestart.Controls
             }
             set
             {
-                hideServer = value;
+                if (hideServer != value)
+                {
+                    hideServer = value;
 
-                notifyPropertyChanged();
-                log.Refresh();
+                    notifyPropertyChanged();
+                    log.Refresh();
+                }
             }
         }
 
@@ -114,10 +117,13 @@ namespace CWSRestart.Controls
             }
             set
             {
-                hideGeneral = value;
+                if (hideGeneral != value)
+                {
+                    hideGeneral = value;
 
-                notifyPropertyChanged();
-                log.Refresh();
+                    notifyPropertyChanged();
+                    log.Refresh();
+                }
             }
         }
 
@@ -129,10 +135,13 @@ namespace CWSRestart.Controls
             }
             set
             {
-                hideInfo = value;
-                notifyPropertyChanged();
+                if (hideInfo != value)
+                {
+                    hideInfo = value;
+                    notifyPropertyChanged();
 
-                log.Refresh();
+                    log.Refresh();
+                }
             }
         }
 
@@ -144,10 +153,13 @@ namespace CWSRestart.Controls
             }
             set
             {
-                hideError = value;
-                notifyPropertyChanged();
+                if (hideError != value)
+                {
+                    hideError = value;
+                    notifyPropertyChanged();
 
-                log.Refresh();
+                    log.Refresh();
+                }
             }
         }
 
@@ -159,9 +171,12 @@ namespace CWSRestart.Controls
             }
             set
             {
-                hideWarning = value;
-                notifyPropertyChanged();
-                log.Refresh();
+                if (hideWarning != value)
+                {
+                    hideWarning = value;
+                    notifyPropertyChanged();
+                    log.Refresh();
+                }
             }
         }
 

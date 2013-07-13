@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -14,6 +13,9 @@ namespace ServerService
     {
         private static System.Timers.Timer timeout;
         public static event EventHandler ServerRestarted;
+
+        private static BackgroundWorker output;
+        internal static Process Server;
 
         /// <summary>
         /// Indicates if the helper is working (for instance restarting the server)
@@ -25,9 +27,6 @@ namespace ServerService
                 return (timeout != null) ? timeout.Enabled : false;
             }
         }
-
-        private static BackgroundWorker output;
-        internal static Process Server;
 
         /// <summary>
         /// Retrieves the external IP
@@ -58,7 +57,6 @@ namespace ServerService
             }
         }
 
-        public static bool LocalIpWorking = false;
 
         /// <summary>
         /// Retrieves the LAN ip
@@ -66,8 +64,6 @@ namespace ServerService
         /// <returns>The LAN ip</returns>
         public static async Task<IPAddress> GetLocalIP()
         {
-            LocalIpWorking = true;
-
             IPHostEntry host;
             IPAddress localIP = null;
             host = await Dns.GetHostEntryAsync(Dns.GetHostName());
@@ -79,8 +75,6 @@ namespace ServerService
                     break;
                 }
             }
-
-            LocalIpWorking = false;
 
             return localIP;
         }

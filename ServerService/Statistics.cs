@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace ServerService
@@ -22,6 +18,9 @@ namespace ServerService
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Used to dispose the statistics class
+        /// </summary>
         public void Dispose()
         {
             refresh.Stop();
@@ -31,6 +30,9 @@ namespace ServerService
 
 
         private ObservableCollection<IPAddress> players;
+        /// <summary>
+        /// A list that contains all players, that have visited the server
+        /// </summary>
         public ObservableCollection<IPAddress> Players
         {
             get
@@ -39,8 +41,11 @@ namespace ServerService
             }
             set
             {
-                players = value;
-                notifyPropertyChanged();
+                if (players != value)
+                {
+                    players = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -48,7 +53,7 @@ namespace ServerService
 
         private int restartCount = 0;
         /// <summary>
-        /// Indicates how many times the server has been restarted because of errors
+        /// Indicates how many times the server has been restarted
         /// </summary>
         public int RestartCount
         {
@@ -58,15 +63,13 @@ namespace ServerService
             }
             private set
             {
-                restartCount = value;
-                notifyPropertyChanged();
+                if (restartCount != value)
+                {
+                    restartCount = value;
+                    notifyPropertyChanged();
+                }
             }
         }
-
-        /// <summary>
-        /// Occurs when the statistics are refreshed
-        /// </summary>
-        public event StatisticsUpdatedEventHandler StatisticsUpdated;
 
         private string logFolder = "";
         /// <summary>
@@ -80,46 +83,14 @@ namespace ServerService
             }
             set
             {
-                logFolder = value;
-                notifyPropertyChanged();
+                if (logFolder != value)
+                {
+                    logFolder = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
-        /// <summary>
-        /// Handles updates statistics (will be removed - use PropertyChanged)
-        /// </summary>
-        /// <param name="sender">The class that has been updated</param>
-        /// <param name="e">Arguments containing various statistics</param>
-        public delegate void StatisticsUpdatedEventHandler(object sender, StatisticsUpdatedEventArgs e);
-
-        /// <summary>
-        /// The arguments that go with the StatisticsUpdatedEvent
-        /// </summary>
-        public class StatisticsUpdatedEventArgs : EventArgs
-        {
-            public int ActivePlayerCount;
-            public TimeSpan Runtime;
-            public int TotalUniquePlayers;
-            public long CurrentMemoryUsage;
-            public long PeakMemoryUsage;
-            public int RestartCount;
-        }
-
-        /// <summary>
-        /// Raises the StatisticsUpdated event
-        /// </summary>
-        private void OnStatisticsUpdated()
-        {
-            if(StatisticsUpdated != null)
-                StatisticsUpdated(this, new StatisticsUpdatedEventArgs(){
-                    ActivePlayerCount = this.ActivePlayerCount,
-                    Runtime = this.Runtime,
-                    TotalUniquePlayers = this.TotalUniquePlayers,
-                    CurrentMemoryUsage = this.CurrentMemoryUsage,
-                    PeakMemoryUsage = this.PeakMemoryUsage,
-                    RestartCount = this.RestartCount
-                });
-        }
 
         private bool enabled = false;
         /// <summary>
@@ -133,9 +104,12 @@ namespace ServerService
             }
             private set
             {
-                enabled = value;
-                notifyPropertyChanged();
-                notifyPropertyChanged("ButtonText");
+                if (enabled != value)
+                {
+                    enabled = value;
+                    notifyPropertyChanged();
+                    notifyPropertyChanged("ButtonText");
+                }
             }
         }
 
@@ -151,17 +125,6 @@ namespace ServerService
         }
 
 
-        /// <summary>
-        /// Contains the amount of unique players, deprecated (Use Players.Count instead)
-        /// </summary>
-        public int TotalUniquePlayers
-        {
-            get
-            {
-                return Players.Count;
-            }
-        }
-
         private int activePlayerCount = 0;
         /// <summary>
         /// Contains the current amount of connected players (updated periodically and not on connect)
@@ -174,8 +137,11 @@ namespace ServerService
             }
             private set
             {
-                activePlayerCount = value;
-                notifyPropertyChanged();
+                if (activePlayerCount != value)
+                {
+                    activePlayerCount = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -191,8 +157,11 @@ namespace ServerService
             }
             set
             {
-                runtime = value;
-                notifyPropertyChanged();
+                if (runtime != value)
+                {
+                    runtime = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -213,8 +182,11 @@ namespace ServerService
             }
             private set
             {
-                peakMemoryUsage = value / 1024 / 1024;
-                notifyPropertyChanged();
+                if (peakMemoryUsage != (value / 1024 / 1024))
+                {
+                    peakMemoryUsage = value / 1024 / 1024;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -230,8 +202,11 @@ namespace ServerService
             }
             private set
             {
-                currentMemoryUsage = value / 1024 / 1024;
-                notifyPropertyChanged();
+                if (currentMemoryUsage != value / 1024 / 1024)
+                {
+                    currentMemoryUsage = value / 1024 / 1024;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -358,7 +333,7 @@ namespace ServerService
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                                 String.Format("{0}:{1:00}:{2:00}", Math.Floor(Runtime.TotalHours), Runtime.Minutes, Runtime.Seconds),
                                 ActivePlayerCount,
-                                TotalUniquePlayers,
+                                Players.Count,
                                 CurrentMemoryUsage,
                                 PeakMemoryUsage,
                                 RestartCount);
@@ -377,8 +352,6 @@ namespace ServerService
                         loggingIndicator++;
                     }
                 }
-
-                OnStatisticsUpdated();
             }
         }
 

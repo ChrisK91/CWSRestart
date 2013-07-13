@@ -39,8 +39,11 @@ namespace ServerService
             }
             set
             {
-                ipservice = value;
-                notifyPropertyChanged();
+                if (ipservice != value)
+                {
+                    ipservice = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -59,8 +62,11 @@ namespace ServerService
             }
             set
             {
-                loopback = value;
-                notifyPropertyChanged();
+                if (loopback != value)
+                {
+                    loopback = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -78,8 +84,11 @@ namespace ServerService
             }
             set
             {
-                port = value;
-                notifyPropertyChanged();
+                if (port != value)
+                {
+                    port = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -98,9 +107,12 @@ namespace ServerService
             }
             set
             {
-                lan = value;
-                notifyPropertyChanged();
-                Revalidate();
+                if (lan != value)
+                {
+                    lan = value;
+                    notifyPropertyChanged();
+                    Revalidate();
+                }
             }
         }
         #endregion
@@ -119,9 +131,12 @@ namespace ServerService
             }
             set
             {
-                internet = value;
-                notifyPropertyChanged();
-                Revalidate();
+                if (internet != value)
+                {
+                    internet = value;
+                    notifyPropertyChanged();
+                    Revalidate();
+                }
             }
         }
         #endregion
@@ -139,8 +154,11 @@ namespace ServerService
             }
             set
             {
-                serverProcessName = value;
-                notifyPropertyChanged();
+                if (serverProcessName != value)
+                {
+                    serverProcessName = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -158,8 +176,11 @@ namespace ServerService
             }
             set
             {
-                timeout = value;
-                notifyPropertyChanged();
+                if (timeout != value)
+                {
+                    timeout = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -177,9 +198,12 @@ namespace ServerService
             }
             set
             {
-                serverPath = value;
-                notifyPropertyChanged();
-                Revalidate();
+                if (serverPath != value)
+                {
+                    serverPath = value;
+                    notifyPropertyChanged();
+                    Revalidate();
+                }
             }
         }
         #endregion
@@ -199,13 +223,16 @@ namespace ServerService
             }
             set
             {
-                checkLoopback = value;
-                if (checkLoopback)
-                    ignoreAccess |= AccessType.Loopback;
-                else
-                    ignoreAccess ^= AccessType.Loopback;
-                notifyPropertyChanged();
-                notifyPropertyChanged("IgnoreAccess");
+                if (checkLoopback != value)
+                {
+                    checkLoopback = value;
+                    if (checkLoopback)
+                        ignoreAccess |= AccessType.Loopback;
+                    else
+                        ignoreAccess ^= AccessType.Loopback;
+                    notifyPropertyChanged();
+                    notifyPropertyChanged("IgnoreAccess");
+                }
             }
         }
 
@@ -217,13 +244,16 @@ namespace ServerService
             }
             set
             {
-                checkInternet = value;
                 if (checkInternet)
-                    ignoreAccess |= AccessType.Internet;
-                else
-                    ignoreAccess ^= AccessType.Internet;
-                notifyPropertyChanged();
-                notifyPropertyChanged("IgnoreAccess");
+                {
+                    checkInternet = value;
+                    if (checkInternet)
+                        ignoreAccess |= AccessType.Internet;
+                    else
+                        ignoreAccess ^= AccessType.Internet;
+                    notifyPropertyChanged();
+                    notifyPropertyChanged("IgnoreAccess");
+                }
             }
         }
 
@@ -235,13 +265,16 @@ namespace ServerService
             }
             set
             {
-                checkLAN = value;
-                if (checkLAN)
-                    ignoreAccess |= AccessType.LAN;
-                else
-                    ignoreAccess ^= AccessType.LAN;
-                notifyPropertyChanged();
-                notifyPropertyChanged("IgnoreAccess");
+                if (checkLAN != value)
+                {
+                    checkLAN = value;
+                    if (checkLAN)
+                        ignoreAccess |= AccessType.LAN;
+                    else
+                        ignoreAccess ^= AccessType.LAN;
+                    notifyPropertyChanged();
+                    notifyPropertyChanged("IgnoreAccess");
+                }
             }
         }
 
@@ -253,12 +286,15 @@ namespace ServerService
             }
             set
             {
-                CheckInternet = (value.HasFlag(AccessType.Internet)) ? true : false;
-                CheckLAN = (value.HasFlag(AccessType.LAN)) ? true : false;
-                CheckLoopback = (value.HasFlag(AccessType.Loopback)) ? true : false;
+                if (ignoreAccess != value)
+                {
+                    CheckInternet = (value.HasFlag(AccessType.Internet)) ? true : false;
+                    CheckLAN = (value.HasFlag(AccessType.LAN)) ? true : false;
+                    CheckLoopback = (value.HasFlag(AccessType.Loopback)) ? true : false;
 
-                ignoreAccess = value;
-                notifyPropertyChanged();
+                    ignoreAccess = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -285,6 +321,9 @@ namespace ServerService
         }
 
         private bool validates = false;
+        /// <summary>
+        /// Indicates if all settings are set properly
+        /// </summary>
         public bool Validates
         {
             get
@@ -293,8 +332,11 @@ namespace ServerService
             }
             private set
             {
-                validates = value;
-                notifyPropertyChanged();
+                if (validates != value)
+                {
+                    validates = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 

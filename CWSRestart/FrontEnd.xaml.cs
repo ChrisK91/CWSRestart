@@ -35,8 +35,11 @@ namespace CWSRestart
             }
             private set
             {
-                stats = value;
-                notifyPropertyChanged();
+                if (stats != value)
+                {
+                    stats = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 

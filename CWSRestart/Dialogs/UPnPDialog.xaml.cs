@@ -38,8 +38,11 @@ namespace CWSRestart.Dialogs
             }
             set
             {
-                status = value;
-                notifyPropertyChanged();
+                if (status != value)
+                {
+                    status = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -52,8 +55,11 @@ namespace CWSRestart.Dialogs
             }
             set
             {
-                buttonText = value;
-                notifyPropertyChanged();
+                if (buttonText != value)
+                {
+                    buttonText = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -66,8 +72,11 @@ namespace CWSRestart.Dialogs
             }
             set
             {
-                toggleEnabled = value;
-                notifyPropertyChanged();
+                if (toggleEnabled != value)
+                {
+                    toggleEnabled = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion

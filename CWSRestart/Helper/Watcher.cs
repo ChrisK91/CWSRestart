@@ -110,14 +110,17 @@ namespace CWSRestart.Helper
             }
             private set
             {
-                isRunning = value;
+                if (isRunning != value)
+                {
+                    isRunning = value;
 
-                if (isRunning)
-                    ButtonText = "Stop watcher";
-                else
-                    ButtonText = "Start watcher";
+                    if (isRunning)
+                        ButtonText = "Stop watcher";
+                    else
+                        ButtonText = "Start watcher";
 
-                notifyPropertyChanged();
+                    notifyPropertyChanged();
+                }
             }
         }
 
@@ -131,8 +134,11 @@ namespace CWSRestart.Helper
             }
             private set
             {
-                buttonText = value;
-                notifyPropertyChanged();
+                if (buttonText != value)
+                {
+                    buttonText = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -148,8 +154,11 @@ namespace CWSRestart.Helper
             }
             private set
             {
-                isBlocked = value;
-                notifyPropertyChanged();
+                if (isBlocked != value)
+                {
+                    isBlocked = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion
@@ -164,8 +173,11 @@ namespace CWSRestart.Helper
             }
             private set
             {
-                currentStep = value;
-                notifyPropertyChanged();
+                if (currentStep != value)
+                {
+                    currentStep = value;
+                    notifyPropertyChanged();
+                }
             }
         }
         #endregion

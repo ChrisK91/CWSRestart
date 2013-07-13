@@ -32,8 +32,11 @@ namespace ServerService
             }
             private set
             {
-                working = value;
-                notifyPropertyChanged();
+                if (working != value)
+                {
+                    working = value;
+                    notifyPropertyChanged();
+                }
             }
         }
 
