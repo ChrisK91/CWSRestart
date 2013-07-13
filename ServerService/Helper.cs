@@ -13,6 +13,7 @@ namespace ServerService
     public class Helper
     {
         private static System.Timers.Timer timeout;
+        public static event EventHandler ServerRestarted;
 
         /// <summary>
         /// Indicates if the helper is working (for instance restarting the server)
@@ -89,7 +90,7 @@ namespace ServerService
         /// </summary>
         public static void SendQuit()
         {
-            if (Validator.IsRunning())
+            if (Validator.Instance.IsRunning())
             {
                 if(Server == null)
                     Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
@@ -129,7 +130,7 @@ namespace ServerService
         /// </summary>
         public static void RestartServer()
         {
-            if (Validator.IsRunning())
+            if (Validator.Instance.IsRunning())
             {
                 Logging.OnLogMessage("Sending the q-Key", Logging.MessageType.Info);
                 SendQuit();
@@ -138,12 +139,19 @@ namespace ServerService
                 timeout.AutoReset = false;
                 timeout.Elapsed += timeout_Elapsed;
                 timeout.Start();
+
+                if (ServerRestarted != null)
+                    ServerRestarted(null, null);
+            }
+            else
+            {
+                Logging.OnLogMessage("Process not found", Logging.MessageType.Error);
             }
         }
 
         static void timeout_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (Validator.IsRunning())
+            if (Validator.Instance.IsRunning())
             {
                 Logging.OnLogMessage("The server is still running. Now we force it to quit.", Logging.MessageType.Info);
                 KillServer();

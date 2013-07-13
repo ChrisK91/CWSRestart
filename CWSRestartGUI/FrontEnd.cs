@@ -80,11 +80,11 @@ namespace CWSRestartGUI
 
         private async void singleCheckButton_Click(object sender, EventArgs e)
         {
-            if (ServerService.Settings.Instance.Validate())
+            if (ServerService.Settings.Instance.Revalidate())
             {
                 singleCheckButton.Enabled = false;
 
-                await ServerService.Validator.Validates(getAccessScheme());
+                await ServerService.Validator.Instance.Validates(getAccessScheme());
 
                 singleCheckButton.Enabled = true;
             }
@@ -147,7 +147,7 @@ namespace CWSRestartGUI
 
         private void toggleServerWatcher_Click(object sender, EventArgs e)
         {
-            if (!ServerService.Settings.Instance.Validate())
+            if (!ServerService.Settings.Instance.Revalidate())
             {
                 log("Not all settings are set. Please refresh both of your IPs and select the executable/bat that should be run when the server is dead");
 
@@ -204,7 +204,7 @@ namespace CWSRestartGUI
 
                     log("Time to check if the server is still running");
 
-                    ServerService.Validator.ServerErrors access = await ServerService.Validator.Validates(getAccessScheme());
+                    ServerService.Validator.ServerErrors access = await ServerService.Validator.Instance.Validates(getAccessScheme());
 
                     //do the magic
                     if (access != 0)

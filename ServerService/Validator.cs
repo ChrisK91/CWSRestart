@@ -1,13 +1,42 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace ServerService
 {
-    public class Validator
+    public sealed class Validator : INotifyPropertyChanged
     {
+        private static readonly Validator instance = new Validator();
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private Validator() { }
+
+        public static Validator Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
+        private bool working = false;
+        public bool Working
+        {
+            get
+            {
+                return working;
+            }
+            private set
+            {
+                working = value;
+                notifyPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Describes what is wrong with the server
         /// </summary>
@@ -28,7 +57,7 @@ namespace ServerService
         /// Check if the process is running
         /// </summary>
         /// <returns>true if the process is running, otherwise false</returns>
-        public static bool IsRunning()
+        public bool IsRunning()
         {
             return Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length != 0;
         }
@@ -37,7 +66,7 @@ namespace ServerService
         /// Retrieve, how the server can be accessed
         /// </summary>
         /// <returns>All valid access networks through which the server can be reached</returns>
-        public async static Task<Settings.AccessType> GetAccessType()
+        public async Task<Settings.AccessType> GetAccessType()
         {
             Settings.AccessType access = 0;
 
@@ -58,7 +87,7 @@ namespace ServerService
         /// </summary>
         /// <param name="access">The access scheme</param>
         /// <returns>True if the server was accessible through all the specified access networks</returns>
-        public async static Task<bool> IsAccessible(Settings.AccessType access)
+        public async Task<bool> IsAccessible(Settings.AccessType access)
         {
             bool accessFailed = false;
 
@@ -101,8 +130,9 @@ namespace ServerService
         /// <param name="address">the ip</param>
         /// <param name="port">the port</param>
         /// <returns>true if the server is responding</returns>
-        private async static Task<bool> ServerIsListening(IPAddress address, int port)
+        private async Task<bool> ServerIsListening(IPAddress address, int port)
         {
+            Working = true;
             Logging.OnLogMessage(String.Format("Checking access on {0}:{1}. This might take a minute or two", address.ToString(), port.ToString()), Logging.MessageType.Info);
             
             using(TcpClient connection = new TcpClient(AddressFamily.InterNetwork))
@@ -115,17 +145,19 @@ namespace ServerService
                 {
                     if (ex.SocketErrorCode == SocketError.ConnectionRefused || ex.SocketErrorCode == SocketError.TimedOut)
                     {
+                        Working = false;
                         Logging.OnLogMessage(String.Format("No connection possible on {0}:{1}", address.ToString(), port.ToString()), Logging.MessageType.Error);
                         return false;
                     }
                     else
                     {
+                        Working = false;
                         Logging.OnLogMessage(String.Format("An error occured: {0}", ex.Message), Logging.MessageType.Error);
                         return false;
                     }
                 }
             }
-
+            Working = false;
             return true;
         }
 
@@ -134,7 +166,7 @@ namespace ServerService
         /// </summary>
         /// <param name="access">The desired access scheme</param>
         /// <returns>true if everything is fine</returns>
-        public async static Task<ServerErrors> Validates(Settings.AccessType access)
+        public async Task<ServerErrors> Validates(Settings.AccessType access)
         {
             ServerErrors serverHealth = 0;
 
@@ -159,6 +191,17 @@ namespace ServerService
             }
 
             return serverHealth;
+        }
+
+        public Task<ServerErrors> Validates()
+        {
+            return Validates(Settings.Instance.IgnoreAccess);
+        }
+
+        private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

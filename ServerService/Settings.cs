@@ -186,59 +186,62 @@ namespace ServerService
 
         #region IgnoreAccessSettings
 
-        private bool ignoreLoopback = false;
-        private bool ignoreInternet = false;
-        private bool ignoreLAN = false;
+        private bool checkLoopback = false;
+        private bool checkInternet = false;
+        private bool checkLAN = false;
         private AccessType ignoreAccess = 0;
 
-        public bool IgnoreLoopback
+        public bool CheckLoopback
         {
             get
             {
-                return ignoreLoopback;
+                return checkLoopback;
             }
             set
             {
-                ignoreLoopback = value;
-                if (ignoreLoopback)
+                checkLoopback = value;
+                if (checkLoopback)
                     ignoreAccess |= AccessType.Loopback;
                 else
                     ignoreAccess ^= AccessType.Loopback;
                 notifyPropertyChanged();
+                notifyPropertyChanged("IgnoreAccess");
             }
         }
 
-        public bool IgnoreInternet
+        public bool CheckInternet
         {
             get
             {
-                return ignoreInternet;
+                return checkInternet;
             }
             set
             {
-                ignoreInternet = value;
-                if (ignoreInternet)
+                checkInternet = value;
+                if (checkInternet)
                     ignoreAccess |= AccessType.Internet;
                 else
                     ignoreAccess ^= AccessType.Internet;
                 notifyPropertyChanged();
+                notifyPropertyChanged("IgnoreAccess");
             }
         }
 
-        public bool IgnoreLAN
+        public bool CheckLAN
         {
             get
             {
-                return ignoreLAN;
+                return checkLAN;
             }
             set
             {
-                ignoreLAN = value;
-                if (ignoreLAN)
+                checkLAN = value;
+                if (checkLAN)
                     ignoreAccess |= AccessType.LAN;
                 else
                     ignoreAccess ^= AccessType.LAN;
                 notifyPropertyChanged();
+                notifyPropertyChanged("IgnoreAccess");
             }
         }
 
@@ -250,9 +253,9 @@ namespace ServerService
             }
             set
             {
-                IgnoreInternet = (value.HasFlag(AccessType.Internet)) ? true : false;
-                IgnoreLAN = (value.HasFlag(AccessType.LAN)) ? true : false;
-                IgnoreLoopback = (value.HasFlag(AccessType.Loopback)) ? true : false;
+                CheckInternet = (value.HasFlag(AccessType.Internet)) ? true : false;
+                CheckLAN = (value.HasFlag(AccessType.LAN)) ? true : false;
+                CheckLoopback = (value.HasFlag(AccessType.Loopback)) ? true : false;
 
                 ignoreAccess = value;
                 notifyPropertyChanged();

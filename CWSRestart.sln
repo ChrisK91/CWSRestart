@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerService", "ServerService\ServerService.csproj", "{1CAB7BEE-1AE8-4222-8CDB-498B3DECF641}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWSRestartGUI", "CWSRestartGUI\CWSRestartGUI.csproj", "{D1C2B7FC-806F-4200-BEB1-3D30135D1385}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWSRestartGUI_Old", "CWSRestartGUI\CWSRestartGUI_Old.csproj", "{D1C2B7FC-806F-4200-BEB1-3D30135D1385}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWSRestart", "CWSRestart\CWSRestart.csproj", "{2C796A1F-F142-4D67-A69D-D38E098ACC92}"
 EndProject
@@ -28,5 +28,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

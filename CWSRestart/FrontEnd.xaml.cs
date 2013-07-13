@@ -1,7 +1,10 @@
 ﻿using ServerService;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,11 +22,62 @@ namespace CWSRestart
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class FrontEnd : Window
+    public partial class FrontEnd : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private Statistics stats;
+        public Statistics Stats
+        {
+            get
+            {
+                return stats;
+            }
+            private set
+            {
+                stats = value;
+                notifyPropertyChanged();
+            }
+        }
+
         public FrontEnd()
         {
             InitializeComponent();
+            ServerService.Logging.LogMessage += Logging_LogMessage;
+            Helper.Logging.LogMessage += Logging_LogMessage;
+
+            Stats = new Statistics(1000, false);
+        }
+
+        void Logging_LogMessage(object sender, Logging.LogMessageEventArgs e)
+        {
+            CWSRestart.Controls.LogFilter.MessageType t = Controls.LogFilter.MessageType.General;
+
+            switch (e.type)
+            {
+                case Logging.MessageType.Error:
+                    t = Controls.LogFilter.MessageType.Error;
+                    break;
+
+                case Logging.MessageType.Info:
+                    t = Controls.LogFilter.MessageType.Info;
+                    break;
+
+                case Logging.MessageType.Server:
+                    t = Controls.LogFilter.MessageType.Server;
+                    break;
+
+                case Logging.MessageType.Warning:
+                    t = Controls.LogFilter.MessageType.Warning;
+                    break;
+            }
+
+            Application.Current.Dispatcher.BeginInvoke(new Action<Controls.LogFilter.LogMessage>((m) => LogControl.Messages.Add(m)), new Controls.LogFilter.LogMessage(e.message, t)); 
+        }
+
+        private void log(string message)
+        {
+            LogControl.Messages.Add(new Controls.LogFilter.LogMessage(message, Controls.LogFilter.MessageType.Info));
         }
 
         private async void RefreshExternalButton_Click(object sender, RoutedEventArgs e)
@@ -48,6 +102,92 @@ namespace CWSRestart
             {
                 ServerService.Settings.Instance.ServerPath = selectServer.FileName;
             }
+        }
+
+        private async void ValidateButton_Click(object sender, RoutedEventArgs e)
+        {
+            await ServerService.Validator.Instance.Validates();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Helper.Updater.UpdateAvailable())
+            {
+                log("A new version is available. Please visit the website to update");
+            }
+            else
+            {
+                log("The version your are using is up to date :)");
+            }
+        }
+
+        private void IntervallTextbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                IntervallTextbox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+                e.Handled = true;
+            }
+        }
+
+        private void ToggleWatcher_Click(object sender, RoutedEventArgs e)
+        {
+            Helper.Watcher.Instance.Toggle();
+        }
+
+        private void StartServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.Helper.StartServer();
+        }
+
+        private void StopServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.Helper.SendQuit();
+        }
+
+        private void RestartServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.Helper.RestartServer();
+        }
+
+        private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ToggleStatisticsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Stats.Enabled)
+            {
+                Stats.Stop();
+            }
+            else
+            {
+                Stats.Start();
+            }
+        }
+
+        private void StatsFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog logFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+
+            if (logFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Stats.LogFolder = logFolderDialog.SelectedPath;
+            }
+        }
+
+        private void UPnPButton_Click(object sender, RoutedEventArgs e)
+        {
+            Dialogs.UPnPDialog dlg = new Dialogs.UPnPDialog(Settings.Instance.LAN.ToString());
+            dlg.ShowDialog();
         }
     }
 }

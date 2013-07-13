@@ -1,43 +1,92 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace ServerService
 {
-    public class Statistics
+    public sealed class Statistics : INotifyPropertyChanged, IDisposable
     {
         private Timer refresh;
         private int interval;
         private DateTime start;
 
-        private List<IPAddress> players;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void Dispose()
+        {
+            refresh.Stop();
+            refresh.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+
+        private ObservableCollection<IPAddress> players;
+        public ObservableCollection<IPAddress> Players
+        {
+            get
+            {
+                return players;
+            }
+            set
+            {
+                players = value;
+                notifyPropertyChanged();
+            }
+        }
 
         private int loggingIndicator;
 
+        private int restartCount = 0;
         /// <summary>
         /// Indicates how many times the server has been restarted because of errors
         /// </summary>
-        public int RestartCount { get; private set; }
+        public int RestartCount
+        {
+            get
+            {
+                return restartCount;
+            }
+            private set
+            {
+                restartCount = value;
+                notifyPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Occurs when the statistics are refreshed
         /// </summary>
         public event StatisticsUpdatedEventHandler StatisticsUpdated;
 
+        private string logFolder = "";
         /// <summary>
-        /// 
+        /// Indicates, where the LogFile should be stored
         /// </summary>
-        public string LogFolder = "";
+        public string LogFolder
+        {
+            get
+            {
+                return logFolder;
+            }
+            set
+            {
+                logFolder = value;
+                notifyPropertyChanged();
+            }
+        }
 
         /// <summary>
-        /// Handles updates statistics
+        /// Handles updates statistics (will be removed - use PropertyChanged)
         /// </summary>
         /// <param name="sender">The class that has been updated</param>
         /// <param name="e">Arguments containing various statistics</param>
@@ -72,6 +121,7 @@ namespace ServerService
                 });
         }
 
+        private bool enabled = false;
         /// <summary>
         /// Indicates if the Statistics are updated
         /// </summary>
@@ -79,26 +129,57 @@ namespace ServerService
         {
             get
             {
-                return (refresh != null) ? refresh.Enabled : false;
+                return enabled;
+            }
+            private set
+            {
+                enabled = value;
+                notifyPropertyChanged();
+                notifyPropertyChanged("ButtonText");
             }
         }
 
+        public string ButtonText
+        {
+            get
+            {
+                if (enabled)
+                    return "Disable statistics";
+                else
+                    return "Enable statistics";
+            }
+        }
+
+
         /// <summary>
-        /// Contains the amount of unique players
+        /// Contains the amount of unique players, deprecated (Use Players.Count instead)
         /// </summary>
         public int TotalUniquePlayers
         {
             get
             {
-                return players.Count();
+                return Players.Count;
             }
         }
 
+        private int activePlayerCount = 0;
         /// <summary>
         /// Contains the current amount of connected players (updated periodically and not on connect)
         /// </summary>
-        public int ActivePlayerCount { get; private set; }
+        public int ActivePlayerCount
+        {
+            get
+            {
+                return activePlayerCount;
+            }
+            private set
+            {
+                activePlayerCount = value;
+                notifyPropertyChanged();
+            }
+        }
 
+        private TimeSpan runtime = new TimeSpan(0);
         /// <summary>
         /// The duration of the current sessions
         /// </summary>
@@ -106,15 +187,38 @@ namespace ServerService
         {
             get
             {
-                return DateTime.Now - start;
+                return runtime;
+            }
+            set
+            {
+                runtime = value;
+                notifyPropertyChanged();
             }
         }
 
+        public void UpdateRuntime()
+        {
+            Runtime = DateTime.Now.Subtract(start);
+        }
+
+        private long peakMemoryUsage = 0;
         /// <summary>
         /// Contains the maximum amount of memory used by the server
         /// </summary>
-        public long PeakMemoryUsage { get; private set; }
+        public long PeakMemoryUsage
+        {
+            get
+            {
+                return peakMemoryUsage;
+            }
+            private set
+            {
+                peakMemoryUsage = value / 1024 / 1024;
+                notifyPropertyChanged();
+            }
+        }
 
+        private long currentMemoryUsage = 0;
         /// <summary>
         /// Contains the current amount of memory used by the server
         /// </summary>
@@ -122,8 +226,18 @@ namespace ServerService
         {
             get
             {
-                return (Helper.Server != null) ? Helper.Server.PrivateMemorySize64 : 0;
+                return currentMemoryUsage;
             }
+            private set
+            {
+                currentMemoryUsage = value / 1024 / 1024;
+                notifyPropertyChanged();
+            }
+        }
+
+        public void UpdateCurrentMemoryUsage()
+        {
+            CurrentMemoryUsage = (Helper.Server != null) ? Helper.Server.PrivateMemorySize64 : 0;
         }
 
         /// <summary>
@@ -149,13 +263,30 @@ namespace ServerService
         {
             interval = timeout;
             start = DateTime.Now;
-            players = new List<IPAddress>();
+
+            Helper.ServerRestarted += Helper_ServerRestarted;
+
+            #if DEBUG
+
+            start = start.Subtract(new TimeSpan(5, 0, 0, 0));
+
+            #endif
+
+            players = new ObservableCollection<IPAddress>();
 
             refresh = new Timer(interval);
             refresh.Elapsed += refresh_Elapsed;
 
-            if(autostart)
+            if (autostart)
+            {
                 refresh.Start();
+                Enabled = true;
+            }
+        }
+
+        void Helper_ServerRestarted(object sender, EventArgs e)
+        {
+            IncreaseRestartCount();
         }
 
         /// <summary>
@@ -164,6 +295,11 @@ namespace ServerService
         public void Start()
         {
             refresh.Start();
+
+            if (LogFolder == "")
+                Logging.OnLogMessage("To save your statistics, use the button on the left", Logging.MessageType.Info);
+
+            Enabled = true;
         }
 
         /// <summary>
@@ -172,6 +308,7 @@ namespace ServerService
         public void Stop()
         {
             refresh.Stop();
+            Enabled = false;
         }
 
         /// <summary>
@@ -181,7 +318,9 @@ namespace ServerService
         /// <param name="e"></param>
         void refresh_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (Validator.IsRunning())
+            UpdateRuntime();
+
+            if (Validator.Instance.IsRunning())
             {
                 updatePlayers(true);
 
@@ -189,8 +328,10 @@ namespace ServerService
                 {
                     Helper.Server.Refresh();
 
-                    if (PeakMemoryUsage <= Helper.Server.PrivateMemorySize64)
+                    if (PeakMemoryUsage <= (Helper.Server.PrivateMemorySize64 / 1024 / 1024))
                         PeakMemoryUsage = Helper.Server.PrivateMemorySize64;
+
+                    UpdateCurrentMemoryUsage();
                 }
 
                 if (LogFolder != "")
@@ -252,23 +393,13 @@ namespace ServerService
         }
 
         /// <summary>
-        /// Returns how many players were in total on the server this session
-        /// </summary>
-        /// <returns></returns>
-        public int UpdateUniquePlayerCount()
-        {
-            updatePlayers(true);
-            return players.Count;
-        }
-
-        /// <summary>
         /// Returns the amount of "hits" this session
         /// </summary>
         /// <returns></returns>
         public int UpdateTotalPlayerCount()
         {
             updatePlayers(true);
-            return players.Count;
+            return Players.Count;
         }
 
         private void updatePlayers(bool updateDictionary)
@@ -304,5 +435,10 @@ namespace ServerService
             RestartCount++;
         }
 
+        private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

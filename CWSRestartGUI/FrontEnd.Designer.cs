@@ -15,6 +15,7 @@
         {
             if (disposing && (components != null))
             {
+                stats.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
