@@ -1,0 +1,61 @@
+﻿<Window x:Class="CWSRestart.Dialogs.IPFilter"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ss="clr-namespace:ServerService;assembly=ServerService"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+
+        Title="IP Filter" Height="400" Width="600" ResizeMode="NoResize" x:Name="IPFilterDialog">
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+        </Grid.Background>
+
+        <Grid.Resources>
+            <Style x:Key="DoubleClickStyle" TargetType="{x:Type ListBoxItem}">
+                <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
+            </Style>
+
+            <ObjectDataProvider x:Key="AccessModeProvider" MethodName="GetValues" ObjectType="System:Enum">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="ss:AccessControl+AccessMode"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <GroupBox Grid.Row="0" Grid.Column="0" Header="Active players">
+            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.ConnectedPlayers, ElementName=IPFilterDialog}" />
+        </GroupBox>
+
+        <GroupBox Grid.Row="0" Grid.Column="1" Header="All players">
+            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.Players, ElementName=IPFilterDialog}" />
+        </GroupBox>
+
+        <GroupBox Grid.Row="0" Grid.Column="2" Header="Whitelist / Blacklist">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" ></ListBox>
+                <TextBox Grid.Row="1" x:Name="AddIPTextBox" KeyDown="AddIPTextBox_KeyDown" />
+            </Grid>
+        </GroupBox>
+        
+        <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+            <Button DockPanel.Dock="Left" Width="100">Enable</Button>
+            <ComboBox DockPanel.Dock="Right" Width="80" ItemsSource="{Binding Source={StaticResource AccessModeProvider}}" SelectedItem="{Binding Mode, Source={x:Static ss:AccessControl.Instance}}" VerticalAlignment="Center" />
+            <Label DockPanel.Dock="Right">Use list as: </Label>
+            <Label></Label>
+        </DockPanel>
+    </Grid>
+</Window>

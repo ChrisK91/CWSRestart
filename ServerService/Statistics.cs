@@ -29,7 +29,7 @@ namespace ServerService
         }
 
 
-        private ObservableCollection<IPAddress> players;
+        private ObservableCollection<IPAddress> players = new ObservableCollection<IPAddress>();
         /// <summary>
         /// A list that contains all players, that have visited the server
         /// </summary>
@@ -124,22 +124,21 @@ namespace ServerService
             }
         }
 
-
-        private int activePlayerCount = 0;
+        private ObservableCollection<IPAddress> connectedplayers = new ObservableCollection<IPAddress>();
         /// <summary>
-        /// Contains the current amount of connected players (updated periodically and not on connect)
+        /// A list that contains all players, that have visited the server
         /// </summary>
-        public int ActivePlayerCount
+        public ObservableCollection<IPAddress> ConnectedPlayers
         {
             get
             {
-                return activePlayerCount;
+                return connectedplayers;
             }
-            private set
+            set
             {
-                if (activePlayerCount != value)
+                if (connectedplayers != value)
                 {
-                    activePlayerCount = value;
+                    connectedplayers = value;
                     notifyPropertyChanged();
                 }
             }
@@ -245,9 +244,13 @@ namespace ServerService
 
             start = start.Subtract(new TimeSpan(5, 0, 0, 0));
 
-            #endif
+            Players.Add(IPAddress.Parse("192.168.178.2"));
+            Players.Add(IPAddress.Parse("192.168.178.3"));
+            Players.Add(IPAddress.Parse("192.168.178.4"));
+            Players.Add(IPAddress.Parse("192.168.178.5"));
+            Players.Add(IPAddress.Parse("192.168.178.6"));
 
-            players = new ObservableCollection<IPAddress>();
+            #endif
 
             refresh = new Timer(interval);
             refresh.Elapsed += refresh_Elapsed;
@@ -261,7 +264,7 @@ namespace ServerService
 
         void Helper_ServerRestarted(object sender, EventArgs e)
         {
-            IncreaseRestartCount();
+            increaseRestartCount();
         }
 
         /// <summary>
@@ -297,7 +300,7 @@ namespace ServerService
 
             if (Validator.Instance.IsRunning())
             {
-                updatePlayers(true);
+                UpdatePlayers();
 
                 if (Helper.Server != null)
                 {
@@ -332,7 +335,7 @@ namespace ServerService
                             sw.WriteLine("{0};{1};{2};{3};{4};{5};{6}",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                                 String.Format("{0}:{1:00}:{2:00}", Math.Floor(Runtime.TotalHours), Runtime.Minutes, Runtime.Seconds),
-                                ActivePlayerCount,
+                                ConnectedPlayers.Count,
                                 Players.Count,
                                 CurrentMemoryUsage,
                                 PeakMemoryUsage,
@@ -356,26 +359,10 @@ namespace ServerService
         }
 
         /// <summary>
-        /// Counts how many players are connected to the server.
-        /// </summary>
-        /// <returns>The amount of connected players</returns>
-        public int UpdateConnectedPlayerCount()
-        {
-            updatePlayers(false);
-            return ActivePlayerCount;
-        }
-
-        /// <summary>
-        /// Returns the amount of "hits" this session
+        /// Updates the current players
         /// </summary>
         /// <returns></returns>
-        public int UpdateTotalPlayerCount()
-        {
-            updatePlayers(true);
-            return Players.Count;
-        }
-
-        private void updatePlayers(bool updateDictionary)
+        public void UpdatePlayers()
         {
             IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
             TcpConnectionInformation[] connectionInformation = ipGlobalProperties.GetActiveTcpConnections();
@@ -383,6 +370,7 @@ namespace ServerService
             IEnumerator enumerator = connectionInformation.GetEnumerator();
 
             int count = 0;
+            ConnectedPlayers.Clear();
 
             while (enumerator.MoveNext())
             {
@@ -392,18 +380,15 @@ namespace ServerService
                 {
                     count++;
 
-                    if(updateDictionary)
-                    {
-                        if (!players.Contains(info.RemoteEndPoint.Address))
-                            players.Add(info.RemoteEndPoint.Address);
-                    }
+                    if (!players.Contains(info.RemoteEndPoint.Address))
+                        players.Add(info.RemoteEndPoint.Address);
+
+                    ConnectedPlayers.Add(info.RemoteEndPoint.Address);
                 }
             }
-
-            ActivePlayerCount = count;
         }
 
-        public void IncreaseRestartCount()
+        private void increaseRestartCount()
         {
             RestartCount++;
         }

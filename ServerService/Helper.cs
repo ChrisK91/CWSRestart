@@ -155,6 +155,7 @@ namespace ServerService
                 Logging.OnLogMessage("The server has quit.", Logging.MessageType.Info);
             }
 
+            KillAdditionalProcesses();
             StartServer();
         }
 
@@ -174,6 +175,30 @@ namespace ServerService
 
             Server = Process.Start(pStart);
             output.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Will terminate all processes, that are listed in Settins.AdditionalProcesses
+        /// </summary>
+        private static void KillAdditionalProcesses()
+        {
+            foreach (string s in Settings.Instance.AdditionalProcesses)
+            {
+                try
+                {
+                    Process[] p = Process.GetProcessesByName(s);
+
+                    foreach (Process i in p)
+                    {
+                        Logging.OnLogMessage(String.Format("Terminating {0}", i.ProcessName), Logging.MessageType.Info);
+                        i.Kill();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logging.OnLogMessage(e.Message, Logging.MessageType.Error);
+                }
+            }
         }
 
         static void output_DoWork(object sender, DoWorkEventArgs e)

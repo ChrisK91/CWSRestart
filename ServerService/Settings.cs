@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
@@ -298,6 +299,25 @@ namespace ServerService
             }
         }
 
+        #endregion
+
+        #region AdditionalProcesses
+        private ObservableCollection<string> additionalProcesses = new ObservableCollection<string>();
+        public ObservableCollection<string> AdditionalProcesses
+        {
+            get
+            {
+                return additionalProcesses;
+            }
+            set
+            {
+                if (additionalProcesses != value)
+                {
+                    additionalProcesses = value;
+                    notifyPropertyChanged();
+                }
+            }
+        }
         #endregion
 
         /// <summary>

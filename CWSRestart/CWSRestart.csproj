@@ -63,6 +63,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\IPFilter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectAdditionalProcesses.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\UPnPDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -77,6 +85,12 @@
     </Compile>
     <Compile Include="Controls\LogFilter.xaml.cs">
       <DependentUpon>LogFilter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\IPFilter.xaml.cs">
+      <DependentUpon>IPFilter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectAdditionalProcesses.xaml.cs">
+      <DependentUpon>SelectAdditionalProcesses.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\UPnPDialog.xaml.cs">
       <DependentUpon>UPnPDialog.xaml</DependentUpon>

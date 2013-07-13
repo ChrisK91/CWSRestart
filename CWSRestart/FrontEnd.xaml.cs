@@ -192,5 +192,17 @@ namespace CWSRestart
             Dialogs.UPnPDialog dlg = new Dialogs.UPnPDialog(Settings.Instance.LAN.ToString());
             dlg.ShowDialog();
         }
+
+        private void AdditionalProcesses_Click(object sender, RoutedEventArgs e)
+        {
+            Dialogs.SelectAdditionalProcesses dlg = new Dialogs.SelectAdditionalProcesses();
+            dlg.ShowDialog();
+        }
+
+        private void IpFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            Dialogs.IPFilter dlg = new Dialogs.IPFilter(ref stats);
+            dlg.Show();
+        }
     }
 }
