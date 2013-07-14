@@ -4,7 +4,8 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Cwsrestart : A small tool that can will check periodically if your cubeworld server is still running" />
+    <meta name="description" content="CWSRestart is a servermanager to allowing you to monitor and manage your server" />
+    <meta name="keywords" content="CWSRestart, CubeWorld Server launcher, CubeWorldServer restart, cw restart">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -19,7 +20,7 @@
           <a id="forkme_banner" href="https://github.com/ChrisK91/CWSRestart">View on GitHub</a>
 
           <h1 id="project_title">CWSRestart</h1>
-          <h2 id="project_tagline"><a href="index.html">Home</a> | <a href="#">Features</a> | <a href="contact.html">Bugs, suggestions and contact</a></h2>
+          <h2 id="project_tagline"><a href="index.html">Home</a> | <a href="#">Features</a> | <a href="contact.html">Bugs, suggestions and contact</a> | <a href="manual.html">How to use</a></h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/ChrisK91/CWSRestart/releases">Downloads</a>
@@ -38,6 +39,8 @@
           <p>CWSRestart is developed with CPU and RAM usage in mind. I will try to keep a minimal, yet extendable core, that fits your need while keeping CPU and RAM usage to a minimum</p>
           <h4>Statistics</h4>
           <p>If you want, you can keep track on your server statistics. CWSRestart will &dash; on your command &dash; start collectiong statistics about the number of players, the CPU and RAM usage, and a few more numbers. These numbers are stored in a comma seperated file to allow you further analysis.</p>
+          <h4>Access lists</h4>
+          <p>Do you want a private server? No problem. CWSRestart can enforce whitelists, allowing you to host a private server for your community. Or you can create a blacklist instead.</p>
           <h4>Automated restarting</h4>
           <p>If the server isn't passing required tests, it will be restarted. CWSRestart will try to perform a gracefule shutdown: it will try to send the letter <i>q</i> to allow the server to quit. If this won't work, the process is terminated. You can select how you want to restart the server. By default, you want to use the standard <i>Server.exe</i>. However, CWSRestart also supports custom actions. For instance, you can chose to start the server via a <i>.bat</i>-file that sends you an e-mail, or you can start the server through the launcher of your choice</p>
           <h4>Open source</h4>
@@ -45,11 +48,9 @@
           <h2>Possible future features</h2>
           <p>CWSRestart is very much a work in progress. It is stable, however I'll try to add features that the users want to see. Here is a list of possible future features. This is more of an idea list. Features listed here might not make it into a future version.</p>
           <ul>
-              <li>Persistent settings, to easily recover your settings.</li>
-              <li>Add the ability to check and kill multiple processes. This is sometimes important for launchers, that are spawning multiple processes.</li>
               <li>Implement some form of process-to-process communication. This should allow me to create advanced features, that don't need to be in the main project.</li>
               <li>Expose statistics to the web, include a web interface. When process to process communication is in place, I want to include a (purely optional) web server. This server should allow you to manage the settings remotely, and add statistics to your website.</li>
-              <li>Add banning abilities and a <i>Who is online</i> list. This might not be possible in the current state of the server. I could sniff the connection from the server to the client, however I want to implement more basic features first.</li>
+              <li>Add more detailed statistics</li>
           </ul>
       </section>
     </div>
