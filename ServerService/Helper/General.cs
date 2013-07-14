@@ -199,7 +199,8 @@ namespace ServerService.Helper
         {
             Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
             ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);
-            pStart.UseShellExecute = false;
+
+            pStart.UseShellExecute = Settings.Instance.DoNotRedirectOutput;
 
             if (!pStart.UseShellExecute)
             {
@@ -207,6 +208,7 @@ namespace ServerService.Helper
                 pStart.RedirectStandardOutput = true;
             }
 
+            pStart.WorkingDirectory = Path.GetDirectoryName(Settings.Instance.ServerPath);
             output = new BackgroundWorker();
             output.DoWork += output_DoWork;
 

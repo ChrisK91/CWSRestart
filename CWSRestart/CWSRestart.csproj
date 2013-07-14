@@ -138,9 +138,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ServerService\ServerService.csproj">
       <Project>{1cab7bee-1ae8-4222-8cdb-498b3decf641}</Project>
       <Name>ServerService</Name>

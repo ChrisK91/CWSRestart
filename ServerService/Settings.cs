@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace ServerService
@@ -14,7 +16,26 @@ namespace ServerService
     {
         private static readonly Settings instance = new Settings();
 
-        private Settings() { }
+        private Settings() {
+            createSettingsIfNotExists();
+
+            IPService = new Uri(getAppSettingWithStandardValue("IPService", "http://bot.whatismyipaddress.com/"));
+            Loopback = getAppSettingWithStandardValue("Loopback", IPAddress.Loopback);
+            Port = getAppSettingWithStandardValue("Port", 12345);
+            LAN = getAppSettingIP("LAN");
+            Internet = getAppSettingIP("Internet");
+            ServerProcessName = getAppSettingWithStandardValue("ServerProcessName", "Server");
+            Timeout = getAppSettingWithStandardValue("Timeout", 10000);
+            ServerPath = getAppSettingWithStandardValue("ServerPath", "");
+
+            CheckLoopback = getAppSettingWithStandardValue("CheckLoopback", false);
+            CheckLAN = getAppSettingWithStandardValue("CheckLAN", true);
+            CheckInternet = getAppSettingWithStandardValue("CheckInternet", true);
+
+            DoNotRedirectOutput = getAppSettingWithStandardValue("DoNotRedirectOutput", false);
+            StatisticsInterval = getAppSettingWithStandardValue("StatisticsInterval", 1000);
+            SaveStatisticsEvery = getAppSettingWithStandardValue("SaveStatisticsEvery", 10);
+        }
 
         public static Settings Instance
         {
@@ -27,8 +48,44 @@ namespace ServerService
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private int saveStatisticsEvery;
+        public int SaveStatisticsEvery
+        {
+            get
+            {
+                return saveStatisticsEvery;
+            }
+            set
+            {
+                if (value != saveStatisticsEvery)
+                {
+                    saveStatisticsEvery = value;
+                    notifyPropertyChanged();
+                    setAppSetting("SaveStatisticsEvery", value);
+                }
+            }
+        }
+
+        private int statisticsInterval;
+        public int StatisticsInterval
+        {
+            get
+            {
+                return statisticsInterval;
+            }
+            set
+            {
+                if (value != statisticsInterval)
+                {
+                    statisticsInterval = value;
+                    notifyPropertyChanged();
+                    setAppSetting("StatisticsInterval", value);
+                }
+            }
+        }
+
         #region IPService
-        private Uri ipservice = new Uri("http://bot.whatismyipaddress.com/");
+        private Uri ipservice;
         /// <summary>
         /// A service that can be used to retrieve the current (global) IP
         /// </summary>
@@ -44,13 +101,14 @@ namespace ServerService
                 {
                     ipservice = value;
                     notifyPropertyChanged();
+                    setAppSetting("IPService", value.ToString());
                 }
             }
         }
         #endregion
 
         #region Loopback
-        private IPAddress loopback = IPAddress.Loopback;
+        private IPAddress loopback;
 
         /// <summary>
         /// The Loopback Network IP
@@ -67,13 +125,14 @@ namespace ServerService
                 {
                     loopback = value;
                     notifyPropertyChanged();
+                    setAppSetting("Loopback", value);
                 }
             }
         }
         #endregion
 
         #region Port
-        private int port = 12345;
+        private int port;
         /// <summary>
         /// The port on which the server is listening
         /// </summary>
@@ -89,6 +148,7 @@ namespace ServerService
                 {
                     port = value;
                     notifyPropertyChanged();
+                    setAppSetting("Port", value);
                 }
             }
         }
@@ -113,6 +173,7 @@ namespace ServerService
                     lan = value;
                     notifyPropertyChanged();
                     Revalidate();
+                    setAppSetting("LAN", value);
                 }
             }
         }
@@ -137,6 +198,7 @@ namespace ServerService
                     internet = value;
                     notifyPropertyChanged();
                     Revalidate();
+                    setAppSetting("Internet", value);
                 }
             }
         }
@@ -159,13 +221,14 @@ namespace ServerService
                 {
                     serverProcessName = value;
                     notifyPropertyChanged();
+                    setAppSetting("ServerProcessName", value);
                 }
             }
         }
         #endregion
 
         #region Timeout
-        private int timeout = 10000;
+        private int timeout;
         /// <summary>
         /// The timeout to wait for the server to quit, before we try killing it
         /// </summary>
@@ -181,13 +244,14 @@ namespace ServerService
                 {
                     timeout = value;
                     notifyPropertyChanged();
+                    setAppSetting("Timeout", value);
                 }
             }
         }
         #endregion
 
         #region ServerPath
-        private string serverPath = "";
+        private string serverPath;
         /// <summary>
         /// The location of the server exectuable
         /// </summary>
@@ -204,6 +268,7 @@ namespace ServerService
                     serverPath = value;
                     notifyPropertyChanged();
                     Revalidate();
+                    setAppSetting("ServerPath", value);
                 }
             }
         }
@@ -211,9 +276,9 @@ namespace ServerService
 
         #region IgnoreAccessSettings
 
-        private bool checkLoopback = false;
-        private bool checkInternet = false;
-        private bool checkLAN = false;
+        private bool checkLoopback;
+        private bool checkInternet;
+        private bool checkLAN;
         private AccessType ignoreAccess = 0;
 
         public bool CheckLoopback
@@ -233,6 +298,8 @@ namespace ServerService
                         ignoreAccess ^= AccessType.Loopback;
                     notifyPropertyChanged();
                     notifyPropertyChanged("IgnoreAccess");
+
+                    setAppSetting("CheckLoopback", value.ToString());
                 }
             }
         }
@@ -245,7 +312,7 @@ namespace ServerService
             }
             set
             {
-                if (checkInternet)
+                if (checkInternet != value)
                 {
                     checkInternet = value;
                     if (checkInternet)
@@ -254,6 +321,8 @@ namespace ServerService
                         ignoreAccess ^= AccessType.Internet;
                     notifyPropertyChanged();
                     notifyPropertyChanged("IgnoreAccess");
+
+                    setAppSetting("CheckInternet", value.ToString());
                 }
             }
         }
@@ -275,6 +344,8 @@ namespace ServerService
                         ignoreAccess ^= AccessType.LAN;
                     notifyPropertyChanged();
                     notifyPropertyChanged("IgnoreAccess");
+
+                    setAppSetting("CheckLAN", value.ToString());
                 }
             }
         }
@@ -298,9 +369,26 @@ namespace ServerService
                 }
             }
         }
-
         #endregion
 
+        private bool doNotRedirectOutput;
+        public bool DoNotRedirectOutput
+        {
+            get
+            {
+                return doNotRedirectOutput;
+            }
+            set
+            {
+                if (doNotRedirectOutput != value)
+                {
+                    doNotRedirectOutput = value;
+                    notifyPropertyChanged();
+
+                    setAppSetting("DoNotRedirectOutput", value.ToString());
+                }
+            }
+        }
         #region AdditionalProcesses
         private ObservableCollection<string> additionalProcesses = new ObservableCollection<string>();
         public ObservableCollection<string> AdditionalProcesses
@@ -378,6 +466,95 @@ namespace ServerService
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private string getAppSettingWithStandardValue(string key, string fallback)
+        {
+            if (getAppSetting(key) != null)
+                return getAppSetting(key);
+
+            setAppSetting(key, fallback);
+            return fallback;
+        }
+
+        private IPAddress getAppSettingWithStandardValue(string key, IPAddress fallback)
+        {
+            IPAddress ret;
+            if (getAppSetting(key) != null && IPAddress.TryParse(getAppSetting(key), out ret))
+                return ret;
+
+            setAppSetting(key, fallback);
+            return fallback;
+        }
+
+        private bool getAppSettingWithStandardValue(string key, bool fallback)
+        {
+            bool ret;
+            if (getAppSetting(key) != null && Boolean.TryParse(getAppSetting(key), out ret))
+                return ret;
+
+            setAppSetting(key, fallback.ToString());
+            return fallback;
+        }
+
+        private int getAppSettingWithStandardValue(string key, int fallback)
+        {
+            int ret;
+            if (getAppSetting(key) != null && Int32.TryParse(getAppSetting(key), out ret))
+                return ret;
+
+            setAppSetting(key, fallback);
+            return fallback;
+        }
+
+        private string getAppSetting(string key)
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
+            return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null; 
+        }
+
+        private IPAddress getAppSettingIP(string key)
+        {
+            IPAddress ret;
+            if (IPAddress.TryParse((string)getAppSetting(key), out ret))
+                return ret;
+            return null;
+        }
+
+        private void createSettingsIfNotExists()
+        {
+            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config")))
+                using (Stream resource = GetType().Assembly.GetManifestResourceStream("ServerService.ServerService.dll.config"))
+                {
+                    using (Stream output = File.OpenWrite(Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config")))
+                    {
+                        resource.CopyTo(output);
+                    }
+                }
+        }
+
+        private void setAppSetting(string key, string value)
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
+
+            if (config.AppSettings.Settings[key] != null)
+            {
+                config.AppSettings.Settings.Remove(key);
+            }
+
+            config.AppSettings.Settings.Add(key, value);
+            config.Save(ConfigurationSaveMode.Modified);
+        }
+
+        private void setAppSetting(string key, IPAddress fallback)
+        {
+            setAppSetting(key, fallback.ToString());
+        }
+
+
+        private void setAppSetting(string key, int fallback)
+        {
+            setAppSetting(key, fallback.ToString());
         }
     }
 }

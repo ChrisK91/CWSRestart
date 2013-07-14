@@ -13,7 +13,6 @@ namespace ServerService
     public sealed class Statistics : INotifyPropertyChanged, IDisposable
     {
         private Timer refresh;
-        private int interval;
         private DateTime start;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -235,7 +234,6 @@ namespace ServerService
 
         private void initialize(int timeout, bool autostart)
         {
-            interval = timeout;
             start = DateTime.Now;
 
             Helper.General.ServerRestarted += Helper_ServerRestarted;
@@ -252,7 +250,7 @@ namespace ServerService
 
 #endif
 
-            refresh = new Timer(interval);
+            refresh = new Timer(Settings.Instance.StatisticsInterval);
             refresh.Elapsed += refresh_Elapsed;
 
             if (autostart)
@@ -314,7 +312,7 @@ namespace ServerService
                     UpdateCurrentMemoryUsage();
                 }
 
-                if ((loggingIndicator % 10) == 0)
+                if ((loggingIndicator % Settings.Instance.SaveStatisticsEvery) == 0)
                 {
                     AccessControl.Instance.Enforce();
 
