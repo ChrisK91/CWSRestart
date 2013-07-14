@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -79,6 +80,10 @@ namespace ServerService
             return localIP;
         }
 
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);   
+
+
         /// <summary>
         /// Attempts to send the "q" Key to the StandardInput of the server
         /// </summary>
@@ -86,16 +91,27 @@ namespace ServerService
         {
             if (Validator.Instance.IsRunning())
             {
-                if(Server == null)
+                if(Server == null || (Server.ProcessName != Settings.Instance.ServerProcessName))
                     Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
                 try
                 {
-                    Server.StandardInput.WriteLine("q");
+                    if (!Server.StartInfo.UseShellExecute)
+                    {
+                        Logging.OnLogMessage("Writing to process stream", Logging.MessageType.Info);
+                        Server.StandardInput.WriteLine("q");
+                    }
+                    else
+                    {
+                        Logging.OnLogMessage("Sending key", Logging.MessageType.Info);
+                        SetForegroundWindow(Server.MainWindowHandle);
+                        System.Windows.Forms.SendKeys.SendWait("q{ENTER}");
+                    }
                 }
-                catch
+                catch(Exception ex)
                 {
                     Logging.OnLogMessage("Unable to send keypress...", Logging.MessageType.Warning);
+                    Logging.OnLogMessage(ex.Message, Logging.MessageType.Error);
                 }
             }
             else
@@ -109,7 +125,7 @@ namespace ServerService
         /// </summary>
         public static void KillServer()
         {
-            if(Server == null)
+            if (Server == null || (Server.ProcessName != Settings.Instance.ServerProcessName))
                 Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
             if(Server != null)
@@ -167,8 +183,12 @@ namespace ServerService
             Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
             ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);
             pStart.UseShellExecute = false;
-            pStart.RedirectStandardInput = true;
-            pStart.RedirectStandardOutput = true;
+
+            if (!pStart.UseShellExecute)
+            {
+                pStart.RedirectStandardInput = true;
+                pStart.RedirectStandardOutput = true;
+            }
 
             output = new BackgroundWorker();
             output.DoWork += output_DoWork;
@@ -203,7 +223,7 @@ namespace ServerService
 
         static void output_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (Server != null)
+            if (Server != null && !Server.StartInfo.UseShellExecute)
             {
                 StreamReader tmp = Server.StandardOutput;
 
