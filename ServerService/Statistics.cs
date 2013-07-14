@@ -211,7 +211,7 @@ namespace ServerService
 
         public void UpdateCurrentMemoryUsage()
         {
-            CurrentMemoryUsage = (Helper.Server != null) ? Helper.Server.PrivateMemorySize64 : 0;
+            CurrentMemoryUsage = (Helper.General.Server != null) ? Helper.General.Server.PrivateMemorySize64 : 0;
         }
 
         /// <summary>
@@ -238,9 +238,9 @@ namespace ServerService
             interval = timeout;
             start = DateTime.Now;
 
-            Helper.ServerRestarted += Helper_ServerRestarted;
+            Helper.General.ServerRestarted += Helper_ServerRestarted;
 
-            #if DEBUG
+#if DEBUG
 
             start = start.Subtract(new TimeSpan(5, 0, 0, 0));
 
@@ -250,7 +250,7 @@ namespace ServerService
             Players.Add(IPAddress.Parse("192.168.178.5"));
             Players.Add(IPAddress.Parse("192.168.178.6"));
 
-            #endif
+#endif
 
             refresh = new Timer(interval);
             refresh.Elapsed += refresh_Elapsed;
@@ -296,25 +296,29 @@ namespace ServerService
         /// <param name="e"></param>
         void refresh_Elapsed(object sender, ElapsedEventArgs e)
         {
+            refresh.Stop();
+
             UpdateRuntime();
 
             if (Validator.Instance.IsRunning())
             {
                 UpdatePlayers();
 
-                if (Helper.Server != null)
+                if (Helper.General.Server != null)
                 {
-                    Helper.Server.Refresh();
+                    Helper.General.Server.Refresh();
 
-                    if (PeakMemoryUsage <= (Helper.Server.PrivateMemorySize64 / 1024 / 1024))
-                        PeakMemoryUsage = Helper.Server.PrivateMemorySize64;
+                    if (PeakMemoryUsage <= (Helper.General.Server.PrivateMemorySize64 / 1024 / 1024))
+                        PeakMemoryUsage = Helper.General.Server.PrivateMemorySize64;
 
                     UpdateCurrentMemoryUsage();
                 }
 
-                if (LogFolder != "")
+                if ((loggingIndicator % 10) == 0)
                 {
-                    if ((loggingIndicator % 10) == 0)
+                    AccessControl.Instance.Enforce();
+
+                    if (LogFolder != "")
                     {
                         try
                         {
@@ -350,12 +354,14 @@ namespace ServerService
                             Logging.OnLogMessage("The log is now incomplete.", Logging.MessageType.Warning);
                         }
                     }
-                    else
-                    {
-                        loggingIndicator++;
-                    }
+                }
+                else
+                {
+                    loggingIndicator++;
                 }
             }
+
+            refresh.Start();
         }
 
         /// <summary>
@@ -370,7 +376,9 @@ namespace ServerService
             IEnumerator enumerator = connectionInformation.GetEnumerator();
 
             int count = 0;
-            ConnectedPlayers.Clear();
+
+            ObservableCollection<IPAddress> current = new ObservableCollection<IPAddress>();
+            ObservableCollection<IPAddress> all = new ObservableCollection<IPAddress>(Players);
 
             while (enumerator.MoveNext())
             {
@@ -380,12 +388,40 @@ namespace ServerService
                 {
                     count++;
 
-                    if (!players.Contains(info.RemoteEndPoint.Address))
-                        players.Add(info.RemoteEndPoint.Address);
+                    if (!all.Contains(info.RemoteEndPoint.Address))
+                        all.Add(info.RemoteEndPoint.Address);
 
-                    ConnectedPlayers.Add(info.RemoteEndPoint.Address);
+                    current.Add(info.RemoteEndPoint.Address);
                 }
             }
+
+#if DEBUG
+            //Time for some debug data
+
+            Random rnd = new Random();
+            int playersToGenerate = rnd.Next(1, 10);
+
+            for (int i = 0; i < playersToGenerate; i++)
+            {
+                int a = rnd.Next(0, 255);
+
+
+                IPAddress tmp;
+                string ip = "127.0.0." + a.ToString();
+
+                if (IPAddress.TryParse(ip, out tmp))
+                {
+                    if (!current.Contains(tmp))
+                        current.Add(tmp);
+
+                    if (!all.Contains(tmp))
+                        all.Add(tmp);
+                }
+            }
+#endif
+
+            ConnectedPlayers = current;
+            Players = all;
         }
 
         private void increaseRestartCount()

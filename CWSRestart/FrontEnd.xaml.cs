@@ -50,6 +50,15 @@ namespace CWSRestart
             Helper.Logging.LogMessage += Logging_LogMessage;
 
             Stats = new Statistics(1000, false);
+
+            if (!ServerService.Helper.UacHelper.IsProcessElevated && ServerService.Helper.UacHelper.IsUacEnabled)
+            {
+                Helper.Logging.OnLogMessage("The application is not running as administrator. Features like banning might not work.", Logging.MessageType.Warning);
+            }
+            else
+            {
+                Helper.Logging.OnLogMessage("The application is running as administrator. Keep in mind, that everything that is launched from here, will run as administrator as well.", Logging.MessageType.Info);
+            }
         }
 
         void Logging_LogMessage(object sender, Logging.LogMessageEventArgs e)
@@ -85,12 +94,12 @@ namespace CWSRestart
 
         private async void RefreshExternalButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Settings.Instance.Internet = await ServerService.Helper.GetExternalIp();
+            ServerService.Settings.Instance.Internet = await ServerService.Helper.General.GetExternalIp();
         }
 
         private async void RefreshLanButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Settings.Instance.LAN = await ServerService.Helper.GetLocalIP();
+            ServerService.Settings.Instance.LAN = await ServerService.Helper.General.GetLocalIP();
         }
 
         private void SelectServerButton_Click(object sender, RoutedEventArgs e)
@@ -146,17 +155,17 @@ namespace CWSRestart
 
         private void StartServerButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Helper.StartServer();
+            ServerService.Helper.General.StartServer();
         }
 
         private void StopServerButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Helper.SendQuit();
+            ServerService.Helper.General.SendQuit();
         }
 
         private void RestartServerButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Helper.RestartServer();
+            ServerService.Helper.General.RestartServer();
         }
 
         private void notifyPropertyChanged([CallerMemberName] string propertyName = "")

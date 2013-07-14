@@ -32,7 +32,7 @@ namespace CWSRestart.Helper
 
         async void watcher_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (ServerService.Helper.Working)
+            if (ServerService.Helper.General.Working)
             {
                 IsBlocked = true;
             }
@@ -56,11 +56,11 @@ namespace CWSRestart.Helper
 
                         if (!errors.HasFlag(ServerService.Validator.ServerErrors.ProcessDead))
                         {
-                            ServerService.Helper.RestartServer();
+                            ServerService.Helper.General.RestartServer();
                         }
                         else
                         {
-                            ServerService.Helper.StartServer();
+                            ServerService.Helper.General.StartServer();
                         }
                     }
 

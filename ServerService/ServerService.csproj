@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessControl.cs" />
-    <Compile Include="Helper.cs" />
+    <Compile Include="Helper\General.cs" />
+    <Compile Include="Helper\Disconnect.cs" />
+    <Compile Include="Helper\UacHelper.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />

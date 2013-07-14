@@ -8,15 +8,32 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace ServerService
+namespace ServerService.Helper
 {
-    public class Helper
+    public class General
     {
         private static System.Timers.Timer timeout;
         public static event EventHandler ServerRestarted;
 
         private static BackgroundWorker output;
-        internal static Process Server;
+
+        private static Process server;
+        public static Process Server
+        {
+            private set
+            {
+                server = value;
+            }
+            get
+            {
+                if (server == null && (Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length > 0))
+                {
+                    server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
+                }
+
+                return server;
+            }
+        }
 
         /// <summary>
         /// Indicates if the helper is working (for instance restarting the server)
@@ -91,7 +108,7 @@ namespace ServerService
         {
             if (Validator.Instance.IsRunning())
             {
-                if(Server == null || (Server.ProcessName != Settings.Instance.ServerProcessName))
+                if(Server == null || Server.HasExited || (Server.ProcessName != Settings.Instance.ServerProcessName))
                     Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
                 try
@@ -125,7 +142,7 @@ namespace ServerService
         /// </summary>
         public static void KillServer()
         {
-            if (Server == null || (Server.ProcessName != Settings.Instance.ServerProcessName))
+            if (Server == null || Server.HasExited || (Server.ProcessName != Settings.Instance.ServerProcessName))
                 Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
             if(Server != null)

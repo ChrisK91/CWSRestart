@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              x:Name="LogControl"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="500">
+             d:DesignHeight="384" d:DesignWidth="630">
     <UserControl.Resources>
         <ResourceDictionary Source="Resources/LogStyle.xaml" />
     </UserControl.Resources>
@@ -29,7 +29,7 @@
                 <GridView>
                     <GridViewColumn Width="70" Header="Time" DisplayMemberBinding="{Binding Timestamp, StringFormat='HH:mm:ss'}" />
                     <GridViewColumn Width="75" Header="Type" DisplayMemberBinding="{Binding MessageType}" />
-                    <GridViewColumn Width="250" Header="Message" DisplayMemberBinding="{Binding Message}" />
+                    <GridViewColumn Width="460" Header="Message" DisplayMemberBinding="{Binding Message}" />
                 </GridView>
             </ListView.View>
         </ListView>
