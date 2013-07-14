@@ -50,52 +50,57 @@ namespace ServerService
 
         public void Enforce()
         {
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] connectionInformation = ipGlobalProperties.GetActiveTcpConnections();
-
-            IEnumerator enumerator = connectionInformation.GetEnumerator();
-
-            while (enumerator.MoveNext())
+            if (AccessList.Count > 0)
             {
-                TcpConnectionInformation info = (TcpConnectionInformation)enumerator.Current;
+                IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+                TcpConnectionInformation[] connectionInformation = ipGlobalProperties.GetActiveTcpConnections();
 
-                if (info.LocalEndPoint.Port == 12345 && info.State == TcpState.Established)
+                IEnumerator enumerator = connectionInformation.GetEnumerator();
+
+                Logging.OnLogMessage(String.Format("Enforcing {0}", Mode), Logging.MessageType.Info);
+
+                while (enumerator.MoveNext())
                 {
-                    int ret = 0;
-                    bool actionTaken = false;
+                    TcpConnectionInformation info = (TcpConnectionInformation)enumerator.Current;
 
-                    switch(Mode)
+                    if (info.LocalEndPoint.Port == 12345 && info.State == TcpState.Established)
                     {
-                        case AccessMode.Whitelist:
+                        int ret = 0;
+                        bool actionTaken = false;
 
-                            if (!AccessList.Contains(info.RemoteEndPoint.Address))
-                            {
-                                //Player not on whitelist
-                                ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
-                                actionTaken = true;
-                            }
+                        switch (Mode)
+                        {
+                            case AccessMode.Whitelist:
 
-                            break;
+                                if (!AccessList.Contains(info.RemoteEndPoint.Address))
+                                {
+                                    //Player not on whitelist
+                                    ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
+                                    actionTaken = true;
+                                }
 
-                        case AccessMode.Blacklist:
+                                break;
 
-                            if (AccessList.Contains(info.RemoteEndPoint.Address))
-                            {
-                                //Player on blacklist
-                                ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
-                                actionTaken = true;
-                            }
+                            case AccessMode.Blacklist:
 
-                            break;
-                    }
+                                if (AccessList.Contains(info.RemoteEndPoint.Address))
+                                {
+                                    //Player on blacklist
+                                    ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
+                                    actionTaken = true;
+                                }
 
-                    if (actionTaken && (Helper.UacHelper.IsProcessElevated == Helper.UacHelper.IsUacEnabled))
-                    {
-                        Logging.OnLogMessage(String.Format("{0} should now be kicked.", info.RemoteEndPoint.ToString()), Logging.MessageType.Info);
-                    }
-                    else
-                    {
-                        Logging.OnLogMessage(String.Format("{0} could not be kicked.", info.RemoteEndPoint.ToString()), Logging.MessageType.Warning);
+                                break;
+                        }
+
+                        if (actionTaken && (Helper.UacHelper.IsProcessElevated == Helper.UacHelper.IsUacEnabled))
+                        {
+                            Logging.OnLogMessage(String.Format("{0} should now be kicked.", info.RemoteEndPoint.ToString()), Logging.MessageType.Info);
+                        }
+                        else if (actionTaken)
+                        {
+                            Logging.OnLogMessage(String.Format("{0} could not be kicked.", info.RemoteEndPoint.ToString()), Logging.MessageType.Warning);
+                        }
                     }
                 }
             }

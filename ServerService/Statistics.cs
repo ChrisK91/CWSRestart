@@ -344,7 +344,6 @@ namespace ServerService
                                 RestartCount);
 
                             sw.Close();
-                            loggingIndicator = 1;
                         }
                         catch (Exception ex)
                         {
@@ -352,6 +351,8 @@ namespace ServerService
                             Logging.OnLogMessage("The log is now incomplete.", Logging.MessageType.Warning);
                         }
                     }
+
+                    loggingIndicator = 1;
                 }
                 else
                 {
