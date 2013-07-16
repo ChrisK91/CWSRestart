@@ -2,9 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ss="clr-namespace:ServerService;assembly=ServerService"
-        xmlns:Helper="clr-namespace:CWSRestart.Helper" xmlns:Controls="clr-namespace:CWSRestart.Controls" x:Class="CWSRestart.FrontEnd"
-        Title="CWS Restart" Height="600" Width="800" MinHeight="600" MinWidth="800"
-        x:Name="FrontEndControl"
+        xmlns:Helper="clr-namespace:CWSRestart.Helper"
+        xmlns:Controls="clr-namespace:CWSRestart.Controls"
+        x:Class="CWSRestart.FrontEnd"
+        xmlns:IS="clr-namespace:CWSRestart.Infrastructure"
+        Title="CWS Restart" Height="700" Width="800" MinHeight="600" MinWidth="800"
+        x:Name="FrontEndControl" Closing="FrontEndControl_Closing"
     >
 
     <Window.Resources>
@@ -73,6 +76,7 @@
                         <Button Margin="1,1" Height="26" x:Name="UpdateButton" Click="UpdateButton_Click">Check for updates</Button>
                         <Button IsEnabled="{Binding LAN, Converter={StaticResource StringIsNotEmpty}, Source={x:Static ss:Settings.Instance}}" Margin="1,1" Height="26" x:Name="UPnPButton" Click="UPnPButton_Click">UPnP</Button>
                         <Button Margin="1,1" Height="26" x:Name="StatsFolderButton" Click="StatsFolderButton_Click">Save statistics to...</Button>
+                        <Button Margin="1,1" Height="26" x:Name="ToggleInterProcessCommunication" Content="{Binding ButtonText, Source={x:Static IS:Server.Instance}}" Click="ToggleInterProcessCommunication_Click" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Watcher" Margin="2,0" DockPanel.Dock="Top">

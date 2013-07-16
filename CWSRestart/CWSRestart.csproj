@@ -113,6 +113,7 @@
     <Compile Include="Helper\Logging.cs" />
     <Compile Include="Helper\Updater.cs" />
     <Compile Include="Helper\Watcher.cs" />
+    <Compile Include="Infrastructure\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

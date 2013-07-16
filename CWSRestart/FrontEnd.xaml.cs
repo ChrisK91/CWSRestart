@@ -213,5 +213,16 @@ namespace CWSRestart
             Dialogs.IPFilter dlg = new Dialogs.IPFilter(ref stats);
             dlg.Show();
         }
+
+        private void ToggleInterProcessCommunication_Click(object sender, RoutedEventArgs e)
+        {
+            Infrastructure.Server.Instance.ToggleServer();
+        }
+
+        private void FrontEndControl_Closing(object sender, CancelEventArgs e)
+        {
+            if (Infrastructure.Server.Instance.IsRunning)
+                Infrastructure.Server.Instance.ToggleServer();
+        }
     }
 }
