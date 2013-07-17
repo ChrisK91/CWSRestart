@@ -29,30 +29,33 @@ namespace CWSWeb
 
 
             host.Start();
+            MessageLoop();
+
+            host.Stop();
+        }
+
+        private static void MessageLoop()
+        {
             string message = "start";
-            Client c = new Client();
+            CWSProtocol.Client c = new CWSProtocol.Client("WebServer");
 
             while (message != "quit")
             {
-                switch(message)
+                switch (message)
                 {
-                    case "start":
-                        c.Connect();
-                        break;
-
-                    case "stop":
-                        c.Stop();
+                    case "test":
+                        if (c.Test())
+                            Console.WriteLine("Connection succesful.");
+                        else
+                            Console.WriteLine("No connection possible.");
                         break;
                 }
 
                 message = "";
                 Console.WriteLine("Enter \"quit\" to quit");
-                Console.WriteLine("Enter \"start\" to start communicating with CWSRestart");
-                Console.WriteLine("Enter \"stop\" to stop communicating with CWSRestart");
+                Console.WriteLine("Enter \"test\" to test communicating with CWSRestart");
                 message = Console.ReadLine().ToLower();
             }
-
-            host.Stop();
         }
     }
 }

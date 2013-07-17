@@ -139,6 +139,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CWSProtocol\CWSProtocol.csproj">
+      <Project>{0ef0ff1f-a55e-43ac-aaaa-02a07890fd81}</Project>
+      <Name>CWSProtocol</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ServerService\ServerService.csproj">
       <Project>{1cab7bee-1ae8-4222-8cdb-498b3decf641}</Project>
       <Name>ServerService</Name>

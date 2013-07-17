@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
-    <Compile Include="Client.cs" />
     <Compile Include="Modules\API.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -73,7 +72,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Static\css\style.css" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CWSProtocol\CWSProtocol.csproj">
+      <Project>{0ef0ff1f-a55e-43ac-aaaa-02a07890fd81}</Project>
+      <Name>CWSProtocol</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
