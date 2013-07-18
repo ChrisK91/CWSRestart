@@ -116,6 +116,36 @@ namespace CWSProtocol
             return false;
         }
 
+        public Dictionary<string, object> GetStatistics()
+        {
+            sendCommand(Commands.Command.STATISTICS, "");
+            Dictionary<string, object> ret = new Dictionary<string, object>();
+
+            if (client.IsConnected)
+            {
+                Tuple<Commands.Command, string> answer;
+
+                do
+                {
+                    answer = readResponse();
+
+                    if (answer.Item1 == Commands.Command.STATISTICS)
+                    {
+                        string[] contents = answer.Item2.Split(new string[] { " " }, 2, StringSplitOptions.None);
+
+                        if (contents.Length == 2)
+                        {
+                            ret.Add(contents[0], contents[1]);
+                        }
+                    }
+
+                } while (answer.Item1 != Commands.Command.ENDSTATISTICS);
+            }
+
+            disconnectClient();
+            return ret;
+        }
+
         private void disconnectClient()
         {
             client.Dispose();

@@ -17,6 +17,8 @@ namespace CWSRestart.Infrastructure
         private volatile bool _shouldStop = false;
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public ServerService.Statistics Statistics;
+
         public static Server Instance
         {
             get
@@ -83,6 +85,21 @@ namespace CWSRestart.Infrastructure
                                                         case Commands.Command.IDENTIFY:
                                                             Helper.Logging.OnLogMessage(String.Format("{0} has said hello", message), ServerService.Logging.MessageType.Info);               
                                                             sendReply(Commands.Command.ACK, "", serverStream);
+                                                            break;
+
+                                                        case Commands.Command.STATISTICS:
+                                                            Helper.Logging.OnLogMessage("Statistics were requested by an external module", ServerService.Logging.MessageType.Info);
+
+                                                            sendReply(Commands.Command.STATISTICS, String.Format("ALIVE {0}", ServerService.Validator.Instance.IsRunning()), serverStream);
+
+                                                            if (Statistics != null && Statistics.Enabled)
+                                                            {
+                                                                sendReply(Commands.Command.STATISTICS, String.Format("TOTAL {0}", Statistics.Players.Count), serverStream);
+                                                                sendReply(Commands.Command.STATISTICS, String.Format("CURRENT {0}", Statistics.ConnectedPlayers.Count), serverStream);
+                                                            }
+
+                                                            sendReply(Commands.Command.ENDSTATISTICS, "", serverStream);
+
                                                             break;
                                                     }
 

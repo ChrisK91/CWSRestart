@@ -37,14 +37,14 @@ namespace CWSWeb
         private static void MessageLoop()
         {
             string message = "start";
-            CWSProtocol.Client c = new CWSProtocol.Client("WebServer");
+            Helper.Settings.Client = new CWSProtocol.Client("WebServer");
 
             while (message != "quit")
             {
                 switch (message)
                 {
                     case "test":
-                        if (c.Test())
+                        if (Helper.Settings.Client.Test())
                             Console.WriteLine("Connection succesful.");
                         else
                             Console.WriteLine("No connection possible.");

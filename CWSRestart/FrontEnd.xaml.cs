@@ -50,6 +50,7 @@ namespace CWSRestart
             Helper.Logging.LogMessage += Logging_LogMessage;
 
             Stats = new Statistics(1000, false);
+            Infrastructure.Server.Instance.Statistics = Stats;
 
             if (!ServerService.Helper.UacHelper.IsProcessElevated && ServerService.Helper.UacHelper.IsUacEnabled)
             {

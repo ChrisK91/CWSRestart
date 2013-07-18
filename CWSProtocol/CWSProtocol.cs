@@ -23,7 +23,8 @@ namespace CWSProtocol
         {
             STATISTICS,
             ACK,
-            IDENTIFY
+            IDENTIFY,
+            ENDSTATISTICS
         }
     }
 }
