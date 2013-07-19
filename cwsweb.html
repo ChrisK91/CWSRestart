@@ -7,7 +7,12 @@
     <meta name="description" content="CWSRestart is a servermanager to allowing you to monitor and manage your server" />
     <meta name="keywords" content="CWSRestart, CubeWorld Server launcher, CubeWorldServer restart, cw restart">
 
+    <script src="javascripts/jquery-1.10.2.min.js"></script>
+    <script src="javascripts/lightbox-2.6.min.js"></script>
+
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+      
+    <link href="stylesheets/lightbox.css" rel="stylesheet" />
 
     <title>CWS Restart - A tool to automatically restart your CubeWorld server</title>
   </head>
@@ -20,7 +25,7 @@
           <a id="forkme_banner" href="https://github.com/ChrisK91/CWSRestart">View on GitHub</a>
 
           <h1 id="project_title">CWSRestart</h1>
-          <h2 id="project_tagline"><a href="index.html">Home</a> | <a href="features.html">Features</a> | <a href="#">Bugs, suggestions and contact</a> | <a href="manual.html">How to use</a> | <a href="cwsweb.html">CWSWeb</a></h2>
+          <h2 id="project_tagline"><a href="index.html">Home</a> | <a href="features.html">Features</a> | <a href="contact.html">Bugs, suggestions and contact</a> | <a href="manual.html">How to use</a> | <a href="#">CWSWeb</a></h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/ChrisK91/CWSRestart/releases">Downloads</a>
@@ -31,7 +36,7 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>If you come across a bug, you can submit it to the <a href="https://github.com/ChrisK91/CWSRestart/issues" target="_blank">project bugtracker</a>. If you don't want to make an account on GitHub, you can also find me on Twitter. My handle is handle is <a href="https://twitter.com/ChrisK91" target="_blank">@ChrisK91</a> (but I'm more of a silent user). If you are more of a Reddit user, you can find me either in <a href="http://www.reddit.com/r/CubeWorldServer/">/r/CubeWorldServer/</a> or contact me directly via <a href="http://www.reddit.com/user/ChrisK91/">/u/ChrisK91</a>.</p>
+       <p><a href="screenshots/cwsweb_preview.png" data-lightbox="screenshots-1" title="A development screenshot of the CWSWeb interface." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_preview_thumb.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 160px; max-width: 200px; float: right"></a>CWSWeb is the first external module for CWSRestart. It implements a basic web server, to display satistics to your users. CWSWeb is not included by default. Not everyone needs a server, so I didn't want to force people to have something they don't need. You'll need to download CWSWeb seperately instead. CWSWeb uses process to process communication to speak with CWSRestart.<br /><br />CWSWeb also includes an API, that allows you to receive data as JSON objects. The first version of CWSWeb will be available with the next release of CWSRestart.</p>
       </section>
     </div>
 
