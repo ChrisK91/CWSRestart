@@ -87,11 +87,11 @@
     <EmbeddedResource Include="Views\index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Static\js\Chart.min.js" />
     <EmbeddedResource Include="Static\js\jquery-1.10.2.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Static\js\moment.min.js" />
+    <EmbeddedResource Include="Static\js\jquery.flot.js" />
+    <EmbeddedResource Include="Static\js\jquery.flot.time.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

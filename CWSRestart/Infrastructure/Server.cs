@@ -135,10 +135,17 @@ namespace CWSRestart.Infrastructure
 
         private void sendReply(Commands.Command command, String content, NamedPipeServerStream server)
         {
-            StreamWriter writer = new StreamWriter(server, System.Text.Encoding.UTF8, 2048, true);
-            string message = String.Format("{0} {1} {2}", Commands.Actions.POST, command, content);
-            writer.WriteLine(message);
-            writer.Close();
+            try
+            {
+                StreamWriter writer = new StreamWriter(server, System.Text.Encoding.UTF8, 2048, true);
+                string message = String.Format("{0} {1} {2}", Commands.Actions.POST, command, content);
+                writer.WriteLine(message);
+                writer.Close();
+            }
+            catch (IOException)
+            {
+                return;
+            }
         }
 
         private void clientConnected(IAsyncResult ar)

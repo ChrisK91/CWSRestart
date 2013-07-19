@@ -6,8 +6,8 @@
     <title>A CubeWorld Server Status Page</title>
 
     <script src="/static/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-    <script src="/static/js/Chart.min.js" type="text/javascript"></script>
-    <script src="/static/js/moment.min.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.flot.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.flot.time.js" type="text/javascript"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -21,19 +21,20 @@
 
         function GeneratePlayerActivity() {
             $.getJSON("/API/stats/playeractivity", function (data) {
-                var ctxActivity = document.getElementById("activity").getContext("2d");
-                new Chart(ctxActivity).Line({
-                    labels: GetDatesFromStrings(data.labels),
-                    datasets: [{
-                        data: data.data,
-                        fillColor: "#FF955E",
-                        strokeColor: "#FF5600",
-                        pointStrokeColor: "#fff",
-                        pointFillColor: "#B28053"
-                        }]
-                }, {
-                    scaleStepWidth: 1,
-                    scaleLineColor: "#002550"
+                var dates = GetDatesFromStrings(data.labels);
+                var points = new Array(dates.length);
+
+                for (var i = 0; i < dates.length; i++) {
+                    points[i] = [dates[i], data.data[i]];
+                }
+
+                $.plot("#activity", [{ data: points }], {
+                    xaxis: {
+                        mode: "time"
+                    },
+                    yaxis: {
+                        minTickSize: 1
+                    }
                 });
             });
         }
@@ -43,8 +44,7 @@
 
             for(var i = 0; i < data.length; i++)
             {
-                tmp = new moment(parseInt(data[i].substr(6)));
-                ret[i] = tmp.format("H:mm");
+                ret[i] = new Date(parseInt(data[i].substr(6))).getTime();
             }
 
             return ret;
@@ -165,10 +165,12 @@
                     font-weight: lighter;
                 }
 
-            canvas {
+            div.graph {
                 display: block;
                 margin: 0 auto;
                 box-shadow: 0 0 8px #808080;
+                width: 800px;
+                height: 400px;
             }
     </style>
 </head>
@@ -189,7 +191,7 @@
                 if (Model.Keys != null && Model.ActivePlayers != null && Model.Keys.Length > 0 && Model.Keys[0] != null)
                 { 
                     <h2>Player activity</h2>
-                    <canvas width="750" height="350" id="activity"></canvas>
+                    <div id="activity" class="graph"></div>
                 }
             }
             else { 

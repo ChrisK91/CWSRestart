@@ -121,11 +121,12 @@ namespace CWSWeb.Helper
             {
                 if (File.Exists(path))
                 {
-                    string data = ReadEndTokens(path, 30, Encoding.UTF8, Environment.NewLine);
+                    const int lineLimit = 151;
+                    string data = ReadEndTokens(path, lineLimit, Encoding.UTF8, Environment.NewLine);
 
                     string[] lines = data.Split(new string[]{ Environment.NewLine }, StringSplitOptions.None);
 
-                    if (0 < lines.Length && lines.Length < 30)
+                    if (1 < lines.Length && lines.Length < lineLimit)
                     {
                         Keys = new DateTime[lines.Length - 2];
                         ActivePlayers = new int[lines.Length - 2];
@@ -146,10 +147,13 @@ namespace CWSWeb.Helper
                             DateTime dt = DateTime.ParseExact(value[0], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                             int current = Int32.Parse(value[2]);
 
-                            Keys[index] = dt;
-                            ActivePlayers[index] = current;
+                            if (dt.Year > 1)
+                            {
+                                Keys[index] = dt;
+                                ActivePlayers[index] = current;
 
-                            index++;
+                                index++;
+                            }
                         }
                     }
                 }
