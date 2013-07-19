@@ -56,8 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
+    <Compile Include="Helper\CachedVariables.cs" />
+    <Compile Include="Helper\DataContainer.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Modules\API.cs" />
+    <Compile Include="Modules\Root.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Various\EmbeddedStaticContentConventionBuilder.cs" />
@@ -65,8 +68,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="Views\baselayout.cshtml" />
     <EmbeddedResource Include="Views\API\stats.cshtml" />
+    <EmbeddedResource Include="Views\API\statsData.cshtml" />
     <None Include="web.config">
       <SubType>Designer</SubType>
     </None>
@@ -79,6 +82,16 @@
       <Project>{0ef0ff1f-a55e-43ac-aaaa-02a07890fd81}</Project>
       <Name>CWSProtocol</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Static\js\Chart.min.js" />
+    <EmbeddedResource Include="Static\js\jquery-1.10.2.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Static\js\moment.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

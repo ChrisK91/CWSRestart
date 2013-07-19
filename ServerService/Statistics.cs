@@ -13,7 +13,7 @@ namespace ServerService
     public sealed class Statistics : INotifyPropertyChanged, IDisposable
     {
         private Timer refresh;
-        private DateTime start;
+        public DateTime StartTime { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -165,7 +165,7 @@ namespace ServerService
 
         public void UpdateRuntime()
         {
-            Runtime = DateTime.Now.Subtract(start);
+            Runtime = DateTime.Now.Subtract(StartTime);
         }
 
         private long peakMemoryUsage = 0;
@@ -234,13 +234,13 @@ namespace ServerService
 
         private void initialize(int timeout, bool autostart)
         {
-            start = DateTime.Now;
+            StartTime = DateTime.Now;
 
             Helper.General.ServerRestarted += Helper_ServerRestarted;
 
 #if DEBUG
 
-            start = start.Subtract(new TimeSpan(5, 0, 0, 0));
+            StartTime = StartTime.Subtract(new TimeSpan(5, 0, 0, 0));
 
             Players.Add(IPAddress.Parse("192.168.178.2"));
             Players.Add(IPAddress.Parse("192.168.178.3"));
@@ -320,7 +320,7 @@ namespace ServerService
                     {
                         try
                         {
-                            string targetFile = Path.Combine(LogFolder, String.Format("{0}.{1}", start.ToString("yyyy-MM-dd_HH-mm-ss"), "csv"));
+                            string targetFile = Path.Combine(LogFolder, String.Format("{0}.{1}", StartTime.ToString("yyyy-MM-dd_HH-mm-ss"), "csv"));
 
                             StreamWriter sw = null;
 

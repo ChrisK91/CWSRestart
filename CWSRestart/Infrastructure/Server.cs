@@ -96,6 +96,11 @@ namespace CWSRestart.Infrastructure
                                                             {
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("TOTAL {0}", Statistics.Players.Count), serverStream);
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("CURRENT {0}", Statistics.ConnectedPlayers.Count), serverStream);
+                                                                sendReply(Commands.Command.STATISTICS, String.Format("RUNTIME {0:00}:{1:00}:{2:00}", Statistics.Runtime.TotalHours, Statistics.Runtime.Minutes, Statistics.Runtime.Seconds), serverStream);
+
+                                                                string logFolder = Path.Combine(Statistics.LogFolder, String.Format("{0}.{1}", Statistics.StartTime.ToString("yyyy-MM-dd_HH-mm-ss"), "csv")); ;
+
+                                                                sendReply(Commands.Command.STATISTICS, String.Format("LOGFILE {0}", logFolder), serverStream);
                                                             }
 
                                                             sendReply(Commands.Command.ENDSTATISTICS, "", serverStream);

@@ -1,0 +1,5 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Helper.DataContainer>
+{
+    "labels"  : @Html.Raw(Model.Key),
+    "data"    : @Html.Raw(Model.Value)
+}
