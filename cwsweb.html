@@ -37,6 +37,20 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
        <p><a href="screenshots/cwsweb_preview.png" data-lightbox="screenshots-1" title="A development screenshot of the CWSWeb interface." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_preview_thumb.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 160px; max-width: 200px; float: right"></a>CWSWeb is the first external module for CWSRestart. It implements a basic web server, to display satistics to your users. CWSWeb is not included by default. Not everyone needs a server, so I didn't want to force people to have something they don't need. You'll need to download CWSWeb seperately instead. CWSWeb uses process to process communication to speak with CWSRestart.<br /><br />CWSWeb also includes an API, that allows you to receive data as JSON objects. The first version of CWSWeb will be available with the next release of CWSRestart.</p>
+          <h2>Configuration</h2>
+          <p>At the moment, there isnt much to configure. You can change the port on which the web service is listening, by launching CWSWeb with <code>CWSWeb <i>port</i></code> (for instance, if you'd like to have CWSWeb listen on port 80, you can launch it with <code>CWSWeb 80</code>). The displayed graph is generated, by parsing the logfile. To enable the graph, you'll need to specify a save location for the logfile in CWSRestart (use the button <i>Save statistics to...</i> to do this). By default, the last 200 lines will be read. This equals around half an hour. If you want to increase the timespan, you have several possibilities:</p>
+          <ul>
+              <li>Increase the <code>StatisticsInterval</code> in the ServerService.dll.config (in the CWSRestart folder): This setting contains the delay between two statistic updates (in ms).</li>
+              <li>Increase the <code>SaveStatisticsEvery</code> in the ServerService.dll.config (in the CWSRestart folder): This setting is the frequency, how often the statistics are saved to your logfiles. The statistics will be saved every <i>x</i> rounds of updates, with <i>x</i> = <code>SaveStatisticsEvery</code>.</li>
+              <li>Increase the <code>LinesToRead</code> in CWSWeb.exe.config: This setting tells CWSWeb how many lines should be read (starting at the end). High numbers can increase CPU and HDD usage.</li>
+          </ul>
+          <h2>API</h2>
+          <p>If you want to use the data from CWSWeb on your webpage, you can use a small API:</p>
+          <ul>
+              <li><code>/API/stats</code> will return all available info, such as runtime and if the server is running</li>
+              <li><code>/API/stats/playeractivity</code> will return the user activity over the past time</li>
+          </ul>
+          <p>You'll get the objects serialized as JSON. Timestamps are formated a bit odd. You can parse them to JavaScript dates with <code>new Date(parseInt(<i>timestamp</i>.substr(6)))</code></p>
       </section>
     </div>
 
