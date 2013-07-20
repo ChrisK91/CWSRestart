@@ -202,6 +202,13 @@ blockquote {
   border-left: 3px solid #bbb;
 }
 
+blockquote.notice {
+  color: #666;
+  margin-bottom: 20px;
+  padding: 0 0 0 20px;
+  border-left: 3px solid #ff8400;
+}
+
 ul, ol, dl {
   margin-bottom: 15px
 }
