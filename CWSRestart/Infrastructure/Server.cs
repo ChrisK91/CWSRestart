@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +45,10 @@ namespace CWSRestart.Infrastructure
             
             Helper.Logging.OnLogMessage("Starting CWSRestartServer for process communication", ServerService.Logging.MessageType.Info);
 
-            serverStream = new NamedPipeServerStream(CWSProtocol.Configuration.SERVERNAME, PipeDirection.InOut, 4, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            PipeSecurity ps = new PipeSecurity();
+
+            ps.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance, System.Security.AccessControl.AccessControlType.Allow));
+            serverStream = new NamedPipeServerStream(CWSProtocol.Configuration.SERVERNAME, PipeDirection.InOut, 4, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps);
 
 
             while (!_shouldStop)
@@ -142,8 +147,10 @@ namespace CWSRestart.Infrastructure
                 writer.WriteLine(message);
                 writer.Close();
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                if (Debugger.IsAttached)
+                    Debugger.Break();
                 return;
             }
         }

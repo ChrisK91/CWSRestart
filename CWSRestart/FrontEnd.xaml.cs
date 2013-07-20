@@ -85,7 +85,15 @@ namespace CWSRestart
                     break;
             }
 
-            Application.Current.Dispatcher.BeginInvoke(new Action<Controls.LogFilter.LogMessage>((m) => LogControl.Messages.Add(m)), new Controls.LogFilter.LogMessage(e.message, t)); 
+            try
+            {
+                Application.Current.Dispatcher.BeginInvoke(new Action<Controls.LogFilter.LogMessage>((m) => LogControl.Messages.Add(m)), new Controls.LogFilter.LogMessage(e.message, t));
+            }
+            catch (NullReferenceException)
+            {
+                if (Debugger.IsAttached)
+                    Debugger.Break();
+            }
         }
 
         private void log(string message)

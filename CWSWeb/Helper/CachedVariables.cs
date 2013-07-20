@@ -16,9 +16,9 @@ namespace CWSWeb.Helper
             {
                 stats = new Statistics();
 
-                if (Helper.Settings.Client != null)
+                if (Helper.Settings.Instance.Client != null)
                 {
-                    Dictionary<string, object> rawData = Helper.Settings.Client.GetStatistics();
+                    Dictionary<string, object> rawData = Helper.Settings.Instance.Client.GetStatistics();
 
                     if (rawData.ContainsKey("ALIVE"))
                         stats.IsAlive = Boolean.Parse(rawData["ALIVE"].ToString());
@@ -121,12 +121,11 @@ namespace CWSWeb.Helper
             {
                 if (File.Exists(path))
                 {
-                    const int lineLimit = 151;
-                    string data = ReadEndTokens(path, lineLimit, Encoding.UTF8, Environment.NewLine);
+                    string data = ReadEndTokens(path, Settings.Instance.LinesToRead, Encoding.UTF8, Environment.NewLine);
 
                     string[] lines = data.Split(new string[]{ Environment.NewLine }, StringSplitOptions.None);
 
-                    if (1 < lines.Length && lines.Length < lineLimit)
+                    if (1 < lines.Length && lines.Length < Settings.Instance.LinesToRead)
                     {
                         Keys = new DateTime[lines.Length - 2];
                         ActivePlayers = new int[lines.Length - 2];

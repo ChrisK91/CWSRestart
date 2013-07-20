@@ -125,21 +125,25 @@ namespace CWSProtocol
             {
                 Tuple<Commands.Command, string> answer;
 
-                do
+                answer = readResponse();
+
+                if (answer != null)
                 {
-                    answer = readResponse();
-
-                    if (answer.Item1 == Commands.Command.STATISTICS)
+                    while (answer != null && answer.Item1 != Commands.Command.ENDSTATISTICS)
                     {
-                        string[] contents = answer.Item2.Split(new string[] { " " }, 2, StringSplitOptions.None);
 
-                        if (contents.Length == 2)
+                        if (answer.Item1 == Commands.Command.STATISTICS)
                         {
-                            ret.Add(contents[0], contents[1]);
-                        }
-                    }
+                            string[] contents = answer.Item2.Split(new string[] { " " }, 2, StringSplitOptions.None);
 
-                } while (answer.Item1 != Commands.Command.ENDSTATISTICS);
+                            if (contents.Length == 2)
+                            {
+                                ret.Add(contents[0], contents[1]);
+                            }
+                        }
+                        answer = readResponse();
+                    }
+                }
             }
 
             disconnectClient();

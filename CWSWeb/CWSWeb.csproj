@@ -43,6 +43,7 @@
       <HintPath>..\packages\Nancy.Viewengines.Razor.0.18.0\lib\net40\Nancy.ViewEngines.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Razor.Unofficial">
@@ -68,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="CWSWeb.exe.config" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\API\stats.cshtml" />
     <EmbeddedResource Include="Views\API\statsData.cshtml" />
@@ -93,6 +95,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Static\js\jquery.flot.js" />
     <EmbeddedResource Include="Static\js\jquery.flot.time.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Static\js\jquery.flot.selection.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

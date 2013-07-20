@@ -11,7 +11,7 @@ namespace CWSRestart.Helper
         /// <summary>
         /// Build date in Year, Month, Day
         /// </summary>
-        public static DateTime BuildDate = new DateTime(2013, 7, 14);
+        public static DateTime BuildDate = new DateTime(2013, 7, 20);
         public static string VersionLocation = "http://chrisk91.github.io/CWSRestart/last-update";
         
         public static async Task<bool> UpdateAvailable()
