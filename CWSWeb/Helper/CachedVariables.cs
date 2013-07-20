@@ -10,41 +10,44 @@ namespace CWSWeb.Helper
 
     public static class CachedVariables
     {
+        internal static void UpdateCachedVariables()
+        {
+            if (refreshRequired())
+            {
+                stats = new Statistics();
+
+                if (Helper.Settings.Client != null)
+                {
+                    Dictionary<string, object> rawData = Helper.Settings.Client.GetStatistics();
+
+                    if (rawData.ContainsKey("ALIVE"))
+                        stats.IsAlive = Boolean.Parse(rawData["ALIVE"].ToString());
+
+                    if (rawData.ContainsKey("CURRENT"))
+                        stats.PlayerStats.Current = Int32.Parse(rawData["CURRENT"].ToString());
+
+                    if (rawData.ContainsKey("TOTAL"))
+                        stats.PlayerStats.Total = Int32.Parse(rawData["TOTAL"].ToString());
+
+                    if (rawData.ContainsKey("RUNTIME"))
+                        stats.FormatedRuntime = rawData["RUNTIME"].ToString();
+
+                    if (rawData.ContainsKey("LOGFILE"))
+                        stats.UpdateFromCSV(rawData["LOGFILE"].ToString());
+
+                }
+
+                statsLastUpdated = DateTime.Now;
+                refreshJSON();
+            }
+        }
+
         private static DateTime statsLastUpdated;
         private static Statistics stats;
         public static Statistics Stats
         {
             get
             {
-                if (refreshRequired())
-                {
-                    stats = new Statistics();
-
-                    if (Helper.Settings.Client != null)
-                    {
-                        Dictionary<string, object> rawData = Helper.Settings.Client.GetStatistics();
-
-                        if (rawData.ContainsKey("ALIVE"))
-                            stats.IsAlive = Boolean.Parse(rawData["ALIVE"].ToString());
-
-                        if (rawData.ContainsKey("CURRENT"))
-                            stats.PlayerStats.Current = Int32.Parse(rawData["CURRENT"].ToString());
-
-                        if (rawData.ContainsKey("TOTAL"))
-                            stats.PlayerStats.Total = Int32.Parse(rawData["TOTAL"].ToString());
-
-                        if (rawData.ContainsKey("RUNTIME"))
-                            stats.FormatedRuntime = rawData["RUNTIME"].ToString();
-
-                        if (rawData.ContainsKey("LOGFILE"))
-                            stats.UpdateFromCSV(rawData["LOGFILE"].ToString());
-
-                    }
-
-                    statsLastUpdated = DateTime.Now;
-                    refreshJSON();
-                }
-
                 return stats;
             }
         }
@@ -55,7 +58,6 @@ namespace CWSWeb.Helper
         {
             get
             {
-                performUpdate();
                 return statsJSON;
             }
         }
@@ -65,7 +67,6 @@ namespace CWSWeb.Helper
         {
             get
             {
-                performUpdate();
                 return keysJSON;
             }
         }
@@ -75,7 +76,6 @@ namespace CWSWeb.Helper
         {
             get
             {
-                performUpdate();
                 return activeplayersJSON;
             }
         }

@@ -27,10 +27,12 @@ namespace CWSWeb
             NancyHost host = new NancyHost(new ApplicationBootstrapper(),config, new Uri(String.Format("http://localhost:{0}", port)));
             Console.WriteLine("Starting server on http://localhost:" + port.ToString());
 
+            Helper.CacheUpdater updater = new Helper.CacheUpdater();
 
             host.Start();
             MessageLoop();
 
+            updater.StopUpdater();
             host.Stop();
         }
 

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
     <Compile Include="Helper\CachedVariables.cs" />
+    <Compile Include="Helper\CacheUpdater.cs" />
     <Compile Include="Helper\DataContainer.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Modules\API.cs" />
