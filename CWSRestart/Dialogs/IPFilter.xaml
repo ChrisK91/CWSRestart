@@ -11,6 +11,11 @@
         </Grid.Background>
 
         <Grid.Resources>
+            
+            <Style x:Key="ActivePlayersStyle"  TargetType="{x:Type ListBoxItem}">
+                <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
+            </Style>
+
             <Style x:Key="DoubleClickStyle" TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
             </Style>
@@ -33,7 +38,8 @@
         </Grid.ColumnDefinitions>
         
         <GroupBox Grid.Row="0" Grid.Column="0" Header="Active players">
-            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.ConnectedPlayers, ElementName=IPFilterDialog}" />
+            <ListBox x:Name="ActivePlayersList" ItemContainerStyle="{StaticResource ActivePlayersStyle}" ItemsSource="{Binding Statistics.ConnectedPlayers, ElementName=IPFilterDialog}" KeyDown="ListBox_KeyDown" >
+            </ListBox>
         </GroupBox>
 
         <GroupBox Grid.Row="0" Grid.Column="1" Header="All players">
@@ -46,7 +52,8 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" ></ListBox>
+                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" >
+                </ListBox>
                 <TextBox Grid.Row="1" x:Name="AddIPTextBox" KeyDown="AddIPTextBox_KeyDown" />
             </Grid>
         </GroupBox>
@@ -54,6 +61,8 @@
         <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <ComboBox DockPanel.Dock="Right" Width="80" ItemsSource="{Binding Source={StaticResource AccessModeProvider}}" SelectedItem="{Binding Mode, Source={x:Static ss:AccessControl.Instance}}" VerticalAlignment="Center" />
             <Label DockPanel.Dock="Right">Use list as: </Label>
+            <Button x:Name="SaveButton" Content="Save list" DockPanel.Dock="Left" Width="80" Margin="2" Click="SaveButton_Click" />
+            <Button x:Name="RestoreButton" Content="Restore list" DockPanel.Dock="Left" Width="80" Margin="2" Click="RestoreButton_Click" />
             <Label></Label>
         </DockPanel>
     </Grid>

@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ServerService.Helper;
+using System;
 using System.ComponentModel;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CWSRestart.Dialogs
 {
@@ -23,6 +16,15 @@ namespace CWSRestart.Dialogs
     public partial class IPFilter : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private static string listLocation = Path.Combine(Directory.GetCurrentDirectory(), "iplist.txt");
+        public static string ListLocation
+        {
+            get
+            {
+                return listLocation;
+            }
+        }
 
         private ServerService.Statistics statistics;
         public ServerService.Statistics Statistics
@@ -50,18 +52,21 @@ namespace CWSRestart.Dialogs
 
         private void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            IPAddress address = ((ListBoxItem)sender).DataContext as IPAddress;
+            AccessListEntry address = ParseText(((ListBoxItem)sender).DataContext.ToString());
 
-            if (ServerService.AccessControl.Instance.AccessList.Contains(address))
-                ServerService.AccessControl.Instance.AccessList.Remove(address);
-            else
-                ServerService.AccessControl.Instance.AccessList.Add(address);
+            if (address != null)
+            {
+                if (ServerService.AccessControl.Instance.AccessList.Contains(address))
+                    ServerService.AccessControl.Instance.AccessList.Remove(address);
+                else
+                    ServerService.AccessControl.Instance.AccessList.Add(address);
+            }
         }
 
         private void AddIPTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            IPAddress ip;
-            if (e.Key == Key.Enter && IPAddress.TryParse(AddIPTextBox.Text, out ip))
+            AccessListEntry ip;
+            if (e.Key == Key.Enter && (ip = ParseText(AddIPTextBox.Text)) != null)
             {
                 if (!ServerService.AccessControl.Instance.AccessList.Contains(ip))
                     ServerService.AccessControl.Instance.AccessList.Add(ip);
@@ -75,6 +80,41 @@ namespace CWSRestart.Dialogs
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private AccessListEntry ParseText(string text)
+        {
+            AccessListEntry e = null;
+            if (!AccessIP.TryParse(text, out e))
+            {
+                if (!AccessIPRange.TryParse(text, out e))
+                {
+                    return null;
+                }
+            }
+            return e;
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            ServerService.AccessControl.Instance.SaveList(listLocation);
+        }
+
+        private void RestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(File.Exists(listLocation))
+                ServerService.AccessControl.Instance.RestoreList(listLocation);
+        }
+
+        private void ListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                IPAddress add = ActivePlayersList.SelectedItem as IPAddress;
+
+                if(add != null)
+                    DisconnectWrapper.CloseRemoteIP(add.ToString());
+            }
         }
     }
 }

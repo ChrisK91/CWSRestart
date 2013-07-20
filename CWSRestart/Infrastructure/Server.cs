@@ -150,7 +150,10 @@ namespace CWSRestart.Infrastructure
             catch (IOException ex)
             {
                 if (Debugger.IsAttached)
+                {
+                    Debugger.Log(0, "Error", ex.Message);
                     Debugger.Break();
+                }
                 return;
             }
         }

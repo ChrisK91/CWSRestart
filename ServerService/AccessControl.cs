@@ -1,8 +1,10 @@
-﻿using System;
+﻿using ServerService.Helper;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -31,8 +33,8 @@ namespace ServerService
             }
         }
 
-        private ObservableCollection<IPAddress> accessList = new ObservableCollection<IPAddress>();
-        public ObservableCollection<IPAddress> AccessList
+        private ObservableCollection<AccessListEntry> accessList = new ObservableCollection<AccessListEntry>();
+        public ObservableCollection<AccessListEntry> AccessList
         {
             get
             {
@@ -67,25 +69,24 @@ namespace ServerService
                     {
                         int ret = 0;
                         bool actionTaken = false;
+                        bool playerFound = PlayerInList(info);
 
                         switch (Mode)
                         {
                             case AccessMode.Whitelist:
 
-                                if (!AccessList.Contains(info.RemoteEndPoint.Address))
+                                if(!playerFound)
                                 {
-                                    //Player not on whitelist
                                     ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
                                     actionTaken = true;
                                 }
-
+                                
                                 break;
 
                             case AccessMode.Blacklist:
 
-                                if (AccessList.Contains(info.RemoteEndPoint.Address))
+                                if(playerFound)
                                 {
-                                    //Player on blacklist
                                     ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
                                     actionTaken = true;
                                 }
@@ -104,6 +105,18 @@ namespace ServerService
                     }
                 }
             }
+        }
+
+        public bool PlayerInList(TcpConnectionInformation info)
+        {
+            foreach (AccessListEntry e in accessList)
+            {
+                if (e.Matches(info.LocalEndPoint.Address))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private AccessMode mode = AccessMode.Blacklist;
@@ -131,6 +144,45 @@ namespace ServerService
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void SaveList(string filepath)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (AccessListEntry e in AccessList)
+                sb.AppendLine(e.ToString());
+
+            File.WriteAllText(filepath, sb.ToString());
+        }
+
+        public void RestoreList(string filepath)
+        {
+            using (FileStream fs = File.Open(filepath, FileMode.Open, FileAccess.Read))
+            {
+                AccessList = new ObservableCollection<AccessListEntry>();
+                StreamReader sr = new StreamReader(fs);
+                
+                string line;
+                while((line = sr.ReadLine()) != null)
+                {
+                    AccessListEntry e;
+                    if (generateEntryFromString(line, out e))
+                        if (!AccessList.Contains(e))
+                            AccessList.Add(e);
+                }
+
+                sr.Close();
+            }
+        }
+
+        private bool generateEntryFromString(string s, out AccessListEntry target)
+        {
+            if (!AccessIP.TryParse(s, out target))
+                if (!AccessIPRange.TryParse(s, out target))
+                    return false;
+
+            return true;
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -51,6 +52,9 @@ namespace CWSRestart
 
             Stats = new Statistics(1000, false);
             Infrastructure.Server.Instance.Statistics = Stats;
+
+            if (File.Exists(Dialogs.IPFilter.ListLocation))
+                AccessControl.Instance.RestoreList(Dialogs.IPFilter.ListLocation);
 
             if (!ServerService.Helper.UacHelper.IsProcessElevated && ServerService.Helper.UacHelper.IsUacEnabled)
             {
@@ -232,6 +236,8 @@ namespace CWSRestart
         {
             if (Infrastructure.Server.Instance.IsRunning)
                 Infrastructure.Server.Instance.ToggleServer();
+
+            AccessControl.Instance.SaveList(Dialogs.IPFilter.ListLocation);
         }
     }
 }
