@@ -1,4 +1,5 @@
 ﻿using Nancy;
+using Nancy.Authentication.Forms;
 using Nancy.Bootstrapper;
 using Nancy.Conventions;
 using Nancy.TinyIoc;
@@ -39,6 +40,21 @@ namespace CWSWeb
         void OnConfigurationBuilder(NancyInternalConfiguration x)
         {
             x.ViewLocationProvider = typeof (ResourceViewLocationProvider);
+        }
+
+        protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext context)
+        {
+            var formsAuthConfiguration =
+                new FormsAuthenticationConfiguration()
+                {
+                    RedirectUrl = "~/login",
+                    UserMapper = container.Resolve<IUserMapper>(),
+                };
+
+
+            FormsAuthentication.Enable(pipelines, formsAuthConfiguration);
+
+            base.RequestStartup(container, pipelines, context);
         }
     }
 }

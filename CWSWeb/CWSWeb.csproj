@@ -36,6 +36,9 @@
     <Reference Include="Nancy">
       <HintPath>..\packages\Nancy.0.18.0\lib\net40\Nancy.dll</HintPath>
     </Reference>
+    <Reference Include="Nancy.Authentication.Forms">
+      <HintPath>..\packages\Nancy.Authentication.Forms.0.18.0\lib\net40\Nancy.Authentication.Forms.dll</HintPath>
+    </Reference>
     <Reference Include="Nancy.Hosting.Self">
       <HintPath>..\packages\Nancy.Hosting.Self.0.18.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
     </Reference>
@@ -57,10 +60,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
+    <Compile Include="Helper\Administrator.cs" />
     <Compile Include="Helper\CachedVariables.cs" />
     <Compile Include="Helper\CacheUpdater.cs" />
     <Compile Include="Helper\DataContainer.cs" />
+    <Compile Include="Helper\HashProvider.cs" />
     <Compile Include="Helper\Settings.cs" />
+    <Compile Include="Helper\Users.cs" />
+    <Compile Include="Models\Admin.cs" />
+    <Compile Include="Modules\Admin.cs" />
     <Compile Include="Modules\API.cs" />
     <Compile Include="Modules\Root.cs" />
     <Compile Include="Program.cs" />
@@ -73,6 +81,8 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\API\stats.cshtml" />
     <EmbeddedResource Include="Views\API\statsData.cshtml" />
+    <EmbeddedResource Include="Views\layout.cshtml" />
+    <EmbeddedResource Include="Views\Root\login.cshtml" />
     <None Include="web.config">
       <SubType>Designer</SubType>
     </None>
@@ -87,7 +97,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\index.cshtml" />
+    <EmbeddedResource Include="Views\Root\index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Static\js\jquery-1.10.2.min.js" />
@@ -98,6 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Static\js\jquery.flot.selection.js" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Admin\index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

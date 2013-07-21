@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = "layout.cshtml";
+}
+<h2>Please login to proceed</h2>
+<form method="post">
+    <div class="formContainer">
+        <div class="row">
+            <input type="text" name="Username" />
+            <label for="Username">Username</label>
+        </div>
+        <div class="row clear">
+            <input type="password" name="Password" />
+            <label for="Password">Password</label>
+        </div>
+        <div class="row buttons clear">
+            <button type="submit" class="right">Submit</button>
+            <div class="clear" />
+        </div>
+    </div>
+</form>

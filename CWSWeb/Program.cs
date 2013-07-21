@@ -1,6 +1,7 @@
 ﻿using Nancy.Hosting.Self;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace CWSWeb
 {
     class Program
     {
+        private static string usersDbFile = Path.Combine(Directory.GetCurrentDirectory(), "users.db");
+
         static void Main(string[] args)
         {
             int port = 8181;
@@ -29,11 +32,15 @@ namespace CWSWeb
 
             Helper.CacheUpdater updater = new Helper.CacheUpdater();
 
+            Helper.Users.TryLoadUsersFromFile(usersDbFile);
+
             host.Start();
             MessageLoop();
 
             updater.StopUpdater();
             host.Stop();
+
+            Helper.Users.TrySaveUsersToFile(usersDbFile);
         }
 
         private static void MessageLoop()
@@ -41,9 +48,11 @@ namespace CWSWeb
             string message = "start";
             Helper.Settings.Instance.Client = new CWSProtocol.Client("WebServer");
 
+            string name;
+
             while (message != "quit")
             {
-                switch (message)
+                switch (message.ToLower())
                 {
                     case "test":
                         if (Helper.Settings.Instance.Client.Test())
@@ -51,11 +60,65 @@ namespace CWSWeb
                         else
                             Console.WriteLine("No connection possible.");
                         break;
+                    case "list":
+                        List<string> names = Helper.Users.GetUserNames();
+
+                        foreach (string s in names)
+                            Console.WriteLine(s);
+                        break;
+                    case "add":
+                        Console.WriteLine("Enter the username");
+                        name = Console.ReadLine();
+
+                        Console.WriteLine("Enter the password");
+                        string password = Console.ReadLine();
+
+                        Console.Clear();
+
+                        if (name != "" && password != "")
+                        {
+                            if (Helper.Users.AddUser(name, password))
+                            {
+                                Console.WriteLine("User added succesfully");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Could not add user. A user with this name already exists");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please enter both the username and password");
+                        }
+                        break;
+                    case "remove":
+                        Console.WriteLine("Please enter the username you want to delete");
+                        name = Console.ReadLine();
+                        if (name != "" && Helper.Users.RemoveUser(name))
+                        {
+                            Console.WriteLine("User was removed");
+                        }
+                        else
+                        {
+                            Console.WriteLine("User not found");
+                        }
+                        break;
+                    case "save":
+                        Helper.Users.TrySaveUsersToFile(usersDbFile);
+                        break;
+                    case "load":
+                        Helper.Users.TryLoadUsersFromFile(usersDbFile);
+                        break;
                 }
 
                 message = "";
                 Console.WriteLine("Enter \"quit\" to quit");
                 Console.WriteLine("Enter \"test\" to test communicating with CWSRestart");
+                Console.WriteLine("Enter \"list\" to list all admins");
+                Console.WriteLine("Enter \"add\" to add an admin");
+                Console.WriteLine("Enter \"remove\" to remove an admin");
+                Console.WriteLine("Enter \"save\" to save users");
+                Console.WriteLine("Enter \"load\" to restore users");
                 message = Console.ReadLine().ToLower();
             }
         }

@@ -1,3 +1,186 @@
-﻿body
-{
+﻿/*
+            Light-Orange: #FFE28B
+            Dark-Orange: #FF5600
+            Blue: #002550
+            Brown: #B28053
+            */
+body {
+    font-family: 'Segoe UI', Calibri, Verdana, Arial, sans-serif;
+    background-color: #FFE28B;
+    padding: 0px;
+    margin: 0px;
+}
+
+a {
+    text-decoration: none;
+    color: #002550;
+}
+
+h2 {
+    font-weight: 200;
+}
+
+a:hover, a:active, a:focus {
+    text-decoration: underline;
+    color: #002550;
+}
+
+header {
+    display: block;
+    width: 100%;
+    margin: 0px;
+    background-color: #FF5600;
+    border-bottom: 3px solid #002550;
+    position: fixed;
+    top: 0px;
+    box-shadow: 0 0 8px #808080;
+    min-width: 800px;
+    z-index: 10;
+}
+
+    header h1 {
+        display: block;
+        width: 760px;
+        font-weight: 100;
+        padding: 20px;
+        margin: 0 auto;
+    }
+
+    header span.userbar {
+        display: block;
+        width: 760px;
+        font-weight: 100;
+        padding-bottom: 20px;
+        height: 40px;
+        margin: 0 auto;
+        margin-top: -60px;
+        text-align: right;
+    }
+
+footer {
+    width: 100%;
+    background-color: #B28053;
+    position: fixed;
+    bottom: 0px;
+    box-shadow: 0 0 8px #808080;
+    min-width: 800px;
+}
+
+    footer p {
+        color: #f3f3f3;
+        display: block;
+        width: 760px;
+        margin: 0 auto;
+        padding: 5px 20px;
+    }
+
+div#container {
+    margin-top: 100px;
+    margin-bottom: 50px;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+ul.table {
+    list-style: none;
+    display: table;
+    width: 100%;
+    margin: 0px auto;
+    padding: 0px;
+    border-spacing: 10px;
+}
+
+    ul.table li {
+        display: table-cell;
+        border: 1px solid #808080;
+        width: 28%;
+        margin: 5px;
+        box-shadow: 0 0 8px #808080;
+    }
+
+        ul.table li h6 {
+            display: block;
+            margin: 0px;
+            left: 0px;
+            background-color: #B28053;
+            padding: 0.5em 0.3em;
+            font-size: 1.2em;
+            font-weight: 200;
+            color: #f3f3f3;
+        }
+
+        ul.table li p {
+            display: block;
+            width: 80%;
+            text-align: right;
+            padding: 10%;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            margin: 0px;
+            font-size: 2em;
+            font-weight: lighter;
+        }
+
+div.graph {
+    display: block;
+    margin: 1em auto;
+    box-shadow: 0 0 8px #808080;
+    width: 750px;
+    height: 400px;
+}
+
+div.formContainer {
+    display: block;
+    margin: 1em auto;
+    width: 500px;
+    box-shadow: 0 0 8px #808080;
+    padding: 1.2em 0.8em;
+}
+
+    div.formContainer div.row {
+        display: block;
+        width: 100%;
+        padding: 0px;
+        margin: 0px;
+        border: 0px;
+        white-space: nowrap;
+    }
+
+        div.formContainer div.row label {
+            display: inline-block;
+            width: 28%;
+            padding: 5px 2px;
+            margin: 0px;
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        div.formContainer div.row input[type=text], div.formContainer div.row input[type=password] {
+            width: 70%;
+            padding: 5px 0px;
+            box-sizing: border-box;
+            vertical-align: middle;
+            float: right;
+        }
+
+    div.formContainer div.buttons {
+        padding: 0px;
+        width: 500px;
+        text-align: right;
+    }
+
+    div.fromContainer div.buttons button {
+        box-sizing: border-box;
+        min-width: 150px;
+        vertical-align: middle;
+        padding: 5px 0px;
+    }
+
+.clear {
+    clear: both;
+}
+
+.right {
+    float: right;
 }

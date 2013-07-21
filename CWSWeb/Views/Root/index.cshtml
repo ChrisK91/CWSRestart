@@ -10,6 +10,8 @@
     <script src="/static/js/jquery.flot.time.js" type="text/javascript"></script>
     <script src="/static/js/jquery.flot.selection.js" type="text/javascript"></script>
 
+    <link href="@Url.Content("~/static/css/style.css")" rel="stylesheet" />
+
     <script type="text/javascript">
         $(document).ready(function () {
             @if (Model.Keys != null && Model.PlayerStats != null && Model.Keys.Length > 0 && Model.Keys[0] != null)
@@ -91,130 +93,6 @@
             return ret;
         }
     </script>
-
-    <style type="text/css" media="screen">
-        /*
-            Light-Orange: #FFE28B
-            Dark-Orange: #FF5600
-            Blue: #002550
-            Brown: #B28053
-            */
-        body {
-            font-family: 'Segoe UI', Calibri, Verdana, Arial, sans-serif;
-            background-color: #FFE28B;
-            padding: 0px;
-            margin: 0px;
-        }
-
-        a {
-            text-decoration: none;
-            color: #002550;
-        }
-
-        h2 {
-            font-weight: 200;
-        }
-
-            a:hover, a:active, a:focus {
-                text-decoration: underline;
-                color: #002550;
-            }
-
-        header {
-            display: block;
-            width: 100%;
-            margin: 0px;
-            background-color: #FF5600;
-            border-bottom: 3px solid #002550;
-            position: fixed;
-            top: 0px;
-            box-shadow: 0 0 8px #808080;
-            min-width: 800px;
-            z-index: 10;
-        }
-
-            header h1 {
-                display: block;
-                width: 760px;
-                font-weight: 100;
-                padding: 20px;
-                margin: 0 auto;
-            }
-
-
-        footer {
-            width: 100%;
-            background-color: #B28053;
-            position: fixed;
-            bottom: 0px;
-            box-shadow: 0 0 8px #808080;
-            min-width: 800px;
-        }
-
-            footer p {
-                color: #f3f3f3;
-                display: block;
-                width: 760px;
-                margin: 0 auto;
-                padding: 5px 20px;
-            }
-
-        div#container {
-            margin-top: 100px;
-            margin-bottom: 50px;
-            width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        ul.table {
-            list-style: none;
-            display: table;
-            width: 100%;
-            margin: 0px auto;
-            padding: 0px;
-            border-spacing: 10px;
-        }
-
-            ul.table li {
-                display: table-cell;
-                border: 1px solid #808080;
-                width: 28%;
-                margin: 5px;
-                box-shadow: 0 0 8px #808080;
-            }
-
-                ul.table li h6 {
-                    display: block;
-                    margin: 0px;
-                    left: 0px;
-                    background-color: #B28053;
-                    padding: 0.5em 0.3em;
-                    font-size: 1.2em;
-                    font-weight: 200;
-                    color: #f3f3f3;
-                }
-
-                ul.table li p {
-                    display: block;
-                    width: 80%;
-                    text-align: right;
-                    padding: 10%;
-                    padding-top: 0px;
-                    padding-bottom: 0px;
-                    margin: 0px;
-                    font-size: 2em;
-                    font-weight: lighter;
-                }
-
-            div.graph {
-                display: block;
-                margin: 1em auto;
-                box-shadow: 0 0 8px #808080;
-                width: 750px;
-                height: 400px;
-            }
-    </style>
 </head>
 <body>
     <header>
