@@ -80,6 +80,16 @@ namespace CWSWeb.Helper
             }
         }
 
+        private static int[] memoryUsage;
+        private static string memoryUsageJSON;
+        public static string MemoryUsageJSON
+        {
+            get
+            {
+                return memoryUsageJSON;
+            }
+        }
+
         private static bool refreshRequired()
         {
             return statsLastUpdated == null || ((DateTime.Now - statsLastUpdated) >= new TimeSpan(0, 0, 5));
@@ -99,6 +109,7 @@ namespace CWSWeb.Helper
             statsJSON = js.Serialize(Stats);
             keysJSON = js.Serialize(Stats.Keys);
             activeplayersJSON = js.Serialize(Stats.ActivePlayers);
+            memoryUsageJSON = js.Serialize(memoryUsage);
         }
 
         public class Statistics
@@ -129,11 +140,13 @@ namespace CWSWeb.Helper
                     {
                         Keys = new DateTime[lines.Length - 2];
                         ActivePlayers = new int[lines.Length - 2];
+                        memoryUsage = new int[lines.Length - 2];
                     }
                     else
                     {
                         Keys = new DateTime[lines.Length - 1];
                         ActivePlayers = new int[lines.Length - 1];
+                        memoryUsage = new int[lines.Length - 1];
                     }
 
                     int index = 0;
@@ -145,11 +158,13 @@ namespace CWSWeb.Helper
                         {
                             DateTime dt = DateTime.ParseExact(value[0], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                             int current = Int32.Parse(value[2]);
+                            int memory = Int32.Parse(value[4]);
 
                             if (dt.Year > 1)
                             {
                                 Keys[index] = dt;
                                 ActivePlayers[index] = current;
+                                memoryUsage[index] = memory;
 
                                 index++;
                             }

@@ -2,6 +2,7 @@
 using Nancy.Authentication.Forms;
 using Nancy.Bootstrapper;
 using Nancy.Conventions;
+using Nancy.Session;
 using Nancy.TinyIoc;
 using Nancy.ViewEngines;
 using System;
@@ -53,6 +54,7 @@ namespace CWSWeb
 
 
             FormsAuthentication.Enable(pipelines, formsAuthConfiguration);
+            CookieBasedSessions.Enable(pipelines);
 
             base.RequestStartup(container, pipelines, context);
         }

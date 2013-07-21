@@ -142,7 +142,7 @@ namespace ServerService.Helper
         /// </summary>
         public static void KillServer()
         {
-            if (Server == null || Server.HasExited || (Server.ProcessName != Settings.Instance.ServerProcessName))
+            if ((Server == null || Server.HasExited || (Server.ProcessName != Settings.Instance.ServerProcessName)) && Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length > 0)
                 Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
 
             if(Server != null)
@@ -150,6 +150,8 @@ namespace ServerService.Helper
 
             if (output != null)
                 output.CancelAsync();
+
+            KillAdditionalProcesses();
         }
 
         /// <summary>
@@ -197,23 +199,26 @@ namespace ServerService.Helper
         /// </summary>
         public static void StartServer()
         {
-            Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
-            ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);
-
-            pStart.UseShellExecute = Settings.Instance.DoNotRedirectOutput;
-
-            if (!pStart.UseShellExecute)
+            if (!Validator.Instance.IsRunning() && (timeout == null || !timeout.Enabled))
             {
-                pStart.RedirectStandardInput = true;
-                pStart.RedirectStandardOutput = true;
+                Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
+                ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);
+
+                pStart.UseShellExecute = Settings.Instance.DoNotRedirectOutput;
+
+                if (!pStart.UseShellExecute)
+                {
+                    pStart.RedirectStandardInput = true;
+                    pStart.RedirectStandardOutput = true;
+                }
+
+                pStart.WorkingDirectory = Path.GetDirectoryName(Settings.Instance.ServerPath);
+                output = new BackgroundWorker();
+                output.DoWork += output_DoWork;
+
+                Server = Process.Start(pStart);
+                output.RunWorkerAsync();
             }
-
-            pStart.WorkingDirectory = Path.GetDirectoryName(Settings.Instance.ServerPath);
-            output = new BackgroundWorker();
-            output.DoWork += output_DoWork;
-
-            Server = Process.Start(pStart);
-            output.RunWorkerAsync();
         }
 
         /// <summary>

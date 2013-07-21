@@ -87,9 +87,12 @@ namespace CWSProtocol
 
                 return true;
             }
-            catch(TimeoutException)
+            catch(Exception ex)
             {
-                Console.WriteLine("Could not connect");
+                if (ex is IOException)
+                    Console.WriteLine("Could not connect");
+                else
+                    Console.WriteLine(ex.Message);
             }
             return false;
         }
@@ -114,6 +117,34 @@ namespace CWSProtocol
             }
 
             return false;
+        }
+
+        public void SendStart()
+        {
+            sendCommand(Commands.Command.START, "");
+            if (client.IsConnected)
+                disconnectClient();
+        }
+
+        public void SendStop()
+        {
+            sendCommand(Commands.Command.STOP, "");
+            if (client.IsConnected)
+                disconnectClient();
+        }
+
+        public void SendRestart()
+        {
+            sendCommand(Commands.Command.RESTART, "");
+            if (client.IsConnected)
+                disconnectClient();
+        }
+
+        public void SendKill()
+        {
+            sendCommand(Commands.Command.KILL, "");
+            if (client.IsConnected)
+                disconnectClient();
         }
 
         public Dictionary<string, object> GetStatistics()

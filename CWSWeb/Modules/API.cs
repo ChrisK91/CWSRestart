@@ -22,6 +22,14 @@ namespace CWSWeb.Pages
                 {
                     return View["statsData", new DataContainer(CachedVariables.KeysJSON, CachedVariables.ActiveplayersJSON)].WithHeader("Cache-Control", "no-cache");
                 };
+
+            Get["/stats/memoryusage"] = parameters =>
+                {
+                    if (Context.CurrentUser == null)
+                        return HttpStatusCode.Forbidden;
+                    else
+                        return View["statsData", new DataContainer(CachedVariables.KeysJSON, CachedVariables.MemoryUsageJSON)].WithHeader("Cache-Control", "no-cache");
+                };
         }
     }
 }

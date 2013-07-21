@@ -1,6 +1,43 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase
 @{
-    ViewBag.Title = "Login";
+    ViewBag.Title = "Administration";
     Layout = "layout.cshtml";
 }
-<h2>You are now logged in</h2>
+<h2>Controlpanel</h2>
+@if (ViewBag.ToggleMessage != null)
+{ 
+    if (ViewBag.RequiresDelay != null)
+    {
+        @:<a href="@Url.Content("~/admin/")">
+    }
+
+    <p class="message">@ViewBag.ToggleMessage</p>
+
+    if (ViewBag.RequiresDelay != null)
+    {
+        @:</a>
+    }
+}
+@if (ViewBag.RequiresDelay == null)
+{ 
+    <table class="restart">
+        <tr>
+            <th colspan="4">    
+                @if (CWSWeb.Helper.CachedVariables.Stats.IsAlive)
+        {    
+                    @:The server is running.
+                }
+        else
+        { 
+            @:The server is not running (it might be restarting, though).
+        }
+            </th>
+        </tr>
+        <tr>
+            <td><a href="/admin/toggle/start" class="button">Start</a></td>
+            <td><a href="/admin/toggle/stop" class="button">Quit server</a></td>
+            <td><a href="/admin/toggle/restart" class="button">Restart</a></td>
+            <td><a href="/admin/toggle/kill" class="button">Kill</a></td>
+        </tr>
+    </table>
+}

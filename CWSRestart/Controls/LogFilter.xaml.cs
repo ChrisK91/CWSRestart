@@ -29,6 +29,14 @@ namespace CWSRestart.Controls
             {
                 return messages;
             }
+            private set
+            {
+                if (messages != value)
+                {
+                    messages = value;
+                    notifyPropertyChanged();
+                }
+            }
         }
 
         ICollectionView log;
@@ -224,8 +232,8 @@ namespace CWSRestart.Controls
 
         public LogFilter()
         {
-            messages = new LimitedObservableCollection<LogMessage>();
-            messages.MaxCapacity = 500;
+            Messages = new LimitedObservableCollection<LogMessage>();
+            Messages.MaxCapacity = 500;
             log = CollectionViewSource.GetDefaultView(Messages);
             log.Filter = logFilter;
             log.SortDescriptions.Add(new SortDescription("Timestamp", ListSortDirection.Descending));
@@ -302,6 +310,12 @@ namespace CWSRestart.Controls
 
                 Clipboard.SetText(b.ToString());
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Messages = new LimitedObservableCollection<LogMessage>();
+            Messages.MaxCapacity = 500;
         }
     }
 }

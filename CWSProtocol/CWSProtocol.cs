@@ -24,7 +24,11 @@ namespace CWSProtocol
             STATISTICS,
             ACK,
             IDENTIFY,
-            ENDSTATISTICS
+            ENDSTATISTICS,
+            START,
+            STOP,
+            RESTART,
+            KILL
         }
     }
 }

@@ -111,6 +111,22 @@ namespace CWSRestart.Infrastructure
                                                             sendReply(Commands.Command.ENDSTATISTICS, "", serverStream);
 
                                                             break;
+
+                                                        case Commands.Command.START:
+                                                            ServerService.Helper.General.StartServer();
+                                                            break;
+
+                                                        case Commands.Command.STOP:
+                                                            ServerService.Helper.General.SendQuit();
+                                                            break;
+
+                                                        case Commands.Command.RESTART:
+                                                            ServerService.Helper.General.RestartServer();
+                                                            break;
+
+                                                        case Commands.Command.KILL:
+                                                            ServerService.Helper.General.KillServer();
+                                                            break;
                                                     }
 
                                                     break;

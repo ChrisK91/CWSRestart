@@ -15,14 +15,16 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1" DockPanel.Dock="Bottom" Orientation="Horizontal">
+        <DockPanel Grid.Row="1" DockPanel.Dock="Bottom">
             <Label>Hide:</Label>
-            <CheckBox IsChecked="{Binding HideServer, ElementName=LogControl}" VerticalAlignment="Center" Width="75">Server</CheckBox>
-            <CheckBox IsChecked="{Binding HideInfo, ElementName=LogControl}" VerticalAlignment="Center" Width="75">Info</CheckBox>
-            <CheckBox IsChecked="{Binding HideWarning, ElementName=LogControl}" VerticalAlignment="Center" Width="75">Warning</CheckBox>
-            <CheckBox IsChecked="{Binding HideError, ElementName=LogControl}" VerticalAlignment="Center" Width="75">Error</CheckBox>
-            <CheckBox IsChecked="{Binding HideGeneral, ElementName=LogControl}" VerticalAlignment="Center" Width="75">General</CheckBox>
-        </StackPanel>
+            <CheckBox IsChecked="{Binding HideServer, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">Server</CheckBox>
+            <CheckBox IsChecked="{Binding HideInfo, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">Info</CheckBox>
+            <CheckBox IsChecked="{Binding HideWarning, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">Warning</CheckBox>
+            <CheckBox IsChecked="{Binding HideError, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">Error</CheckBox>
+            <CheckBox IsChecked="{Binding HideGeneral, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">General</CheckBox>
+            <Button DockPanel.Dock="Right" Width="75" Click="Button_Click">Clear log</Button>
+            <Label />
+        </DockPanel>
 
         <ListView x:Name="LogView" Grid.Row="0" ItemContainerStyle="{StaticResource LogMessageStyle}" ItemsSource="{Binding Messages, ElementName=LogControl}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" KeyDown="LogView_KeyDown" Margin="2,0" >
             <ListView.View>
