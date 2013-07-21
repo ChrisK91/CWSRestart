@@ -21,12 +21,10 @@
 
     <link href="@Url.Content("~/static/css/style.css")" rel="stylesheet" />
 
-    <script type="text/javascript">
-        @if (IsSectionDefined("js"))
-        {
-            @RenderSection("js");
-        }
-    </script>
+    @if (IsSectionDefined("js"))
+    {
+        @RenderSection("js");
+    }
 </head>
 <body>
     <header>

@@ -1,0 +1,120 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase
+@{
+    ViewBag.Title = "Statistics";
+    Layout = "layout.cshtml";
+}
+<h2>Activity and memory usage</h2>
+<div id="activity" class="graph"></div>
+<div id="activityoverview" class="graph" style="height: 150px"></div>
+
+@section js {
+    <script type="text/ecmascript">
+        $(document).ready(function () {
+            GeneratePlayerActivity();
+        });
+
+        function GeneratePlayerActivity() {
+            $.getJSON("/API/stats/playeractivity", function (data) {
+                $.getJSON("/API/stats/memoryusage", function (memory) {
+                    var dates = GetDatesFromStrings(data.labels);
+                    var points = new Array(dates.length);
+
+                    for (var i = 0; i < dates.length; i++) {
+                        points[i] = [dates[i], data.data[i]];
+                    }
+
+                    var memDates = GetDatesFromStrings(memory.labels);
+                    var memPoints = new Array(memDates.length);
+
+                    for (var i = 0; i < memDates.length; i++) {
+                        memPoints[i] = [memDates[i], memory.data[i]];
+                    }
+
+                    var options = {
+                        xaxes: [{
+                            mode: "time"
+                        }],
+                        yaxes: [{
+                            minTickSize: 1,
+                            min: 0,
+                            position: "left"
+                        }, {
+                            minTickSize: 1,
+                            min: 0,
+                            position: "right"
+                        }]
+                    };
+
+                    var points = [
+                        {
+                            data: memPoints,
+                            lines: { show: true, fill: true},
+                            label: "RAM",
+                            yaxis: 2
+                        },
+                        {
+                            data: points,
+                            lines: { show: true, fill: true },
+                            label: "Connected players"
+                        }
+                    ];
+
+                    var activity = $.plot("#activity", points, options);
+
+                    var overviewActivity = $.plot("#activityoverview", points, {
+                        series: {
+                            lines: {
+                                show: true,
+                                lineWidth: 1
+                            },
+                            shadowSize: 0
+                        },
+                        xaxes: [{
+                            ticks: [],
+                            mode: "time"
+                        }],
+                        yaxes: [{
+                            ticks: [],
+                            autoscaleMargin: 0.2,
+                            min: 0
+                        },
+                        {
+                            ticks: [],
+                            autoscaleMargin: 0.2,
+                            min: 0
+                        }],
+                        selection: {
+                            mode: "x"
+                        }
+                    });
+
+                    $("#activity").bind("plotselected", function (event, ranges) {
+                        activity = $.plot("#activity", points, $.extend(true, {}, options, {
+                            xaxis: {
+                                min: ranges.xaxis.from,
+                                max: ranges.xaxis.to
+                            }
+                        }));
+
+                        overviewActivity.setSelection(ranges, true);
+                    });
+
+                    $("#activityoverview").bind("plotselected", function (event, ranges) {
+                        activity.setSelection(ranges);
+                    });
+                });
+            });
+        }
+
+        function GetDatesFromStrings(data) {
+            var ret = Array(data.length);
+
+            for(var i = 0; i < data.length; i++)
+            {
+                ret[i] = new Date(parseInt(data[i].substr(6))).getTime();
+            }
+
+            return ret;
+        }
+    </script>
+}

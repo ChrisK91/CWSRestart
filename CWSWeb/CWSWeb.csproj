@@ -83,6 +83,7 @@
     <EmbeddedResource Include="Views\API\statsData.cshtml" />
     <EmbeddedResource Include="Views\layout.cshtml" />
     <EmbeddedResource Include="Views\Root\login.cshtml" />
+    <EmbeddedResource Include="Views\Admin\statistics.cshtml" />
     <None Include="web.config">
       <SubType>Designer</SubType>
     </None>

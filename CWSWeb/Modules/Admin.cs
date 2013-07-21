@@ -72,6 +72,11 @@ namespace CWSWeb.Modules
                 Helper.CachedVariables.UpdateCachedVariables();
                 return Response.AsRedirect("/admin");
             };
+
+            Get["/statistics"] = parameters =>
+            {
+                return View["statistics.cshtml"];
+            };
         }
     }
 }
