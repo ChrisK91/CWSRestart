@@ -77,16 +77,25 @@
                         },
                         grid: {
                             markings: ranges
-                        }
-                    };
-
-                    var activity = $.plot("#activity", [{ data: points }], options);
-
-                    var overviewActivity = $.plot("#activityoverview", [{ data: points }], {
+                        },
                         series: {
                             lines: {
                                 show: true,
-                                lineWidth: 1
+                                lineWidth: 1,
+                                fill: true
+                            },
+                            shadowSize: 0
+                        }
+                    };
+
+                    var activity = $.plot("#activity", [{ data: points, color: "#FF5600" }], options);
+
+                    var overviewActivity = $.plot("#activityoverview", [{ data: points, color: "#FF5600" }], {
+                        series: {
+                            lines: {
+                                show: true,
+                                lineWidth: 1,
+                                fill: true
                             },
                             shadowSize: 0
                         },
