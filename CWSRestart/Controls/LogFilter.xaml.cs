@@ -234,20 +234,30 @@ namespace CWSRestart.Controls
         {
             Messages = new LimitedObservableCollection<LogMessage>();
             Messages.MaxCapacity = 500;
-            log = CollectionViewSource.GetDefaultView(Messages);
-            log.Filter = logFilter;
-            log.SortDescriptions.Add(new SortDescription("Timestamp", ListSortDirection.Descending));
-
-            InitializeComponent();
+            InitializeLog();
 #if DEBUG
             messages.Add(new LogMessage("This is a general Message", MessageType.General));
             messages.Add(new LogMessage("This is a server Message", MessageType.Server));
             messages.Add(new LogMessage("This is an info", MessageType.Info));
             messages.Add(new LogMessage("This is an error", MessageType.Error));
             messages.Add(new LogMessage("This is a warning", MessageType.Warning));
-            messages.Add(new LogMessage("I'm from the past", new DateTime(1990,1,1)));
-            messages.Add(new LogMessage("I'm from the future", new DateTime(3000,1,1)));
+            messages.Add(new LogMessage("I'm from the past", new DateTime(1990, 1, 1)));
+            messages.Add(new LogMessage("I'm from the future", new DateTime(3000, 1, 1)));
+
+            for (int i = 0; i < 500; i++)
+            {
+                messages.Add(new LogMessage("This is an info " + i.ToString(), MessageType.Info));
+            }
 #endif
+            InitializeComponent();
+        }
+
+        private void InitializeLog()
+        {
+
+            log = CollectionViewSource.GetDefaultView(Messages);
+            log.Filter = logFilter;
+            log.SortDescriptions.Add(new SortDescription("Timestamp", ListSortDirection.Descending));
         }
 
         public class LogMessage
@@ -314,8 +324,14 @@ namespace CWSRestart.Controls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            ClearLog();
+        }
+
+        public void ClearLog()
+        {
             Messages = new LimitedObservableCollection<LogMessage>();
             Messages.MaxCapacity = 500;
+            InitializeLog();
         }
     }
 }

@@ -32,6 +32,11 @@ namespace CWSWeb.Modules
 
                 return this.LoginAndRedirect(userGuid.Value, null, "/admin");
             };
+
+            Get["/notavailable"] = parameters =>
+                {
+                    return View["notavailable"];
+                };
         }
     }
 }

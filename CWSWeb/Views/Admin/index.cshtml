@@ -1,9 +1,8 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Models.Admin.ControlPanel>
 @{
-    ViewBag.Title = "Administration";
+    ViewBag.Title = "Administration &raquo; Controlpanel";
     Layout = "layout.cshtml";
 }
-<h2>Controlpanel</h2>
 @if (ViewBag.ToggleMessage != null)
 { 
     if (ViewBag.RequiresDelay != null)
@@ -20,10 +19,10 @@
 }
 @if (ViewBag.RequiresDelay == null)
 { 
-    <table class="restart">
+    <table class="action actionFour">
         <tr>
             <th colspan="4">    
-                @if (CWSWeb.Helper.CachedVariables.Stats.IsAlive)
+                @if (Model.ServerAlive)
         {    
                     @:The server is running.
                 }
@@ -40,4 +39,63 @@
             <td><a href="/admin/toggle/kill" class="button">Kill</a></td>
         </tr>
     </table>
+    
+        
+    if (Model.WatcherBusy)
+    { 
+        <p class="message"><a href="@Url.Content("~/admin/")">The watcher is currently busy. Refresh this page to update this status.</a></p>
+    }
+    else
+    { 
+        <form method="post" action="@Url.Content("~/admin/watcher")">
+            <table class="action actionFour">
+                <tr>
+                    <th colspan="4">
+                        @if (Model.WatcherEnabled)
+                        { 
+                            @:The watcher is running
+                        }
+                        else
+                        { 
+                            @:The watcher is disabled
+                        }
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align:right">
+                        Timeout:
+                    </td>
+                    <td>
+                        <input type="text" value="@Model.WatcherTimeout.ToString()" name="Timeout" />
+                    </td>
+                    <td>
+                        <button type="submit">Apply</button>
+                    </td>
+                    <td>
+                    @if (Model.WatcherEnabled)
+                        { 
+                            @:<a href="/admin/watcher/stop" class="button">Stop watcher</a>
+                        }
+                        else
+                        { 
+                            @:<a href="/admin/watcher/start" class="button">Start watcher</a>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </form>
+    }
+    
+    <ul class="log">
+        @{               
+            foreach(string s in Model.LogMessages)
+            {
+                if (s != "")
+                { 
+                    <li>@s</li>
+                }
+            }
+        }
+    </ul>
+    <a class="button" style="width: 750px; margin: 0 auto; box-shadow: 0 0 8px #808080;" href="@Url.Content("~/admin/log/clear")">Clear log</a>
 }

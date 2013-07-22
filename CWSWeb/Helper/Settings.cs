@@ -29,7 +29,7 @@ namespace CWSWeb.Helper
             LinesToRead = getAppSettingWithStandardValue("LinesToRead", 201);
         }
 
-        public CWSProtocol.Client Client;
+        public volatile CWSProtocol.Client Client;
 
         private string getAppSettingWithStandardValue(string key, string fallback)
         {

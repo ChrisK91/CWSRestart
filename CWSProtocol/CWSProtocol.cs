@@ -28,7 +28,9 @@ namespace CWSProtocol
             START,
             STOP,
             RESTART,
-            KILL
+            KILL,
+            WATCHER,
+            LOG
         }
     }
 }

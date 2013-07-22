@@ -181,12 +181,12 @@ div.formContainer {
         text-align: right;
     }
 
-    div.fromContainer div.buttons button {
-        box-sizing: border-box;
-        min-width: 150px;
-        vertical-align: middle;
-        padding: 5px 0px;
-    }
+div.fromContainer div.buttons button {
+    box-sizing: border-box;
+    min-width: 150px;
+    vertical-align: middle;
+    padding: 5px 0px;
+}
 
 .clear {
     clear: both;
@@ -211,37 +211,114 @@ p.message {
     box-sizing: border-box;
 }
 
-table.restart {
+table.action {
     box-shadow: 0 0 8px #808080;
     width: 750px;
-    margin: 0 auto;
+    margin: 1.4em auto;
     padding: 1.2em 0.8em;
 }
 
-    table.restart tr th {
+    table.action tr th {
         background-color: #B28053;
         font-weight: 200;
         color: #f3f3f3;
         border: #002550 1px solid;
+        box-sizing: border-box;
     }
 
-    table.restart tr td {
-        width: 25%;
+    table.action tr {
+        box-sizing: border-box;
+        padding-left: 0.3em;
+        padding-right: 0.3em;
     }
 
-        table.restart tr td a.button {
-            display: block;
-            width: 100%;
-            height: 26px;
-            font-weight: 300;
-            background-color: #f3f3f3;
-            text-align: center;
-            border: 1px solid #B28053;
-        }
+table.actionFour tr td {
+    width: 25%;
+}
 
-        table.restart tr td a.button:hover {
-            color: #002550;
-            background-color: #FF5600;
-            border: 1px solid #B28053;
-            text-decoration: none;
-        }
+table.actionThree tr td {
+    width: 33%;
+}
+
+table.actionTwo tr td {
+    width: 50%;
+}
+
+table.action tr td input {
+    display: block;
+    width: 100%;
+    height: 26px;
+    padding: 0px;
+    margin: 0;
+    box-sizing: border-box;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+}
+
+table.action tr td a.button, table.action tr td button, a.button {
+    display: block;
+    width: 100%;
+    height: 26px;
+    font-weight: normal;
+    background-color: #f3f3f3;
+    text-align: center;
+    border: 1px solid #B28053;
+    box-sizing: border-box;
+    line-height: 26px;
+}
+
+    table.action tr td a.button:hover, table.action tr td button:hover, a.button:hover {
+        color: #002550;
+        background-color: #FF5600;
+        border: 1px solid #B28053;
+        text-decoration: none;
+    }
+
+ul.log {
+    list-style: none;
+    font-family: Consolas, "Lucida Console", monospace;
+    font-size: 0.9em;
+    box-shadow: 0 0 8px #808080;
+    width: 750px;
+    height: 400px;
+    overflow: auto;
+    margin: 2em auto;
+    margin-bottom: 0px;
+    padding: 0px;
+    border-collapse: collapse;
+    border: 1px solid #f3f3f3;
+    box-sizing: border-box;
+}
+
+    ul.log li {
+        display: block;
+        min-width: 100%;
+        background-color: #002550;
+        color: #f3f3f3;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        border-top: 1px solid #f3f3f3;
+    }
+
+    ul.log li:first-child {
+        border-top: none;
+    }
+
+button {
+    color: #002550;
+    height: 26px;
+    font-weight: normal;
+    background-color: #f3f3f3;
+    text-align: center;
+    border: 1px solid #B28053;
+    box-sizing: border-box;
+    min-width: 150px;
+    font-size: 1em;
+}
+
+    button:hover {
+        color: #002550;
+        background-color: #FF5600;
+        border: 1px solid #B28053;
+        text-decoration: none;
+    }

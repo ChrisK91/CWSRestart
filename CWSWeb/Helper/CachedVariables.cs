@@ -14,26 +14,26 @@ namespace CWSWeb.Helper
         {
             if (refreshRequired())
             {
-                stats = new Statistics();
+                Stats = new Statistics();
 
                 if (Helper.Settings.Instance.Client != null)
                 {
                     Dictionary<string, object> rawData = Helper.Settings.Instance.Client.GetStatistics();
 
                     if (rawData.ContainsKey("ALIVE"))
-                        stats.IsAlive = Boolean.Parse(rawData["ALIVE"].ToString());
+                        Stats.IsAlive = Boolean.Parse(rawData["ALIVE"].ToString());
 
                     if (rawData.ContainsKey("CURRENT"))
-                        stats.PlayerStats.Current = Int32.Parse(rawData["CURRENT"].ToString());
+                        Stats.PlayerStats.Current = Int32.Parse(rawData["CURRENT"].ToString());
 
                     if (rawData.ContainsKey("TOTAL"))
-                        stats.PlayerStats.Total = Int32.Parse(rawData["TOTAL"].ToString());
+                        Stats.PlayerStats.Total = Int32.Parse(rawData["TOTAL"].ToString());
 
                     if (rawData.ContainsKey("RUNTIME"))
-                        stats.FormatedRuntime = rawData["RUNTIME"].ToString();
+                        Stats.FormatedRuntime = rawData["RUNTIME"].ToString();
 
                     if (rawData.ContainsKey("LOGFILE"))
-                        stats.UpdateFromCSV(rawData["LOGFILE"].ToString());
+                        Stats.UpdateFromCSV(rawData["LOGFILE"].ToString());
 
                 }
 
@@ -43,52 +43,14 @@ namespace CWSWeb.Helper
         }
 
         private static DateTime statsLastUpdated;
-        private static Statistics stats;
-        public static Statistics Stats
-        {
-            get
-            {
-                return stats;
-            }
-        }
-
-
-        private static string statsJSON;
-        public static string StatsJSON
-        {
-            get
-            {
-                return statsJSON;
-            }
-        }
-
-        private static string keysJSON;
-        public static string KeysJSON
-        {
-            get
-            {
-                return keysJSON;
-            }
-        }
-
-        private static string activeplayersJSON;
-        public static string ActiveplayersJSON
-        {
-            get
-            {
-                return activeplayersJSON;
-            }
-        }
-
         private static int[] memoryUsage;
-        private static string memoryUsageJSON;
-        public static string MemoryUsageJSON
-        {
-            get
-            {
-                return memoryUsageJSON;
-            }
-        }
+
+        public static Statistics Stats { get; private set; }
+        public static string RestartsJSON { get; private set; }
+        public static string StatsJSON { get; private set; }
+        public static string KeysJSON { get; private set; }
+        public static string ActiveplayersJSON { get; private set; }
+        public static string MemoryUsageJSON { get; private set; }
 
         private static bool refreshRequired()
         {
@@ -106,10 +68,11 @@ namespace CWSWeb.Helper
         private static void refreshJSON()
         {
             Nancy.Json.JavaScriptSerializer js = new Nancy.Json.JavaScriptSerializer();
-            statsJSON = js.Serialize(Stats);
-            keysJSON = js.Serialize(Stats.Keys);
-            activeplayersJSON = js.Serialize(Stats.ActivePlayers);
-            memoryUsageJSON = js.Serialize(memoryUsage);
+            StatsJSON = js.Serialize(Stats);
+            KeysJSON = js.Serialize(Stats.Keys);
+            ActiveplayersJSON = js.Serialize(Stats.ActivePlayers);
+            MemoryUsageJSON = js.Serialize(memoryUsage);
+            RestartsJSON = js.Serialize(Stats.Restarts);
         }
 
         public class Statistics
@@ -120,6 +83,7 @@ namespace CWSWeb.Helper
 
             public DateTime[] Keys;
             public int[] ActivePlayers;
+            public DateTime[] Restarts;
 
 
             public class Players
@@ -134,7 +98,7 @@ namespace CWSWeb.Helper
                 {
                     string data = ReadEndTokens(path, Settings.Instance.LinesToRead, Encoding.UTF8, Environment.NewLine);
 
-                    string[] lines = data.Split(new string[]{ Environment.NewLine }, StringSplitOptions.None);
+                    string[] lines = data.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
                     if (1 < lines.Length && lines.Length < Settings.Instance.LinesToRead)
                     {
@@ -149,16 +113,21 @@ namespace CWSWeb.Helper
                         memoryUsage = new int[lines.Length - 1];
                     }
 
+                    List<DateTime> tmpRestarts = new List<DateTime>();
+
                     int index = 0;
+                    int prevRestarts = 0;
 
                     foreach (string line in lines)
                     {
-                        string[] value = line.Split(new string[]{";"}, StringSplitOptions.None);
+                        string[] value = line.Split(new string[] { ";" }, StringSplitOptions.None);
                         if (value.Length == 7 && value[0] != "Timestamp")
                         {
                             DateTime dt = DateTime.ParseExact(value[0], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                             int current = Int32.Parse(value[2]);
                             int memory = Int32.Parse(value[4]);
+                            int currentRestarts = Int32.Parse(value[6]);
+
 
                             if (dt.Year > 1)
                             {
@@ -166,10 +135,18 @@ namespace CWSWeb.Helper
                                 ActivePlayers[index] = current;
                                 memoryUsage[index] = memory;
 
+                                if (currentRestarts > prevRestarts)
+                                {
+                                    tmpRestarts.Add(dt);
+                                    prevRestarts = currentRestarts;
+                                }
+
                                 index++;
                             }
                         }
                     }
+
+                    Restarts = tmpRestarts.ToArray();
                 }
             }
 

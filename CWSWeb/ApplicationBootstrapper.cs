@@ -2,6 +2,7 @@
 using Nancy.Authentication.Forms;
 using Nancy.Bootstrapper;
 using Nancy.Conventions;
+using Nancy.Responses;
 using Nancy.Session;
 using Nancy.TinyIoc;
 using Nancy.ViewEngines;
@@ -55,6 +56,20 @@ namespace CWSWeb
 
             FormsAuthentication.Enable(pipelines, formsAuthConfiguration);
             CookieBasedSessions.Enable(pipelines);
+
+            pipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
+                {
+                    if (Helper.Settings.Instance.Client.CanConnect)
+                        return null;
+                    else
+                    {
+                        if (String.Compare(ctx.Request.Path, "/notavailable", true) == 0)
+                        {
+                            return null;
+                        }
+                        return new RedirectResponse("/notavailable");
+                    }
+                });
 
             base.RequestStartup(container, pipelines, context);
         }

@@ -1,0 +1,22 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Models.Error>
+@{
+    if (Model.ErrorCode != "")
+    {
+        ViewBag.Title = Model.ErrorCode;
+    }
+    else
+    { 
+        ViewBag.Title = "Error";
+    }
+    Layout = "layout.cshtml";
+}
+<p class="message">@{
+    if (Model.ErrorMessage != "")
+    { 
+        @Model.ErrorMessage;
+    }
+    else
+    { 
+        @:Something bad happened :(
+    }
+}</p>

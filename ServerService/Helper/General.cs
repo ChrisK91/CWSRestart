@@ -174,7 +174,8 @@ namespace ServerService.Helper
             }
             else
             {
-                Logging.OnLogMessage("Process not found", Logging.MessageType.Error);
+                Logging.OnLogMessage("Process not found. Starting server", Logging.MessageType.Error);
+                StartServer();
             }
         }
 
@@ -184,14 +185,16 @@ namespace ServerService.Helper
             {
                 Logging.OnLogMessage("The server is still running. Now we force it to quit.", Logging.MessageType.Info);
                 KillServer();
+                Logging.OnLogMessage("Waiting for a few seconds to give our processes enough time to exit...", Logging.MessageType.Info);
+                timeout.Start();  
+                //Warning: possible infinite loop
             }
             else
             {
                 Logging.OnLogMessage("The server has quit.", Logging.MessageType.Info);
+                KillAdditionalProcesses();
+                StartServer();
             }
-
-            KillAdditionalProcesses();
-            StartServer();
         }
 
         /// <summary>

@@ -6,7 +6,7 @@
     <title>@{
         if (ViewBag.Title != "")
         {
-        @ViewBag.Title;
+            @Html.Raw(ViewBag.Title);
         }
         else
         { 
@@ -31,7 +31,7 @@
         <h1>@{ 
             if (ViewBag.Title != "")
             { 
-            @ViewBag.Title;
+                @Html.Raw(@ViewBag.Title);
             }
         }
         </h1>

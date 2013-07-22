@@ -1,0 +1,24 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Helper.CachedVariables.Statistics>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>A CubeWorld Server Status Page</title>
+
+    <link href="@Url.Content("~/static/css/style.css")" rel="stylesheet" />
+
+</head>
+<body>
+    <header>
+        <h1>Error</h1>
+    </header>
+    <div id="container">
+        <section>
+                <p class="message">Could not establish a connection with CWSRestart.</p>
+        </section>
+    </div>
+    <footer>
+        <p>This data is gathered using <a href="http://chrisk91.github.io/CWSRestart/">CWSRestart</a>. Underlying data is updated every five seconds.</p>
+    </footer>
+</body>
+</html>

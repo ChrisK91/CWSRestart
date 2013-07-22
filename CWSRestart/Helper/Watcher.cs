@@ -198,6 +198,26 @@ namespace CWSRestart.Helper
             IsRunning = !IsRunning;
         }
 
+        public void Start()
+        {
+            if (!watcher.Enabled)
+            {
+                Logging.OnLogMessage("Watcher started", ServerService.Logging.MessageType.Info);
+                watcher.Start();
+                IsRunning = true;
+            }
+        }
+
+        public void Stop()
+        {
+            if (watcher.Enabled && !IsBlocked)
+            {
+                Logging.OnLogMessage("Watcher stopped", ServerService.Logging.MessageType.Info);
+                watcher.Stop();
+                IsRunning = false;
+            }
+        }
+
         private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)

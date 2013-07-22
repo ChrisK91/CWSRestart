@@ -30,6 +30,11 @@ namespace CWSWeb.Pages
                     else
                         return View["statsData", new DataContainer(CachedVariables.KeysJSON, CachedVariables.MemoryUsageJSON)].WithHeader("Cache-Control", "no-cache");
                 };
+
+            Get["/stats/serverrestarts"] = parameters =>
+                {
+                    return View["singleJson", CachedVariables.RestartsJSON].WithHeader("Cache-Control", "no-cache");
+                };
         }
     }
 }

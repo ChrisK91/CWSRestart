@@ -302,7 +302,7 @@ namespace ServerService
             {
                 UpdatePlayers();
 
-                if (Helper.General.Server != null)
+                if (Helper.General.Server != null && !Helper.General.Server.HasExited)
                 {
                     Helper.General.Server.Refresh();
 

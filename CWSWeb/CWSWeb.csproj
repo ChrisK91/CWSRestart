@@ -67,13 +67,16 @@
     <Compile Include="Helper\HashProvider.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\Users.cs" />
-    <Compile Include="Models\Admin.cs" />
+    <Compile Include="Models\Error.cs" />
+    <Compile Include="Models\User\Admin.cs" />
+    <Compile Include="Models\Admin\ControlPanel.cs" />
     <Compile Include="Modules\Admin.cs" />
     <Compile Include="Modules\API.cs" />
     <Compile Include="Modules\Root.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Various\EmbeddedStaticContentConventionBuilder.cs" />
+    <Compile Include="Various\ErrorHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -84,6 +87,9 @@
     <EmbeddedResource Include="Views\layout.cshtml" />
     <EmbeddedResource Include="Views\Root\login.cshtml" />
     <EmbeddedResource Include="Views\Admin\statistics.cshtml" />
+    <EmbeddedResource Include="Views\API\singleJson.cshtml" />
+    <EmbeddedResource Include="Views\Root\notavailable.cshtml" />
+    <EmbeddedResource Include="Views\Error\error.cshtml" />
     <None Include="web.config">
       <SubType>Designer</SubType>
     </None>

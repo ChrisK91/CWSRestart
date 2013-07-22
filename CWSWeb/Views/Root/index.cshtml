@@ -14,70 +14,113 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            @if (Model.Keys != null && Model.PlayerStats != null && Model.Keys.Length > 0 && Model.Keys[0] != null)
+            setInterval(function () {
+            @if (CWSWeb.Helper.CachedVariables.Stats != null && CWSWeb.Helper.CachedVariables.Stats.Keys != null && CWSWeb.Helper.CachedVariables.Stats.Keys.Length >= 2)
             { 
-                <text>
-            GeneratePlayerActivity();
-                </text>            
+                @:GeneratePlayerActivity();          
+            }
+                UpdateServerStats();
+            }, 5000);
+
+            @if (CWSWeb.Helper.CachedVariables.Stats != null && CWSWeb.Helper.CachedVariables.Stats.Keys != null && CWSWeb.Helper.CachedVariables.Stats.Keys.Length >= 2)
+            {
+                @:GeneratePlayerActivity();
             }
         });
 
+        function UpdateServerStats() {
+            $.getJSON("/API/stats/", function (data) {
+                if (data != null) {
+                    if (data.PlayerStats.Current != null)
+                        $("#active").text(data.PlayerStats.Current);
+
+                    if (data.PlayerStats.Total != null)
+                        $("#total").text(data.PlayerStats.Total);
+
+                    if (data.FormatedRuntime != null)
+                        $("#runtime").text(data.FormatedRuntime);
+                }
+            });
+        };
+
         function GeneratePlayerActivity() {
             $.getJSON("/API/stats/playeractivity", function (data) {
-                var dates = GetDatesFromStrings(data.labels);
-                var points = new Array(dates.length);
+                $.getJSON("/API/stats/serverrestarts", function (restarts) {
+                    var dates = GetDatesFromStrings(data.labels);
+                    var points = new Array(dates.length);
 
-                for (var i = 0; i < dates.length; i++) {
-                    points[i] = [dates[i], data.data[i]];
-                }
+                    var ranges = [];
 
-                var options = {
-                    xaxis: {
-                        mode: "time"
-                    },
-                    yaxis: {
-                        minTickSize: 1,
-                        min: 0
-                    }
-                };
+                    if (restarts != null && restarts.data != null && restarts.data.length > 0) {
+                        var restartDates = GetDatesFromStrings(restarts.data);
 
-                var activity = $.plot("#activity", [{ data: points }], options);
-
-                var overviewActivity = $.plot("#activityoverview", [{ data: points }], {
-                    series: {
-                        lines: {
-                            show: true,
-                            lineWidth: 1
-                        },
-                        shadowSize: 0
-                    },
-                    xaxis: {
-                        ticks: [],
-                        mode: "time"
-                    },
-                    yaxis: {
-                        ticks: [],
-                        autoscaleMargin: 0.2,
-                        min: 0
-                    },
-                    selection: {
-                        mode: "x"
-                    }
-                });
-
-                $("#activity").bind("plotselected", function (event, ranges) {
-                    activity = $.plot("#activity", [{ data: points }], $.extend(true, {}, options, {
-                        xaxis: {
-                            min: ranges.xaxis.from,
-                            max: ranges.xaxis.to
+                        ranges = new Array(restartDates.length);
+                        for (var i = 0; i < restartDates.length; i++) {
+                            ranges[i] = {
+                                xaxis: { from: restartDates[i], to: restartDates[i] },
+                                color: "#f00"
+                            };
                         }
-                    }));
+                    }
 
-                    overviewActivity.setSelection(ranges, true);
-                });
+                    for (var i = 0; i < dates.length; i++) {
+                        points[i] = [dates[i], data.data[i]];
+                    }
 
-                $("#activityoverview").bind("plotselected", function (event, ranges) {
-                    activity.setSelection(ranges);
+                    var options = {
+                        xaxis: {
+                            mode: "time"
+                        },
+                        yaxis: {
+                            minTickSize: 1,
+                            min: 0
+                        },
+                        grid: {
+                            markings: ranges
+                        }
+                    };
+
+                    var activity = $.plot("#activity", [{ data: points }], options);
+
+                    var overviewActivity = $.plot("#activityoverview", [{ data: points }], {
+                        series: {
+                            lines: {
+                                show: true,
+                                lineWidth: 1
+                            },
+                            shadowSize: 0
+                        },
+                        xaxis: {
+                            ticks: [],
+                            mode: "time"
+                        },
+                        yaxis: {
+                            ticks: [],
+                            autoscaleMargin: 0.2,
+                            min: 0
+                        },
+                        selection: {
+                            mode: "x"
+                        },
+                        grid: {
+                            markings: ranges
+                        }
+                    });
+
+                    $("#activity").bind("plotselected", function (event, ranges) {
+                        activity = $.plot("#activity", [{ data: points }], $.extend(true, {}, options, {
+                            xaxis: {
+                                min: ranges.xaxis.from,
+                                max: ranges.xaxis.to
+                            }
+                        }));
+
+                        overviewActivity.setSelection(ranges, true);
+                    });
+
+                    $("#activityoverview").bind("plotselected", function (event, ranges) {
+                        activity.setSelection(ranges);
+                    });
                 });
             });
         }
@@ -85,8 +128,7 @@
         function GetDatesFromStrings(data) {
             var ret = Array(data.length);
 
-            for(var i = 0; i < data.length; i++)
-            {
+            for (var i = 0; i < data.length; i++) {
                 ret[i] = new Date(parseInt(data[i].substr(6))).getTime();
             }
 
@@ -103,23 +145,39 @@
             @if (Model.IsAlive)
             { 
                 <ul class="table">
-                    <li><h6>Active players</h6><p>@Model.PlayerStats.Current.ToString()</p></li>
-                    <li><h6>Total players</h6><p>@Model.PlayerStats.Total.ToString()</p></li>
-                    <li><h6>Runtime</h6><p>@Model.FormatedRuntime</p></li>
+                    <li>
+                        <h6>Active players</h6>
+                        <p id="active">@Model.PlayerStats.Current.ToString()</p>
+                    </li>
+                    <li>
+                        <h6>Total players</h6>
+                        <p id="total">@Model.PlayerStats.Total.ToString()</p>
+                    </li>
+                    <li>
+                        <h6>Runtime</h6>
+                        <p id="runtime">@Model.FormatedRuntime</p>
+                    </li>
                 </ul>
                 
-                if (Model.Keys != null && Model.ActivePlayers != null && Model.Keys.Length > 0 && Model.Keys[0] != null)
+                if (CWSWeb.Helper.CachedVariables.Stats != null && CWSWeb.Helper.CachedVariables.Stats.Keys != null && CWSWeb.Helper.CachedVariables.Stats.Keys.Length >= 2)
                 { 
-                    <h2>Player activity</h2>
-                    <div id="activity" class="graph"></div>
-                    <div id="activityoverview" class="graph" style="height: 150px"></div>
+                <h2>Player activity</h2>
+                <div id="activity" class="graph"></div>
+                <div id="activityoverview" class="graph" style="height: 150px"></div>
+                }
+                else
+                { 
+                <p class="message">The graphs are not available at this time.</p>
                 }
             }
-            else { 
-                <h2>The server is offline</h2>
+            else
+            { 
+                <p class="message">The server is offline</p>
             }
         </section>
     </div>
-    <footer><p>This data is gathered using <a href="http://chrisk91.github.io/CWSRestart/">CWSRestart</a>. Underlying data is updated every five seconds.</p></footer>
+    <footer>
+        <p>This data is gathered using <a href="http://chrisk91.github.io/CWSRestart/">CWSRestart</a>. Underlying data is updated every five seconds.</p>
+    </footer>
 </body>
 </html>

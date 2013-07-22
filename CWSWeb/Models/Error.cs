@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace CWSWeb.Models
 {
-    public class Admin
+    public class Error
     {
-        public string Username { get; private set; }
-
-        public Admin(string name)
-        {
-            Username = name;
-        }
+        public string ErrorCode;
+        public string ErrorMessage;
     }
 }

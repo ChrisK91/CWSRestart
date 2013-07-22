@@ -14,12 +14,14 @@ namespace CWSWeb.Modules
         public Admin()
             : base("/admin")
         {
+            CWSProtocol.Client c = new CWSProtocol.Client("AdminModule");
+
             this.RequiresAuthentication();
 
             Get["/"] = parameters =>
             {
                 var message = Session.FirstOrDefault(o => o.Key == "toggleMessage");
-                
+
                 if (message.Key != null)
                 {
                     Context.ViewBag["toggleMessage"] = message.Value;
@@ -27,14 +29,28 @@ namespace CWSWeb.Modules
                 }
 
                 message = Session.FirstOrDefault(o => o.Key == "requiresDelay");
+                Models.Admin.ControlPanel m = new Models.Admin.ControlPanel(null, false, true, 0);
 
                 if (message.Key != null)
                 {
                     Context.ViewBag["requiresDelay"] = true;
                     Session.Delete("requiresDelay");
                 }
+                else
+                {
+                    List<string> logEntries = c.GetLogMessages();
+                    logEntries.Reverse();
 
-                return View["index.cshtml"];
+                    Dictionary<string, object> watcherSettings = c.GetWatcherStatus();
+
+                    if (watcherSettings != null)
+                        m = new Models.Admin.ControlPanel(logEntries,
+                            watcherSettings.ContainsKey("ENABLED") ? Boolean.Parse(watcherSettings["ENABLED"].ToString()) : false,
+                            watcherSettings.ContainsKey("BLOCKED") ? Boolean.Parse(watcherSettings["BLOCKED"].ToString()) : false,
+                            watcherSettings.ContainsKey("TIMEOUT") ? UInt32.Parse(watcherSettings["TIMEOUT"].ToString()) : 0);
+                }
+
+                return View["index.cshtml", m];
             };
 
             Get["/logout"] = parameters =>
@@ -46,25 +62,25 @@ namespace CWSWeb.Modules
             {
                 string action = parameters["action"].ToString();
 
-                switch(action.ToLower())
+                switch (action.ToLower())
                 {
                     case "start":
-                        Helper.Settings.Instance.Client.SendStart();
+                        c.SendStart();
                         Session["toggleMessage"] = "The server will now be started. Please refresh the page in a few seconds.";
                         Session["requiresDelay"] = true;
                         break;
                     case "stop":
-                        Helper.Settings.Instance.Client.SendStop();
+                        c.SendStop();
                         Session["toggleMessage"] = "The server will now be stopped. Please refresh the page in a few seconds.";
                         Session["requiresDelay"] = true;
                         break;
                     case "restart":
-                        Helper.Settings.Instance.Client.SendRestart();
+                        c.SendRestart();
                         Session["toggleMessage"] = "The server will now be restarted. Please refresh the page in a few seconds.";
                         Session["requiresDelay"] = true;
                         break;
                     case "kill":
-                        Helper.Settings.Instance.Client.SendKill();
+                        c.SendKill();
                         Session["toggleMessage"] = "The server will now be killed. Please refresh the page in a few seconds.";
                         Session["requiresDelay"] = true;
                         break;
@@ -76,6 +92,38 @@ namespace CWSWeb.Modules
             Get["/statistics"] = parameters =>
             {
                 return View["statistics.cshtml"];
+            };
+
+            Get["/log/clear"] = parameters =>
+            {
+                c.ClearLogMessage();
+                return Response.AsRedirect("/admin");
+            };
+
+            Get["/watcher/{action}"] = parameters =>
+            {
+                string action = parameters["action"].ToString();
+                switch (action.ToLower())
+                {
+                    case "start":
+                        c.StartWatcher();
+                        break;
+                    case "stop":
+                        c.StopWatcher();
+                        break;
+                }
+                return Response.AsRedirect("/admin");
+            };
+
+            Post["/watcher"] = parameters =>
+            {
+                string timeout = (string)Request.Form.Timeout;
+                UInt32 seconds;
+
+                if (UInt32.TryParse(timeout, out seconds))
+                    c.SetWatcherTimeout(seconds);
+
+                return Response.AsRedirect("/admin");
             };
         }
     }

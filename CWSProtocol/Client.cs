@@ -14,23 +14,35 @@ namespace CWSProtocol
     {
         private NamedPipeClientStream client;
         private string name;
+        public bool CanConnect = false;
 
         public Client(string name)
         {
             this.name = name;
         }
 
+        private bool sendCommand(Commands.Command command)
+        {
+            return sendCommand(command, "");
+        }
 
-        private void sendCommand(Commands.Command command, String content)
+        private bool sendCommand(Commands.Command command, String content)
+        {
+            return sendCommand(command, content, Commands.Actions.GET);
+        }
+
+        private bool sendCommand(Commands.Command command, String content, Commands.Actions action)
         {
             if (tryConnect())
             {
                 StreamWriter writer = new StreamWriter(client, System.Text.Encoding.UTF8, 2048, true);
 
-                string message = String.Format("{0} {1} {2}", Commands.Actions.GET, command, content);
+                string message = String.Format("{0} {1} {2}", action, command, content);
                 writer.WriteLine(message);
                 writer.Close();
+                return true;
             }
+            return false;
         }
 
         private Tuple<Commands.Command, string> readResponse()
@@ -85,22 +97,29 @@ namespace CWSProtocol
                     client.Connect(10);
                 }
 
+                CanConnect = true;
                 return true;
             }
             catch(Exception ex)
             {
                 if (ex is IOException)
                     Console.WriteLine("Could not connect");
+                else if (ex is TimeoutException)
+                    Console.WriteLine("Connection to CWSRestart timed out");
                 else
+                {
                     Console.WriteLine(ex.Message);
+
+                    if (Debugger.IsAttached)
+                        Debugger.Break();
+                }
             }
             return false;
         }
 
         public bool Test()
-        {
-            sendCommand(Commands.Command.IDENTIFY, name);
-            if (client.IsConnected)
+        {       
+            if (sendCommand(Commands.Command.IDENTIFY, name))
             {
                 Tuple<Commands.Command, string> answer = readResponse();
                 disconnectClient();
@@ -121,38 +140,39 @@ namespace CWSProtocol
 
         public void SendStart()
         {
-            sendCommand(Commands.Command.START, "");
-            if (client.IsConnected)
+            if(sendCommand(Commands.Command.START))
                 disconnectClient();
         }
 
         public void SendStop()
         {
-            sendCommand(Commands.Command.STOP, "");
-            if (client.IsConnected)
+            if(sendCommand(Commands.Command.STOP))
                 disconnectClient();
         }
 
         public void SendRestart()
         {
-            sendCommand(Commands.Command.RESTART, "");
-            if (client.IsConnected)
+            if(sendCommand(Commands.Command.RESTART))
                 disconnectClient();
         }
 
         public void SendKill()
         {
-            sendCommand(Commands.Command.KILL, "");
-            if (client.IsConnected)
+            if(sendCommand(Commands.Command.KILL))
+                disconnectClient();
+        }
+
+        public void SetWatcherTimeout(UInt32 seconds)
+        {
+            if (sendCommand(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", seconds), Commands.Actions.POST))
                 disconnectClient();
         }
 
         public Dictionary<string, object> GetStatistics()
         {
-            sendCommand(Commands.Command.STATISTICS, "");
             Dictionary<string, object> ret = new Dictionary<string, object>();
 
-            if (client.IsConnected)
+            if (sendCommand(Commands.Command.STATISTICS))
             {
                 Tuple<Commands.Command, string> answer;
 
@@ -181,9 +201,77 @@ namespace CWSProtocol
             return ret;
         }
 
+        public Dictionary<string, object> GetWatcherStatus()
+        {
+            Dictionary<string, object> ret = new Dictionary<string, object>();
+
+            if(sendCommand(Commands.Command.WATCHER))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Tuple<Commands.Command, string> answer = readResponse();
+
+                    if (answer != null && answer.Item1 == Commands.Command.WATCHER)
+                    {
+                        string[] contents = answer.Item2.Split(new string[] { " " }, 2, StringSplitOptions.None);
+
+                        if (contents.Length == 2)
+                        {
+                            ret.Add(contents[0], contents[1]);
+                        }
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            disconnectClient();
+            return ret;
+        }
+
+        public List<string> GetLogMessages()
+        {
+            List<string> ret = new List<string>();
+            
+            if (sendCommand(Commands.Command.LOG))
+            {
+                string line;
+                StreamReader reader = new StreamReader(client, System.Text.Encoding.UTF8, true, 2048, true);
+
+                while ((line = reader.ReadLine()) != null)
+                    ret.Add(line);
+            }
+
+            disconnectClient();
+            return ret;
+        }
+
+        public void StartWatcher()
+        {
+            sendCommand(Commands.Command.WATCHER, "START", Commands.Actions.POST);
+            disconnectClient();
+        }
+
+        public void StopWatcher()
+        {
+            sendCommand(Commands.Command.WATCHER, "STOP", Commands.Actions.POST);
+            disconnectClient();
+        }
+
+        public void ClearLogMessage()
+        {
+            sendCommand(Commands.Command.LOG, "CLEAR", Commands.Actions.POST);
+            disconnectClient();
+        }
+
         private void disconnectClient()
         {
-            client.Dispose();
+            if (client != null)
+            {
+                client.Dispose();
+            }
             client = null;
         }
     }

@@ -52,6 +52,19 @@ namespace CWSRestart
 
             Stats = new Statistics(1000, false);
             Infrastructure.Server.Instance.Statistics = Stats;
+            
+            Infrastructure.Server.Instance.GetLog = () =>
+            {
+                return LogControl.Messages.ToList();
+            };
+
+            Infrastructure.Server.Instance.ClearLog = () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    LogControl.ClearLog();
+                });
+            };
 
             if (File.Exists(Dialogs.IPFilter.ListLocation))
                 AccessControl.Instance.RestoreList(Dialogs.IPFilter.ListLocation);
@@ -64,6 +77,10 @@ namespace CWSRestart
             {
                 Helper.Logging.OnLogMessage("The application is running as administrator. Keep in mind, that everything that is launched from here, will run as administrator as well.", Logging.MessageType.Info);
             }
+
+#if DEBUG
+            ToggleInterProcessCommunication_Click(null, null);
+#endif
         }
 
         void Logging_LogMessage(object sender, Logging.LogMessageEventArgs e)
