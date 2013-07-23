@@ -17,6 +17,8 @@ namespace CubeWorldMITM
         private static volatile bool shouldExit = false;
         private static EventWaitHandle wait;
 
+        private static List<MITMMessageHandler> establishedConnections = new List<MITMMessageHandler>();
+
         static void Main(string[] args)
         {
             mitm = new TcpListener(IPAddress.Any, 12345);
@@ -49,51 +51,13 @@ namespace CubeWorldMITM
 
             TcpClient toServer = new TcpClient(IPAddress.Loopback.ToString(), 12346);
 
-            NetworkStream stream = client.GetStream();
-            NetworkStream server = toServer.GetStream();
+            NetworkStream clientStream = client.GetStream();
+            NetworkStream serverStream = toServer.GetStream();
 
-            bool clientFinished = true;
-            bool serverFinished = true;
+            Console.Write("{0} connected to {1}", client.Client.RemoteEndPoint.ToString(), client.Client.LocalEndPoint.ToString());
 
-            while (!shouldExit)
-            {
-                EventWaitHandle mitmHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-
-                if (clientFinished)
-                {
-                    byte[] buffer = new byte[1024];
-                    clientFinished = false;
-                    stream.BeginRead(buffer, 0, buffer.Length, sAr =>
-                    {
-                        int bytesRead = stream.EndRead(sAr);
-                        server.BeginWrite(buffer, 0, bytesRead, wAr =>
-                        {
-                            server.EndWrite(wAr);
-                        }, null);
-                        clientFinished = true;
-                        mitmHandle.Set();
-                    }, null);
-                }
-
-                if (serverFinished)
-                {
-                    byte[] buffer = new byte[1024];
-                    serverFinished = false;
-                    server.BeginRead(buffer, 0, buffer.Length, sAr =>
-                    {
-                        int bytesRead = server.EndRead(sAr);
-                        stream.BeginWrite(buffer, 0, bytesRead, wAr =>
-                        {
-                            stream.EndWrite(wAr);
-                        }, null);
-                        serverFinished = true;
-                        mitmHandle.Set();
-                    }, null);
-                }
-
-                mitmHandle.WaitOne();
-            }
-
+            MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream);
+            establishedConnections.Add(handler);
         }
     }
 }
