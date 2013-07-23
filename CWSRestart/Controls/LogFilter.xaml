@@ -22,7 +22,7 @@
             <CheckBox IsChecked="{Binding HideWarning, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">Warning</CheckBox>
             <CheckBox IsChecked="{Binding HideError, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">Error</CheckBox>
             <CheckBox IsChecked="{Binding HideGeneral, ElementName=LogControl}" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left">General</CheckBox>
-            <Button DockPanel.Dock="Right" Width="75" Click="Button_Click">Clear log</Button>
+            <Button DockPanel.Dock="Right" Width="75" Click="Button_Click" Height="20">Clear log</Button>
             <Label />
         </DockPanel>
 

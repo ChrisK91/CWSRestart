@@ -1,0 +1,45 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Models.Admin.Access>
+
+@{
+    ViewBag.Title = "Administration &raquo; Access control";
+    Layout = "layout.cshtml";
+}
+@if (ViewBag.KickMessage != null)
+{
+    if (ViewBag.RequiresDelay != null)
+    {
+        @:<a href="@Url.Content("~/admin/")">
+    }
+
+    <p class="message">@ViewBag.KickMessage</p>
+
+    if (ViewBag.RequiresDelay != null)
+    {
+        @:</a>
+    }
+}
+@if (ViewBag.RequiresDelay == null)
+{
+    if (!CWSWeb.Helper.CachedVariables.Stats.Enabled)
+    {
+        <p class="message">Statistics are not enabled. Please enable statistics in order to use access control.</p>
+    }
+    else
+    { 
+        <ul class="connected">
+            @if(Model.ConnectedPlayers.Count > 0)
+            {
+                <li>The players listed below are currently connected.</li>
+                
+                foreach (string s in Model.ConnectedPlayers)
+                { 
+                    <li>@s (<a href="@Url.Content("~/admin/access/kick/" + s)">Kick</a> | <a href="#">Add to list</a>)</li>
+                }
+            }
+            else
+            {
+                <li>No one is connected at the moment.</li>
+            }
+        </ul>
+    }
+}

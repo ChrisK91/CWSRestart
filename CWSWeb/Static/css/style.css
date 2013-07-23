@@ -244,7 +244,7 @@ table.actionTwo tr td {
     width: 50%;
 }
 
-table.action tr td input {
+table.action tr td input[type=text] {
     display: block;
     width: 100%;
     height: 26px;
@@ -274,7 +274,7 @@ table.action tr td a.button, table.action tr td button, a.button {
         text-decoration: none;
     }
 
-ul.log {
+ul.log, ul.connected {
     list-style: none;
     font-family: Consolas, "Lucida Console", monospace;
     font-size: 0.9em;
@@ -290,7 +290,7 @@ ul.log {
     box-sizing: border-box;
 }
 
-    ul.log li {
+    ul.log li, ul.connected li {
         display: block;
         min-width: 100%;
         background-color: #002550;
@@ -300,8 +300,25 @@ ul.log {
         border-top: 1px solid #f3f3f3;
     }
 
+        ul.connected li a {
+            color: #FFE28B;
+        }
+
     ul.log li:first-child {
         border-top: none;
+    }
+
+    ul.connected li:first-child {
+        border-top: none;
+        background-color: #B28053;
+        color: #f3f3f3;
+        border: #002550 1px solid;
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        font-size: 1.2em;
+        padding: 0.3em 0.1em;
+        text-align: center;
     }
 
 button {

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text;
@@ -104,6 +105,7 @@ namespace CWSRestart.Infrastructure
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("TOTAL {0}", Statistics.Players.Count), serverStream);
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("CURRENT {0}", Statistics.ConnectedPlayers.Count), serverStream);
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("RUNTIME {0:00}:{1:00}:{2:00}", Statistics.Runtime.TotalHours, Statistics.Runtime.Minutes, Statistics.Runtime.Seconds), serverStream);
+                                                                sendReply(Commands.Command.STATISTICS, String.Format("ENABLED {0}", Statistics.Enabled), serverStream);
 
                                                                 string logFolder = Path.Combine(Statistics.LogFolder, String.Format("{0}.{1}", Statistics.StartTime.ToString("yyyy-MM-dd_HH-mm-ss"), "csv"));
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("LOGFILE {0}", logFolder), serverStream);
@@ -133,6 +135,9 @@ namespace CWSRestart.Infrastructure
                                                             sendReply(Commands.Command.WATCHER, String.Format("ENABLED {0}", Helper.Watcher.Instance.IsRunning), serverStream);
                                                             sendReply(Commands.Command.WATCHER, String.Format("BLOCKED {0}", Helper.Watcher.Instance.IsBlocked), serverStream);
                                                             sendReply(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", Helper.Watcher.Instance.IntervallSeconds.ToString()), serverStream);
+                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKINTERNET {0}", ServerService.Settings.Instance.CheckInternet), serverStream);
+                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLAN {0}", ServerService.Settings.Instance.CheckLAN), serverStream);
+                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLOOPBACK {0}", ServerService.Settings.Instance.CheckLoopback), serverStream);
                                                             break;
 
                                                         case Commands.Command.LOG:
@@ -176,6 +181,28 @@ namespace CWSRestart.Infrastructure
                                                                 sendReply(Commands.Command.LOG, "", serverStream);
                                                             }
                                                             break;
+
+                                                        case Commands.Command.CONNECTED:
+
+                                                            List<IPAddress> connected;
+
+                                                            if (Statistics.Enabled && (connected = new List<IPAddress>(Statistics.ConnectedPlayers)).Count > 0)
+                                                            {
+                                                                StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
+
+                                                                foreach (IPAddress ip in connected)
+                                                                    writer.WriteLine(ip.ToString());
+
+                                                                writer.Close();
+                                                            }
+                                                            else
+                                                            {
+                                                                StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
+                                                                writer.WriteLine("");
+                                                                writer.Close();
+                                                            }
+
+                                                            break;
                                                     }
 
                                                     break;
@@ -200,13 +227,53 @@ namespace CWSRestart.Infrastructure
                                                                 {
                                                                     string[] parts = message.Split(new string[] { " " }, 2, StringSplitOptions.None);
 
-                                                                    if (parts.Length == 2 && String.Compare(parts[0], "timeout", true) == 0)
+                                                                    if (parts.Length == 2)
                                                                     {
-                                                                        UInt32 seconds;
-                                                                        if (UInt32.TryParse(parts[1], out seconds))
-                                                                            Helper.Watcher.Instance.IntervallSeconds = seconds;
+                                                                        switch (parts[0])
+                                                                        {
+                                                                            case "TIMEOUT":
+                                                                                UInt32 seconds;
+                                                                                if (UInt32.TryParse(parts[1], out seconds))
+                                                                                    Helper.Watcher.Instance.IntervallSeconds = seconds;
+                                                                                break;
+                                                                            case "ACCESS":
+                                                                                parts = parts[1].Split(' ');
+                                                                                if (parts.Length == 6)
+                                                                                {
+                                                                                    for (int i = 0; i < parts.Length; i = i + 2)
+                                                                                    {
+                                                                                        bool check;
+                                                                                        if (Boolean.TryParse(parts[i + 1], out check))
+                                                                                        {
+                                                                                            switch (parts[i])
+                                                                                            {
+                                                                                                case "CHECKINTERNET":
+                                                                                                    ServerService.Settings.Instance.CheckInternet = check;
+                                                                                                    break;
+
+                                                                                                case "CHECKLAN":
+                                                                                                    ServerService.Settings.Instance.CheckLAN = check;
+                                                                                                    break;
+
+                                                                                                case "CHECKLOOPBACK":
+                                                                                                    ServerService.Settings.Instance.CheckLoopback = check;
+                                                                                                    break;
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                break;
+                                                                        }
                                                                     }
                                                                 }
+                                                            }
+                                                            break;
+
+                                                        case Commands.Command.KICK:
+                                                            IPAddress ip;
+                                                            if(IPAddress.TryParse(message, out ip))
+                                                            {
+                                                                ServerService.Helper.DisconnectWrapper.CloseRemoteIP(ip.ToString());
                                                             }
                                                             break;
 

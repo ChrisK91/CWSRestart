@@ -148,8 +148,8 @@ namespace ServerService.Helper
             if(Server != null)
                 Server.Kill();
 
-            if (output != null)
-                output.CancelAsync();
+            //if (output != null)
+            //    output.CancelAsync();
 
             KillAdditionalProcesses();
         }

@@ -30,7 +30,9 @@ namespace CWSProtocol
             RESTART,
             KILL,
             WATCHER,
-            LOG
+            LOG,
+            CONNECTED,
+            KICK
         }
     }
 }

@@ -43,93 +43,120 @@
             });
         };
 
+        var activity;
+        var oldRange;
+        var zoomed = false;
+
         function GeneratePlayerActivity() {
             $.getJSON("/API/stats/playeractivity", function (data) {
                 $.getJSON("/API/stats/serverrestarts", function (restarts) {
-                    var dates = GetDatesFromStrings(data.labels);
-                    var points = new Array(dates.length);
+                    if (data != null && restarts != null && data.labels != null) {
+                        var dates = GetDatesFromStrings(data.labels);
+                        var points = new Array(dates.length);
 
-                    var ranges = [];
+                        var ranges = [];
 
-                    if (restarts != null && restarts.data != null && restarts.data.length > 0) {
-                        var restartDates = GetDatesFromStrings(restarts.data);
+                        if (restarts != null && restarts.data != null && restarts.data.length > 0) {
+                            var restartDates = GetDatesFromStrings(restarts.data);
 
-                        ranges = new Array(restartDates.length);
-                        for (var i = 0; i < restartDates.length; i++) {
-                            ranges[i] = {
-                                xaxis: { from: restartDates[i], to: restartDates[i] },
-                                color: "#f00"
-                            };
-                        }
-                    }
-
-                    for (var i = 0; i < dates.length; i++) {
-                        points[i] = [dates[i], data.data[i]];
-                    }
-
-                    var options = {
-                        xaxis: {
-                            mode: "time"
-                        },
-                        yaxis: {
-                            minTickSize: 1,
-                            min: 0
-                        },
-                        grid: {
-                            markings: ranges
-                        },
-                        series: {
-                            lines: {
-                                show: true,
-                                lineWidth: 1,
-                                fill: true
-                            },
-                            shadowSize: 0
-                        }
-                    };
-
-                    var activity = $.plot("#activity", [{ data: points, color: "#FF5600" }], options);
-
-                    var overviewActivity = $.plot("#activityoverview", [{ data: points, color: "#FF5600" }], {
-                        series: {
-                            lines: {
-                                show: true,
-                                lineWidth: 1,
-                                fill: true
-                            },
-                            shadowSize: 0
-                        },
-                        xaxis: {
-                            ticks: [],
-                            mode: "time"
-                        },
-                        yaxis: {
-                            ticks: [],
-                            autoscaleMargin: 0.2,
-                            min: 0
-                        },
-                        selection: {
-                            mode: "x"
-                        },
-                        grid: {
-                            markings: ranges
-                        }
-                    });
-
-                    $("#activity").bind("plotselected", function (event, ranges) {
-                        activity = $.plot("#activity", [{ data: points }], $.extend(true, {}, options, {
-                            xaxis: {
-                                min: ranges.xaxis.from,
-                                max: ranges.xaxis.to
+                            ranges = new Array(restartDates.length);
+                            for (var i = 0; i < restartDates.length; i++) {
+                                ranges[i] = {
+                                    xaxis: { from: restartDates[i], to: restartDates[i] },
+                                    color: "#f00"
+                                };
                             }
-                        }));
+                        }
 
-                        overviewActivity.setSelection(ranges, true);
-                    });
+                        for (var i = 0; i < dates.length; i++) {
+                            points[i] = [dates[i], data.data[i]];
+                        }
 
-                    $("#activityoverview").bind("plotselected", function (event, ranges) {
-                        activity.setSelection(ranges);
-                    });
+                        var options = {
+                            xaxis: {
+                                mode: "time"
+                            },
+                            yaxis: {
+                                minTickSize: 1,
+                                min: 0
+                            },
+                            grid: {
+                                markings: ranges
+                            },
+                            series: {
+                                lines: {
+                                    show: true,
+                                    lineWidth: 1,
+                                    fill: true
+                                },
+                                shadowSize: 0
+                            }
+                        };
+
+                        if (activity != null && zoomed) {
+                            var zoom = activity.getAxes();
+
+                            options = $.extend(true, {}, options, {
+                                xaxis: {
+                                    min: zoom.xaxis.min,
+                                    max: zoom.xaxis.max
+                                }
+                            });
+                        }
+
+                        activity = $.plot("#activity", [{ data: points, color: "#FF5600" }], options);
+
+                        var overviewOptions = {
+                            series: {
+                                lines: {
+                                    show: true,
+                                    lineWidth: 1,
+                                    fill: true
+                                },
+                                shadowSize: 0
+                            },
+                            xaxis: {
+                                ticks: [],
+                                mode: "time"
+                            },
+                            yaxis: {
+                                ticks: [],
+                                autoscaleMargin: 0.2,
+                                min: 0
+                            },
+                            selection: {
+                                mode: "x",
+                                color: "#B28053"
+                            },
+                            grid: {
+                                markings: ranges
+                            }
+                        };
+
+                        var overviewActivity = $.plot("#activityoverview", [{ data: points, color: "#FF5600" }], overviewOptions);
+
+                        if (oldRange != null) {
+                            overviewActivity.setSelection(oldRange, true);
+                        }
+
+                        $("#activity").bind("plotselected", function (event, ranges) {
+                            activity = $.plot("#activity", [{ data: points, color: "#FF5600" }], $.extend(true, {}, options, {
+                                xaxis: {
+                                    min: ranges.xaxis.from,
+                                    max: ranges.xaxis.to
+                                }
+                            }));
+
+                            overviewActivity.setSelection(ranges, true);
+                            zoomed = true;
+                            oldRange = ranges;
+                        });
+
+                        $("#activityoverview").bind("plotselected", function (event, ranges) {
+                            activity.setSelection(ranges);
+                            zoomed = true;
+                        });
+                    }
                 });
             });
         }

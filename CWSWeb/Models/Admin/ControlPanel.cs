@@ -20,12 +20,19 @@ namespace CWSWeb.Models.Admin
         public bool WatcherBusy { get; private set; }
         public uint WatcherTimeout { get; private set; }
 
-        public ControlPanel(List<string> LogMessages, bool WatcherEnabled, bool WatcherBusy, uint WatcherTimeout)
+        public bool CheckInternet { get; private set; }
+        public bool CheckLAN { get; private set; }
+        public bool CheckLoopback { get; private set; }
+
+        public ControlPanel(List<string> LogMessages, bool WatcherEnabled, bool WatcherBusy, uint WatcherTimeout, bool CheckInternet, bool CheckLAN, bool CheckLoopback)
         {
             this.LogMessages = LogMessages;
             this.WatcherBusy = WatcherBusy;
             this.WatcherTimeout = WatcherTimeout;
             this.WatcherEnabled = WatcherEnabled;
+            this.CheckInternet = CheckInternet;
+            this.CheckLAN = CheckLAN;
+            this.CheckLoopback = CheckLoopback;
         }
     }
 }

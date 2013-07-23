@@ -65,7 +65,7 @@ namespace ServerService
                 {
                     TcpConnectionInformation info = (TcpConnectionInformation)enumerator.Current;
 
-                    if (info.LocalEndPoint.Port == 12345 && info.State == TcpState.Established)
+                    if (info.LocalEndPoint.Port == Settings.Instance.Port && info.State == TcpState.Established)
                     {
                         int ret = 0;
                         bool actionTaken = false;

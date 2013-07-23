@@ -35,6 +35,9 @@ namespace CWSWeb.Helper
                     if (rawData.ContainsKey("LOGFILE"))
                         Stats.UpdateFromCSV(rawData["LOGFILE"].ToString());
 
+                    if (rawData.ContainsKey("ENABLED"))
+                        Stats.Enabled = Boolean.Parse(rawData["ENABLED"].ToString());
+
                 }
 
                 statsLastUpdated = DateTime.Now;
@@ -80,6 +83,7 @@ namespace CWSWeb.Helper
             public bool IsAlive;
             public Players PlayerStats = new Players();
             public string FormatedRuntime = "";
+            public bool Enabled = false;
 
             public DateTime[] Keys;
             public int[] ActivePlayers;
@@ -100,17 +104,21 @@ namespace CWSWeb.Helper
 
                     string[] lines = data.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
+                    bool dropRestart;
+
                     if (1 < lines.Length && lines.Length < Settings.Instance.LinesToRead)
                     {
                         Keys = new DateTime[lines.Length - 2];
                         ActivePlayers = new int[lines.Length - 2];
                         memoryUsage = new int[lines.Length - 2];
+                        dropRestart = false;
                     }
                     else
                     {
                         Keys = new DateTime[lines.Length - 1];
                         ActivePlayers = new int[lines.Length - 1];
                         memoryUsage = new int[lines.Length - 1];
+                        dropRestart = true;
                     }
 
                     List<DateTime> tmpRestarts = new List<DateTime>();
@@ -137,7 +145,14 @@ namespace CWSWeb.Helper
 
                                 if (currentRestarts > prevRestarts)
                                 {
-                                    tmpRestarts.Add(dt);
+                                    if (!dropRestart)
+                                    {
+                                        tmpRestarts.Add(dt);
+                                    }
+                                    else
+                                    {
+                                        dropRestart = false;
+                                    }
                                     prevRestarts = currentRestarts;
                                 }
 

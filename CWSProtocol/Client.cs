@@ -10,7 +10,7 @@ using System.Timers;
 
 namespace CWSProtocol
 {
-    public class Client 
+    public class Client
     {
         private NamedPipeClientStream client;
         private string name;
@@ -89,7 +89,7 @@ namespace CWSProtocol
         {
             try
             {
-                if(client == null)
+                if (client == null)
                     client = new NamedPipeClientStream(".", Configuration.SERVERNAME, PipeDirection.InOut, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation);
 
                 if (!client.IsConnected)
@@ -100,7 +100,7 @@ namespace CWSProtocol
                 CanConnect = true;
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex is IOException)
                     Console.WriteLine("Could not connect");
@@ -118,11 +118,10 @@ namespace CWSProtocol
         }
 
         public bool Test()
-        {       
+        {
             if (sendCommand(Commands.Command.IDENTIFY, name))
             {
                 Tuple<Commands.Command, string> answer = readResponse();
-                disconnectClient();
 
                 if (answer == null)
                 {
@@ -135,36 +134,43 @@ namespace CWSProtocol
                 }
             }
 
+            disconnectClient();
             return false;
         }
 
         public void SendStart()
         {
-            if(sendCommand(Commands.Command.START))
+            if (sendCommand(Commands.Command.START))
                 disconnectClient();
         }
 
         public void SendStop()
         {
-            if(sendCommand(Commands.Command.STOP))
+            if (sendCommand(Commands.Command.STOP))
                 disconnectClient();
         }
 
         public void SendRestart()
         {
-            if(sendCommand(Commands.Command.RESTART))
+            if (sendCommand(Commands.Command.RESTART))
                 disconnectClient();
         }
 
         public void SendKill()
         {
-            if(sendCommand(Commands.Command.KILL))
+            if (sendCommand(Commands.Command.KILL))
                 disconnectClient();
         }
 
         public void SetWatcherTimeout(UInt32 seconds)
         {
             if (sendCommand(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", seconds), Commands.Actions.POST))
+                disconnectClient();
+        }
+
+        public void SetWatcherCheckAccess(bool CheckInternet, bool CheckLAN, bool CheckLoopback)
+        {
+            if (sendCommand(Commands.Command.WATCHER, String.Format("ACCESS CHECKINTERNET {0} CHECKLAN {1} CHECKLOOPBACK {2}", CheckInternet, CheckLAN, CheckLoopback), Commands.Actions.POST))
                 disconnectClient();
         }
 
@@ -205,9 +211,9 @@ namespace CWSProtocol
         {
             Dictionary<string, object> ret = new Dictionary<string, object>();
 
-            if(sendCommand(Commands.Command.WATCHER))
+            if (sendCommand(Commands.Command.WATCHER))
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     Tuple<Commands.Command, string> answer = readResponse();
 
@@ -234,7 +240,7 @@ namespace CWSProtocol
         public List<string> GetLogMessages()
         {
             List<string> ret = new List<string>();
-            
+
             if (sendCommand(Commands.Command.LOG))
             {
                 string line;
@@ -263,6 +269,29 @@ namespace CWSProtocol
         public void ClearLogMessage()
         {
             sendCommand(Commands.Command.LOG, "CLEAR", Commands.Actions.POST);
+            disconnectClient();
+        }
+
+        public List<string> GetConnectedPlayers()
+        {
+            List<string> ret = new List<string>();
+
+            if (sendCommand(Commands.Command.CONNECTED))
+            {
+                string line;
+                StreamReader reader = new StreamReader(client, System.Text.Encoding.UTF8, true, 2048, true);
+
+                while ((line = reader.ReadLine()) != null && line != "")
+                    ret.Add(line);
+            }
+
+            disconnectClient();
+            return ret;
+        }
+
+        public void KickPlayer(string ip)
+        {
+            sendCommand(Commands.Command.KICK, ip, Commands.Actions.POST);
             disconnectClient();
         }
 

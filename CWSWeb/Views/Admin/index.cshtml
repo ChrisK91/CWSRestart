@@ -4,11 +4,11 @@
     Layout = "layout.cshtml";
 }
 @if (ViewBag.ToggleMessage != null)
-{ 
+{
     if (ViewBag.RequiresDelay != null)
     {
-        @:<a href="@Url.Content("~/admin/")">
-    }
+    @:<a href="@Url.Content("~/admin/")">
+}
 
     <p class="message">@ViewBag.ToggleMessage</p>
 
@@ -21,14 +21,14 @@
 { 
     <table class="action actionFour">
         <tr>
-            <th colspan="4">    
+            <th colspan="4">
                 @if (Model.ServerAlive)
-        {    
+                {    
                     @:The server is running.
                 }
-        else
-        { 
-            @:The server is not running (it might be restarting, though).
+                else
+                { 
+                    @:The server is not running (it might be restarting, though).
         }
             </th>
         </tr>
@@ -41,60 +41,85 @@
     </table>
     
         
-    if (Model.WatcherBusy)
-    { 
-        <p class="message"><a href="@Url.Content("~/admin/")">The watcher is currently busy. Refresh this page to update this status.</a></p>
-    }
-    else
-    { 
-        <form method="post" action="@Url.Content("~/admin/watcher")">
-            <table class="action actionFour">
-                <tr>
-                    <th colspan="4">
-                        @if (Model.WatcherEnabled)
-                        { 
-                            @:The watcher is running
-                        }
-                        else
-                        { 
-                            @:The watcher is disabled
-                        }
-                    </th>
-                </tr>
-                <tr>
-                    <td style="text-align:right">
-                        Timeout:
-                    </td>
-                    <td>
-                        <input type="text" value="@Model.WatcherTimeout.ToString()" name="Timeout" />
-                    </td>
-                    <td>
-                        <button type="submit">Apply</button>
-                    </td>
-                    <td>
+                if (Model.WatcherBusy)
+                { 
+    <p class="message"><a href="@Url.Content("~/admin/")">The watcher is currently busy. Refresh this page to update this status.</a></p>
+                }
+                else
+                { 
+    <form method="post" action="@Url.Content("~/admin/watcher")">
+        <table class="action actionFour">
+            <tr>
+                <th colspan="4">
                     @if (Model.WatcherEnabled)
-                        { 
-                            @:<a href="/admin/watcher/stop" class="button">Stop watcher</a>
+                    { 
+                        @:The watcher is running
                         }
-                        else
-                        { 
-                            @:<a href="/admin/watcher/start" class="button">Start watcher</a>
+                    else
+                    { 
+                        @:The watcher is disabled
                         }
-                    </td>
-                </tr>
-            </table>
-        </form>
-    }
+                </th>
+            </tr>
+            <tr>
+                <td style="text-align: right">Timeout:
+                </td>
+                <td>
+                    <input type="text" value="@Model.WatcherTimeout.ToString()" name="Timeout" />
+                </td>
+                <td>
+                    <button type="submit">Apply</button>
+                </td>
+                <td>
+                    @if (Model.WatcherEnabled)
+                    { 
+                        @:<a href="/admin/watcher/stop" class="button">Stop watcher</a>
+                        }
+                    else
+                    { 
+                        @:<a href="/admin/watcher/start" class="button">Start watcher</a>
+                        }
+                </td>
+            </tr>
+        </table>
+        <table class="action actionFour">
+            <tr>
+                <th colspan="4">The watcher should check access from:</th>
+            </tr>
+            <tr>
+                <td><input type="checkbox" name="CheckInternet" id="CheckInternet" @{
+                    if (Model.CheckInternet)
+                    { 
+                        <text>checked="checked"</text>
+                    }
+                } /><label for="CheckInternet">Internet</label></td>
+                <td><input type="checkbox" name="CheckLAN" id="CheckLAN" @{
+                    if (Model.CheckLAN)
+                    { 
+                        <text>checked="checked"</text>
+                    }
+                } /><label for="CheckLAN">LAN</label></td>
+                <td><input type="checkbox" name="CheckLoopback" id="CheckLoopback" @{
+                    if (Model.CheckLoopback)
+                    { 
+                        <text>checked="checked"</text>
+                    }
+                } /><label for="CheckLoopback">Loopback</label></td>
+                <td><button type="submit">Apply</button></td>
+            </tr>
+        </table>
+    </form>
+                }
     
     <ul class="log">
         @{               
-            foreach(string s in Model.LogMessages)
-            {
-                if (s != "")
-                { 
-                    <li>@s</li>
+                foreach (string s in Model.LogMessages)
+                {
+                    if (s != "")
+                    { 
+            <li>@s</li>
+                    }
                 }
-            }
         }
     </ul>
     <a class="button" style="width: 750px; margin: 0 auto; box-shadow: 0 0 8px #808080;" href="@Url.Content("~/admin/log/clear")">Clear log</a>

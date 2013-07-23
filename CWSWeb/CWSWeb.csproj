@@ -67,6 +67,7 @@
     <Compile Include="Helper\HashProvider.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\Users.cs" />
+    <Compile Include="Models\Admin\Access.cs" />
     <Compile Include="Models\Error.cs" />
     <Compile Include="Models\User\Admin.cs" />
     <Compile Include="Models\Admin\ControlPanel.cs" />
@@ -90,6 +91,7 @@
     <EmbeddedResource Include="Views\API\singleJson.cshtml" />
     <EmbeddedResource Include="Views\Root\notavailable.cshtml" />
     <EmbeddedResource Include="Views\Error\error.cshtml" />
+    <EmbeddedResource Include="Views\Admin\access.cshtml" />
     <None Include="web.config">
       <SubType>Designer</SubType>
     </None>
@@ -101,6 +103,10 @@
     <ProjectReference Include="..\CWSProtocol\CWSProtocol.csproj">
       <Project>{0ef0ff1f-a55e-43ac-aaaa-02a07890fd81}</Project>
       <Name>CWSProtocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServerService\ServerService.csproj">
+      <Project>{1cab7bee-1ae8-4222-8cdb-498b3decf641}</Project>
+      <Name>ServerService</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nancy.Security;
 using Nancy.Authentication.Forms;
+using System.Net;
 
 namespace CWSWeb.Modules
 {
@@ -29,7 +30,7 @@ namespace CWSWeb.Modules
                 }
 
                 message = Session.FirstOrDefault(o => o.Key == "requiresDelay");
-                Models.Admin.ControlPanel m = new Models.Admin.ControlPanel(null, false, true, 0);
+                Models.Admin.ControlPanel m = new Models.Admin.ControlPanel(null, false, true, 0, false, false, false);
 
                 if (message.Key != null)
                 {
@@ -47,7 +48,10 @@ namespace CWSWeb.Modules
                         m = new Models.Admin.ControlPanel(logEntries,
                             watcherSettings.ContainsKey("ENABLED") ? Boolean.Parse(watcherSettings["ENABLED"].ToString()) : false,
                             watcherSettings.ContainsKey("BLOCKED") ? Boolean.Parse(watcherSettings["BLOCKED"].ToString()) : false,
-                            watcherSettings.ContainsKey("TIMEOUT") ? UInt32.Parse(watcherSettings["TIMEOUT"].ToString()) : 0);
+                            watcherSettings.ContainsKey("TIMEOUT") ? UInt32.Parse(watcherSettings["TIMEOUT"].ToString()) : 0,
+                            watcherSettings.ContainsKey("CHECKINTERNET") ? Boolean.Parse(watcherSettings["CHECKINTERNET"].ToString()) : false,
+                            watcherSettings.ContainsKey("CHECKLAN") ? Boolean.Parse(watcherSettings["CHECKLAN"].ToString()) : false,
+                            watcherSettings.ContainsKey("CHECKLOOPBACK") ? Boolean.Parse(watcherSettings["CHECKLOOPBACK"].ToString()) : false);
                 }
 
                 return View["index.cshtml", m];
@@ -120,10 +124,51 @@ namespace CWSWeb.Modules
                 string timeout = (string)Request.Form.Timeout;
                 UInt32 seconds;
 
+                string checkInternet = (string)Request.Form.CheckInternet;
+                string checkLan = (string)Request.Form.CheckLAN;
+                string checkLoopback = (string)Request.Form.CheckLoopback;
+
                 if (UInt32.TryParse(timeout, out seconds))
                     c.SetWatcherTimeout(seconds);
 
+                c.SetWatcherCheckAccess(
+                    checkInternet == "on" ? true : false,
+                    checkLan == "on" ? true : false,
+                    checkLoopback == "on" ? true : false
+                    );
+
+                Session["toggleMessage"] = "The configuration has been updated.";
+                Session["requiresDelay"] = true;
                 return Response.AsRedirect("/admin");
+            };
+
+            Get["/access"] = parameters =>
+            {
+                var message = Session.FirstOrDefault(o => o.Key == "kickMessage");
+
+                if (message.Key != null)
+                {
+                    Context.ViewBag["kickMessage"] = message.Value;
+                    Session.Delete("kickMessage");
+                }
+
+                List<string> connected = c.GetConnectedPlayers();
+                Models.Admin.Access m = new Models.Admin.Access(connected, new List<string>(), ServerService.AccessControl.AccessMode.Blacklist);
+                return View["access", m];
+            };
+
+            Get["/access/kick/{ip}"] = parameters =>
+            {
+                string raw = parameters["ip"].ToString();
+                IPAddress ip;
+
+                if (IPAddress.TryParse(raw, out ip))
+                {
+                    c.KickPlayer(ip.ToString());
+                    Session["kickMessage"] = String.Format("The player {0} should now be kicked", ip.ToString());
+                }
+
+                return Response.AsRedirect("/admin/access");
             };
         }
     }

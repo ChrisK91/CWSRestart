@@ -15,7 +15,13 @@ namespace CWSWeb.Modules
         {
             Get["/"] = parameters =>
             {
-                return View["index", CachedVariables.Stats];
+                if (CachedVariables.Stats.Enabled)
+                    return View["index", CachedVariables.Stats];
+                else
+                    return new Response()
+                    {
+                        StatusCode = HttpStatusCode.Forbidden
+                    };
             };
 
             Get["/login"] = parameters =>

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CWSWeb.Various
 {
-    public class ErrorHandler : IErrorHandler
+    public class ErrorHandler : IStatusCodeHandler
     {
         private IViewFactory factory;
 
