@@ -7,7 +7,12 @@
     <meta name="description" content="CWSRestart is a servermanager to allowing you to monitor and manage your server" />
     <meta name="keywords" content="CWSRestart, CubeWorld Server launcher, CubeWorldServer restart, cw restart">
 
+    <script src="javascripts/jquery-1.10.2.min.js"></script>
+    <script src="javascripts/lightbox-2.6.min.js"></script>
+
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+      
+    <link href="stylesheets/lightbox.css" rel="stylesheet" />
 
     <title>CWS Restart - A tool to automatically restart your CubeWorld server</title>
   </head>
@@ -20,7 +25,7 @@
           <a id="forkme_banner" href="https://github.com/ChrisK91/CWSRestart">View on GitHub</a>
 
           <h1 id="project_title">CWSRestart</h1>
-          <h2 id="project_tagline"><a href="index.html">Home</a> | <a href="features.html">Features</a> | <a href="#">Bugs, suggestions and contact</a> | <a href="manual.html">How to use</a> | <a href="cwsweb.html">CWSWeb</a> | <a href="mitm.html">MITM</a></h2>
+          <h2 id="project_tagline"><a href="index.html">Home</a> | <a href="features.html">Features</a> | <a href="contact.html">Bugs, suggestions and contact</a> | <a href="manual.html">How to use</a> | <a href="cwsweb.html">CWSWeb</a> | <a href="#">MITM</a></h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/ChrisK91/CWSRestart/releases">Downloads</a>
@@ -31,8 +36,13 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>If you come across a bug, you can submit it to the <a href="https://github.com/ChrisK91/CWSRestart/issues" target="_blank">project bugtracker</a>. If you don't want to make an account on GitHub, you can also find me on Twitter. My handle is handle is <a href="https://twitter.com/ChrisK91" target="_blank">@ChrisK91</a> (but I'm more of a silent user). If you are more of a Reddit user, you can find me either in <a href="http://www.reddit.com/r/CubeWorldServer/">/r/CubeWorldServer/</a> or contact me directly via <a href="http://www.reddit.com/user/ChrisK91/">/u/ChrisK91</a>.</p>
-          <p>My cubeworldforum.org thread can be found <a href="http://cubeworldforum.org/topic/9629-utilreleasesource-cwsrestart/" target="_blank">here</a>.</p>
+          <h2>The MITM server</h2>
+          <p>Currently, there is no clean way to get a list of connected players from the server. To work around this issue, I created a small man-in-the-middle server. This server sits between the client and the real CubeWorld server and looks for the client name. When it has retrieved the name, it just relays the traffic.</p>
+          <p>A very big amount of code in this project has been taken from <a href="https://github.com/amPerl/Coob/">Coob</a>, a .Net implementation of the cubeworld server.</p>
+          <h2>Usage</h2>
+          <p>To use the MITM server, you need to edit the server.exe to listen on port <code>12346</code>. You can do this by opening up the server.exe in the hexeditor of your choice, for instance in <a href="http://mh-nexus.de/en/hxd/" target="_blank">HxD</a>. Now you need to find the integer number <code>12345</code>. In hex, just look for <code>39 30 00 00</code>. Change this to the number <code>12345</code>, so you end up with <code>3A 30 00 00</code>. To verify that the change was succesful, run <code>netstat -a -b -n -p TCP</code> when you have started your modified server. Now you can fire up the MITM server. The MITM server will accept traffic from port <code>12345</code>, so you dont need to edit your client.</p>
+          <img src="/screenshots/mitm_small1.png" alt="MITM server" />
+          <img src="/screenshots/mitm_small2.png" alt="MITM server" />
       </section>
     </div>
 
