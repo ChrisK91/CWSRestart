@@ -76,17 +76,18 @@ namespace CWSProtocol
                     switch (a)
                     {
                         case Commands.Actions.POST:
+                            reader.Close();
                             return new Tuple<Commands.Command, string>(c, message);
                         default:
+                            reader.Close();
                             throw new NotImplementedException();
                     }
                 }
                 else
                 {
+                    reader.Close();
                     throw new NotImplementedException();
                 }
-
-                reader.Close();
             }
             return null;
         }
@@ -131,11 +132,13 @@ namespace CWSProtocol
 
                 if (answer == null)
                 {
+                    disconnectClient();
                     return false;
                 }
 
                 if (answer.Item1 == Commands.Command.ACK)
                 {
+                    disconnectClient();
                     return true;
                 }
             }
@@ -234,6 +237,7 @@ namespace CWSProtocol
                     }
                     else
                     {
+                        disconnectClient();
                         return null;
                     }
                 }

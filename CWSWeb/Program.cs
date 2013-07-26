@@ -15,6 +15,11 @@ namespace CWSWeb
 
         static void Main(string[] args)
         {
+            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.Clear();
+
             int port = 8181;
 
             if (args.Length == 1)
@@ -27,7 +32,7 @@ namespace CWSWeb
             config.UrlReservations.CreateAutomatically = true;
             config.UrlReservations.User = new System.Security.Principal.SecurityIdentifier("S-1-1-0").Translate(typeof(System.Security.Principal.NTAccount)).ToString();
 
-            NancyHost host = new NancyHost(new ApplicationBootstrapper(),config, new Uri(String.Format("http://localhost:{0}", port)));
+            NancyHost host = new NancyHost(new ApplicationBootstrapper(), config, new Uri(String.Format("http://localhost:{0}", port)));
             Console.WriteLine("Starting server on http://localhost:" + port.ToString());
 
             Helper.CacheUpdater updater = new Helper.CacheUpdater();
@@ -45,6 +50,10 @@ namespace CWSWeb
 
         private static void MessageLoop()
         {
+            centerText("---------------------");
+            centerText("CWSWeb");
+            centerText("---------------------");
+
             string message = "start";
             Helper.Settings.Instance.Client = new CWSProtocol.Client("WebServer");
 
@@ -55,18 +64,29 @@ namespace CWSWeb
                 switch (message.ToLower())
                 {
                     case "test":
+
+                        centerText("---------------------");
+                        centerText("Connection test");
+                        centerText("---------------------");
+
                         if (Helper.Settings.Instance.Client.Test())
                             Console.WriteLine("Connection succesful.");
                         else
                             Console.WriteLine("No connection possible.");
                         break;
                     case "list":
+                        centerText("---------------------");
+                        centerText("Admin list");
+                        centerText("---------------------");
                         List<string> names = Helper.Users.GetUserNames();
 
                         foreach (string s in names)
                             Console.WriteLine(s);
                         break;
                     case "add":
+                        centerText("---------------------");
+                        centerText("Add user");
+                        centerText("---------------------");
                         Console.WriteLine("Enter the username");
                         name = Console.ReadLine();
 
@@ -92,6 +112,9 @@ namespace CWSWeb
                         }
                         break;
                     case "remove":
+                        centerText("---------------------");
+                        centerText("Remove user");
+                        centerText("---------------------");
                         Console.WriteLine("Please enter the username you want to delete");
                         name = Console.ReadLine();
                         if (name != "" && Helper.Users.RemoveUser(name))
@@ -112,6 +135,8 @@ namespace CWSWeb
                 }
 
                 message = "";
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("Enter \"quit\" to quit");
                 Console.WriteLine("Enter \"test\" to test communicating with CWSRestart");
                 Console.WriteLine("Enter \"list\" to list all admins");
@@ -119,8 +144,16 @@ namespace CWSWeb
                 Console.WriteLine("Enter \"remove\" to remove an admin");
                 Console.WriteLine("Enter \"save\" to save users");
                 Console.WriteLine("Enter \"load\" to restore users");
+                Console.ForegroundColor = ConsoleColor.White;
                 message = Console.ReadLine().ToLower();
+                Console.Clear();
             }
+        }
+
+        private static void centerText(String text)
+        {
+            Console.Write(new string(' ', (Console.WindowWidth - text.Length) / 2));
+            Console.WriteLine(text);
         }
     }
 }
