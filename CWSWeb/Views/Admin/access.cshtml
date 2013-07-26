@@ -42,10 +42,10 @@
             }
         </ul>
         
-        <form action="@Url.Content("~/admin/access/")">
+        <form action="@Url.Content("~/admin/access/")" method="post">
             <div class="accessList">
                 <div class="header">Access list</div>
-                <textarea name="list" id="list">@{
+                <textarea name="List" id="list">@{
         foreach (string s in Model.ListEntries)
         { 
                     @s;
@@ -55,9 +55,19 @@
                 <table class="actionThree" style="box-sizing: border-box; width: 100%">
                     <tr>
                         <td style="box-sizing: border-box; text-align: right">Use list as</td>
-                        <td><select size="1" style="box-sizing: border-box; width: 100%" name="mode">
-                            <option>Blacklist</option>
-                            <option>Whitelist</option>
+                        <td><select size="1" style="box-sizing: border-box; width: 100%" name="Mode">
+                            <option @{
+        if (Model.AccessMode == ServerService.AccessControl.AccessMode.Blacklist)
+        { 
+            @:selected="selected"
+        }
+                            }>Blacklist</option>
+                            <option@{
+        if (Model.AccessMode == ServerService.AccessControl.AccessMode.Whitelist)
+        { 
+            @:selected="selected"
+        }
+                            }>Whitelist</option>
                             </select></td>
                         <td><button type="submit" style="width: 100%; box-sizing:border-box">Save settings</button></td>
                     </tr>

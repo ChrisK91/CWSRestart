@@ -77,10 +77,8 @@ namespace CWSProtocol
                     {
                         case Commands.Actions.POST:
                             return new Tuple<Commands.Command, string>(c, message);
-                            break;
                         default:
                             throw new NotImplementedException();
-                            break;
                     }
                 }
                 else
@@ -327,6 +325,46 @@ namespace CWSProtocol
                 client.Dispose();
             }
             client = null;
+        }
+
+        public ServerService.AccessControl.AccessMode GetAccessMode()
+        {
+            ServerService.AccessControl.AccessMode ret = ServerService.AccessControl.AccessMode.Blacklist;
+            if (sendCommand(Commands.Command.ACCESSMODE))
+            {
+                Tuple<Commands.Command, string> answer = readResponse();
+
+                if (answer.Item1 == Commands.Command.ACCESSMODE)
+                    ret = (ServerService.AccessControl.AccessMode)Enum.Parse(typeof(ServerService.AccessControl.AccessMode), answer.Item2);
+            }
+
+            disconnectClient();
+            return ret;
+        }
+
+        public void SetAccess(List<string> accessList, ServerService.AccessControl.AccessMode mode)
+        {
+            if (accessList != null)
+            {
+                if (accessList.Count == 0)
+                {
+                    sendCommand(Commands.Command.ACCESSLIST, "", Commands.Actions.POST);
+                }
+                else if (tryConnect())
+                {
+                    StreamWriter writer = new StreamWriter(client, System.Text.Encoding.UTF8, 2048, true);
+                    foreach (string s in accessList)
+                    {
+                        string message = String.Format("{0} {1} {2}", Commands.Actions.POST.ToString(), Commands.Command.ACCESSLIST.ToString(), s);
+                        writer.WriteLine(message);
+                    }
+                    writer.Close();
+                }
+
+                disconnectClient();
+                sendCommand(Commands.Command.ACCESSMODE, mode.ToString(), Commands.Actions.POST);
+                disconnectClient();
+            }
         }
     }
 }

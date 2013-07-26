@@ -71,8 +71,7 @@ namespace CWSRestart.Infrastructure
 
                                 StreamReader sr = new StreamReader(serverStream, System.Text.Encoding.UTF8, true, 2048, true);
                                 string message = sr.ReadLine();
-                                sr.Close();
-
+                                
                                 if (message != null)
                                 {
                                     string[] messages = message.Split(new string[] { " " }, 3, StringSplitOptions.None);
@@ -227,6 +226,10 @@ namespace CWSRestart.Infrastructure
                                                             }
 
                                                             break;
+
+                                                        case Commands.Command.ACCESSMODE:
+                                                            sendReply(Commands.Command.ACCESSMODE, AccessControl.Instance.Mode.ToString(), serverStream);
+                                                            break;
                                                     }
 
                                                     break;
@@ -295,10 +298,40 @@ namespace CWSRestart.Infrastructure
 
                                                         case Commands.Command.KICK:
                                                             IPAddress ip;
-                                                            if(IPAddress.TryParse(message, out ip))
+                                                            if (IPAddress.TryParse(message, out ip))
                                                             {
                                                                 ServerService.Helper.DisconnectWrapper.CloseRemoteIP(ip.ToString());
                                                             }
+                                                            break;
+
+                                                        case Commands.Command.ACCESSLIST:
+                                                            string line;
+                                                            List<AccessListEntry> entries = new List<AccessListEntry>();
+                                                            AccessListEntry tmp;
+
+                                                            if (AccessControl.GenerateEntryFromString(message, out tmp))
+                                                                entries.Add(tmp);
+
+                                                            while ((line = sr.ReadLine()) != null)
+                                                            {
+                                                                string[] parts = line.Split(new string[] { " " }, 3, StringSplitOptions.RemoveEmptyEntries);
+
+                                                                if (parts.Length == 3 && parts[0] == Commands.Actions.POST.ToString() && parts[1] == Commands.Command.ACCESSLIST.ToString() && parts[2] != String.Empty)
+                                                                {
+                                                                    if (AccessControl.GenerateEntryFromString(parts[2], out tmp))
+                                                                        entries.Add(tmp);
+                                                                }
+                                                            }
+
+                                                            AccessControl.Instance.AccessList = new System.Collections.ObjectModel.ObservableCollection<AccessListEntry>(entries);
+                                                            break;
+
+                                                        case Commands.Command.ACCESSMODE:
+                                                            ServerService.AccessControl.AccessMode mode;
+
+                                                            if (System.Enum.TryParse<AccessControl.AccessMode>(message, out mode))
+                                                                AccessControl.Instance.Mode = mode;
+
                                                             break;
 
                                                     }
@@ -307,6 +340,8 @@ namespace CWSRestart.Infrastructure
                                         }
                                     }
                                 }
+
+                                sr.Close();
                             }
                             serverStream.Disconnect();
                             wait.Set();

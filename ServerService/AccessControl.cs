@@ -167,7 +167,7 @@ namespace ServerService
                 while((line = sr.ReadLine()) != null)
                 {
                     AccessListEntry e;
-                    if (generateEntryFromString(line, out e))
+                    if (GenerateEntryFromString(line, out e))
                         if (!AccessList.Contains(e))
                             AccessList.Add(e);
                 }
@@ -176,7 +176,7 @@ namespace ServerService
             }
         }
 
-        private bool generateEntryFromString(string s, out AccessListEntry target)
+        public static bool GenerateEntryFromString(string s, out AccessListEntry target)
         {
             if (!AccessIP.TryParse(s, out target))
                 if (!AccessIPRange.TryParse(s, out target))

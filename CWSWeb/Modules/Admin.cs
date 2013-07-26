@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Nancy.Security;
 using Nancy.Authentication.Forms;
 using System.Net;
+using System.IO;
 
 namespace CWSWeb.Modules
 {
@@ -154,10 +155,40 @@ namespace CWSWeb.Modules
 
                 List<string> connected = c.GetConnectedPlayers();
                 List<string> accessList = c.GetAccessListEntries();
+                ServerService.AccessControl.AccessMode mode = c.GetAccessMode();
 
-                Models.Admin.Access m = new Models.Admin.Access(connected, accessList, ServerService.AccessControl.AccessMode.Blacklist);
+                Models.Admin.Access m = new Models.Admin.Access(connected, accessList, mode);
                 return View["access", m];
             };
+
+            Post["/access"] = parameters =>
+                {
+                    ServerService.AccessControl.AccessMode mode = ServerService.AccessControl.AccessMode.Blacklist;
+                    string modeRaw = (string)Request.Form.Mode;
+
+                    if (modeRaw != null)
+                        mode = (ServerService.AccessControl.AccessMode)Enum.Parse(typeof(ServerService.AccessControl.AccessMode), modeRaw);
+
+                    List<string> accessList = null;
+
+                    string rawAccess = (string)Request.Form.List;
+                    if (rawAccess != null)
+                    {
+                        accessList = new List<string>();
+
+                        using (StringReader sr = new StringReader(rawAccess))
+                        {
+                            string line;
+                            while ((line = sr.ReadLine()) != null)
+                                accessList.Add(line);
+                        }
+                    }
+
+                    if (rawAccess != null)
+                        c.SetAccess(accessList, mode);
+
+                    return Response.AsRedirect("/admin/access");
+                };
 
             Get["/access/kick/{ip}"] = parameters =>
             {
