@@ -33,7 +33,7 @@
                 
                 foreach (string s in Model.ConnectedPlayers)
                 { 
-                    <li>@s (<a href="@Url.Content("~/admin/access/kick/" + s)">Kick</a> | <a href="#">Add to list</a>)</li>
+                    <li>@s (<a href="@Url.Content("~/admin/access/kick/" + s)">Kick</a> | <a href="javascript:addList('@s')">Add to list</a>)</li>
                 }
             }
             else
@@ -41,5 +41,37 @@
                 <li>No one is connected at the moment.</li>
             }
         </ul>
+        
+        <form action="@Url.Content("~/admin/access/")">
+            <div class="accessList">
+                <div class="header">Access list</div>
+                <textarea name="list" id="list">@{
+        foreach (string s in Model.ListEntries)
+        { 
+                    @s;
+                    @System.Environment.NewLine;
+        }
+                }</textarea>
+                <table class="actionThree" style="box-sizing: border-box; width: 100%">
+                    <tr>
+                        <td style="box-sizing: border-box; text-align: right">Use list as</td>
+                        <td><select size="1" style="box-sizing: border-box; width: 100%" name="mode">
+                            <option>Blacklist</option>
+                            <option>Whitelist</option>
+                            </select></td>
+                        <td><button type="submit" style="width: 100%; box-sizing:border-box">Save settings</button></td>
+                    </tr>
+                </table>
+            </div>
+        </form>
     }
+}
+
+@section js
+{
+    <script type="text/javascript">
+        function addList(ip) {
+            $("#list").val($("#list").val() + "\n" + ip);
+        }
+    </script>
 }

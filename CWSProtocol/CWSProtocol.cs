@@ -32,7 +32,9 @@ namespace CWSProtocol
             WATCHER,
             LOG,
             CONNECTED,
-            KICK
+            KICK,
+            ACCESSMODE,
+            ACCESSLIST
         }
     }
 }

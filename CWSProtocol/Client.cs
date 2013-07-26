@@ -33,16 +33,24 @@ namespace CWSProtocol
 
         private bool sendCommand(Commands.Command command, String content, Commands.Actions action)
         {
-            if (tryConnect())
+            try
             {
-                StreamWriter writer = new StreamWriter(client, System.Text.Encoding.UTF8, 2048, true);
+                if (tryConnect())
+                {
+                    StreamWriter writer = new StreamWriter(client, System.Text.Encoding.UTF8, 2048, true);
 
-                string message = String.Format("{0} {1} {2}", action, command, content);
-                writer.WriteLine(message);
-                writer.Close();
-                return true;
+                    string message = String.Format("{0} {1} {2}", action, command, content);
+                    writer.WriteLine(message);
+                    writer.Close();
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (IOException)
+            {
+                disconnectClient();
+                return false;
+            }
         }
 
         private Tuple<Commands.Command, string> readResponse()
@@ -293,6 +301,23 @@ namespace CWSProtocol
         {
             sendCommand(Commands.Command.KICK, ip, Commands.Actions.POST);
             disconnectClient();
+        }
+
+        public List<string> GetAccessListEntries()
+        {
+            List<string> ret = new List<string>();
+
+            if (sendCommand(Commands.Command.ACCESSLIST))
+            {
+                string line;
+                StreamReader reader = new StreamReader(client, System.Text.Encoding.UTF8, true, 2048, true);
+
+                while ((line = reader.ReadLine()) != null && line != "")
+                    ret.Add(line);
+            }
+
+            disconnectClient();
+            return ret;
         }
 
         private void disconnectClient()

@@ -1,4 +1,6 @@
 ﻿using CWSProtocol;
+using ServerService;
+using ServerService.Helper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -192,6 +194,28 @@ namespace CWSRestart.Infrastructure
 
                                                                 foreach (IPAddress ip in connected)
                                                                     writer.WriteLine(ip.ToString());
+
+                                                                writer.Close();
+                                                            }
+                                                            else
+                                                            {
+                                                                StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
+                                                                writer.WriteLine("");
+                                                                writer.Close();
+                                                            }
+
+                                                            break;
+
+                                                        case Commands.Command.ACCESSLIST:
+
+                                                            List<AccessListEntry> entries = new List<AccessListEntry>(AccessControl.Instance.AccessList);
+
+                                                            if (Statistics.Enabled && entries.Count > 0)
+                                                            {
+                                                                StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
+
+                                                                foreach (AccessListEntry e in entries)
+                                                                    writer.WriteLine(e.ToString());
 
                                                                 writer.Close();
                                                             }

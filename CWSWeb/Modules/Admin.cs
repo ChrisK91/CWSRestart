@@ -153,7 +153,9 @@ namespace CWSWeb.Modules
                 }
 
                 List<string> connected = c.GetConnectedPlayers();
-                Models.Admin.Access m = new Models.Admin.Access(connected, new List<string>(), ServerService.AccessControl.AccessMode.Blacklist);
+                List<string> accessList = c.GetAccessListEntries();
+
+                Models.Admin.Access m = new Models.Admin.Access(connected, accessList, ServerService.AccessControl.AccessMode.Blacklist);
                 return View["access", m];
             };
 

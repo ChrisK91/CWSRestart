@@ -111,7 +111,7 @@ namespace ServerService
         {
             foreach (AccessListEntry e in accessList)
             {
-                if (e.Matches(info.LocalEndPoint.Address))
+                if (e.Matches(info.RemoteEndPoint.Address))
                 {
                     return true;
                 }
