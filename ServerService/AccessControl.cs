@@ -94,7 +94,30 @@ namespace ServerService
                                 break;
                         }
 
-                        Logging.OnLogMessage(String.Format("Disconnecting returned with {0}", ret), Logging.MessageType.Info);
+                        if (actionTaken)
+                        {
+                            switch(ret)
+                            {
+                                case 0:
+                                    Logging.OnLogMessage(String.Format("The user {0} has been kicked", info.RemoteEndPoint.Address.ToString()), Logging.MessageType.Info);
+                                    break;
+                                case 317:
+                                    Logging.OnLogMessage(String.Format("Could not kick user {0}: Access denied", info.RemoteEndPoint.Address.ToString()), Logging.MessageType.Warning);
+                                    break;
+                                case 0x5:
+                                    Logging.OnLogMessage(String.Format("Could not kick user {0}. You might lack the the required privileges.", info.RemoteEndPoint.Address.ToString()), Logging.MessageType.Warning);
+                                    break;
+                                case 0x57:
+                                    Logging.OnLogMessage("Internal error: wrong parameter", Logging.MessageType.Error);
+                                    break;
+                                case 0x32:
+                                    Logging.OnLogMessage("IPv4 Transport is not configured properly", Logging.MessageType.Error);
+                                    break;
+                                default:
+                                    Logging.OnLogMessage(String.Format("Disconnecting returned with {0}", ret), Logging.MessageType.Info);
+                                    break;
+                            }
+                        }
                     }
                 }
             }

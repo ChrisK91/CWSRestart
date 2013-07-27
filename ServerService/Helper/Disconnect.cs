@@ -98,6 +98,8 @@ namespace ServerService.Helper
                     rows[i].dwState = (int)ConnectionState.Delete_TCB;
                     IntPtr ptr = GetPtrToNewObject(rows[i]);
                     ret = SetTcpEntry(ptr);
+
+                    return ret;
                 }
             }
 
