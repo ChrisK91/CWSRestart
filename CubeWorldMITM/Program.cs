@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -22,6 +23,9 @@ namespace CubeWorldMITM
         private static Dictionary<string, List<string>> KnownNames = new Dictionary<string, List<string>>();
         private static Dictionary<string, MITMMessageHandler> ConnectedPlayers = new Dictionary<string, MITMMessageHandler>();
 
+        private static uint port = 12345;
+        private static uint serverPort = 12346;
+
         static void Main(string[] args)
         {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
@@ -33,20 +37,53 @@ namespace CubeWorldMITM
             centerText("|   Coob and CWSRestart are licensed under the GPL   |");
             centerText("------------------------------------------------------");
             Console.WriteLine();
+            Console.WriteLine("You can start this program with CubeWorldMITM [port1] [port2]");
+            Console.WriteLine("\t [port1] - the port on which the MITM server should listen");
+            Console.WriteLine("\t \t - default 12345");
+            Console.WriteLine();
+            Console.WriteLine("\t [port2] - the port on which the cubeworld server is listening");
+            Console.WriteLine("\t \t - default 12346");
+            Console.WriteLine();
+            Console.WriteLine();
 
-            mitm = new TcpListener(IPAddress.Any, 12345);
+            if (args.Count() >= 1)
+            {
+                if (UInt32.TryParse(args[0], out port) && port > 0)
+                {
+                    Console.WriteLine("MITM port: {0}", port);
+                }
+                else
+                {
+                    port = 12345;
+                }
+            }
+
+            if (args.Count() >= 2)
+            {
+                if (UInt32.TryParse(args[1], out serverPort) && serverPort > 0)
+                {
+                    Console.WriteLine("CubeWorld server port: {0}", serverPort);
+                }
+                else
+                {
+                    serverPort = 12346;
+                }
+            }
+            
+
+            mitm = new TcpListener(IPAddress.Any, (int)port);
+
 
             Thread listenerThread = new Thread(new ThreadStart(ConnectionLoop));
             listenerThread.Start();
 
-            Console.WriteLine("Press any key to exit...");
             messageLoop();
 
             shouldExit = true;
 
             Dictionary<string, MITMMessageHandler> tmp = new Dictionary<string, MITMMessageHandler>(ConnectedPlayers);
-            foreach(KeyValuePair<string, MITMMessageHandler> h in tmp)
-                if(h.Value.Connected)
+            foreach (KeyValuePair<string, MITMMessageHandler> h in tmp)
+                if (h.Value.Connected)
                     h.Value.Disconnect();
 
             listenerThread.Abort();
@@ -65,7 +102,7 @@ namespace CubeWorldMITM
                 string action = Console.ReadLine();
                 Console.Clear();
 
-                switch(action.ToLower())
+                switch (action.ToLower())
                 {
                     case "c":
                         centerText("--------------------------");
@@ -95,7 +132,7 @@ namespace CubeWorldMITM
                         {
                             Console.WriteLine("{0} has visited us with the following names:", h.Key);
 
-                            foreach(string s in h.Value)
+                            foreach (string s in h.Value)
                                 Console.Write("{0} ", s);
 
                             Console.WriteLine();
@@ -136,13 +173,24 @@ namespace CubeWorldMITM
 
         private static void ConnectionLoop()
         {
-            while (!shouldExit)
+            try
             {
-                wait = new EventWaitHandle(false, EventResetMode.ManualReset);
-                mitm.Start();
-                mitm.BeginAcceptTcpClient(OnConnect, null);
+                while (!shouldExit)
+                {
+                    wait = new EventWaitHandle(false, EventResetMode.ManualReset);
+                    mitm.Start();
+                    mitm.BeginAcceptTcpClient(OnConnect, null);
 
-                wait.WaitOne();
+                    wait.WaitOne();
+                }
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Could not create MITM server on port 12345.");
+                Console.WriteLine("You can run \"netstat -a -b -n -o\" to check if something is already running on port 12345");
+                shouldExit = true;
+                Console.ReadLine();
+                Environment.Exit(-1);
             }
         }
 
@@ -151,7 +199,7 @@ namespace CubeWorldMITM
             TcpClient client = mitm.EndAcceptTcpClient(ar);
             wait.Set();
 
-            TcpClient toServer = new TcpClient(IPAddress.Loopback.ToString(), 12346);
+            TcpClient toServer = new TcpClient(IPAddress.Loopback.ToString(), (int)serverPort);
 
             NetworkStream clientStream = client.GetStream();
             NetworkStream serverStream = toServer.GetStream();
@@ -172,7 +220,7 @@ namespace CubeWorldMITM
             {
                 if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
                     KnownNames[h.IP].Add(h.Name);
-                else if(!KnownNames.ContainsKey(h.IP))
+                else if (!KnownNames.ContainsKey(h.IP))
                 {
                     List<string> tmp = new List<string>();
                     tmp.Add(h.Name);
