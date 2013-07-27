@@ -26,6 +26,9 @@ namespace CubeWorldMITM
         private static uint port = 12345;
         private static uint serverPort = 12346;
 
+        private static IPAddress mitmIP = IPAddress.Any;
+        private static IPAddress cubeWorldIP = IPAddress.Loopback;
+
         static void Main(string[] args)
         {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
@@ -37,12 +40,18 @@ namespace CubeWorldMITM
             centerText("|   Coob and CWSRestart are licensed under the GPL   |");
             centerText("------------------------------------------------------");
             Console.WriteLine();
-            Console.WriteLine("You can start this program with CubeWorldMITM [port1] [port2]");
+            Console.WriteLine("You can start this program with CubeWorldMITM [port1] [port2] [internal ip] [server ip]");
             Console.WriteLine("\t [port1] - the port on which the MITM server should listen");
             Console.WriteLine("\t \t - default 12345");
             Console.WriteLine();
             Console.WriteLine("\t [port2] - the port on which the cubeworld server is listening");
             Console.WriteLine("\t \t - default 12346");
+            Console.WriteLine();
+            Console.WriteLine("\t [internal ip] - the ip on wich the MITM should listen");
+            Console.WriteLine("\t \t - defaults to any IP");
+            Console.WriteLine();
+            Console.WriteLine("\t [server ip] - the ip on wich the CubeWorld Server is listening");
+            Console.WriteLine("\t \t - defaults to loopback");
             Console.WriteLine();
             Console.WriteLine();
 
@@ -69,9 +78,20 @@ namespace CubeWorldMITM
                     serverPort = 12346;
                 }
             }
-            
 
-            mitm = new TcpListener(IPAddress.Any, (int)port);
+            if (args.Count() >= 3)
+            {
+                if (IPAddress.TryParse(args[2], out mitmIP))
+                    Console.WriteLine("MITM IP: {0}", mitmIP.ToString());
+            }
+
+            if (args.Count() >= 4)
+            {
+                if (IPAddress.TryParse(args[3], out cubeWorldIP))
+                    Console.WriteLine("CubeWorld Server IP: {0}", cubeWorldIP.ToString());
+            }
+
+            mitm = new TcpListener(mitmIP, (int)port);
 
 
             Thread listenerThread = new Thread(new ThreadStart(ConnectionLoop));
@@ -199,7 +219,8 @@ namespace CubeWorldMITM
             TcpClient client = mitm.EndAcceptTcpClient(ar);
             wait.Set();
 
-            TcpClient toServer = new TcpClient(IPAddress.Loopback.ToString(), (int)serverPort);
+            TcpClient toServer = new TcpClient();
+            toServer.Connect(cubeWorldIP, (int)serverPort);
 
             NetworkStream clientStream = client.GetStream();
             NetworkStream serverStream = toServer.GetStream();
@@ -228,6 +249,11 @@ namespace CubeWorldMITM
                 }
             });
 
+            if (ConnectedPlayers.ContainsKey(handler.IP))
+            {
+                ConnectedPlayers[handler.IP].Disconnect();
+                ConnectedPlayers.Remove(handler.IP);
+            }
             ConnectedPlayers.Add(handler.IP, handler);
 
             establishedConnections.Add(handler);
