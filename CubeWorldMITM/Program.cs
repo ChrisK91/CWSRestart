@@ -24,12 +24,15 @@ namespace CubeWorldMITM
 
         static void Main(string[] args)
         {
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            centerText("This program is heavily inspired and based on Coob");
-            centerText("Coob and CWSRestart are licensed under the GPL");
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
+            Console.Clear();
+
+            centerText("------------------------------------------------------");
+            centerText("| This program is heavily inspired and based on Coob |");
+            centerText("|   Coob and CWSRestart are licensed under the GPL   |");
+            centerText("------------------------------------------------------");
+            Console.WriteLine();
 
             mitm = new TcpListener(IPAddress.Any, 12345);
 
@@ -41,8 +44,10 @@ namespace CubeWorldMITM
 
             shouldExit = true;
 
-            foreach(KeyValuePair<string, MITMMessageHandler> h in ConnectedPlayers)
-                h.Value.Disconnect();
+            Dictionary<string, MITMMessageHandler> tmp = new Dictionary<string, MITMMessageHandler>(ConnectedPlayers);
+            foreach(KeyValuePair<string, MITMMessageHandler> h in tmp)
+                if(h.Value.Connected)
+                    h.Value.Disconnect();
 
             listenerThread.Abort();
         }
@@ -151,9 +156,11 @@ namespace CubeWorldMITM
             NetworkStream clientStream = client.GetStream();
             NetworkStream serverStream = toServer.GetStream();
 
-            Console.Write("{0} connected to {1}", client.Client.RemoteEndPoint.ToString(), client.Client.LocalEndPoint.ToString());
+            IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
 
-            MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, client.Client.RemoteEndPoint.ToString());
+            Console.WriteLine("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString());
+
+            MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
 
             handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
             {
