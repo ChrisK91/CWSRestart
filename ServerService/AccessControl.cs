@@ -94,14 +94,7 @@ namespace ServerService
                                 break;
                         }
 
-                        if (actionTaken && (Helper.UacHelper.IsProcessElevated == Helper.UacHelper.IsUacEnabled))
-                        {
-                            Logging.OnLogMessage(String.Format("{0} should now be kicked.", info.RemoteEndPoint.ToString()), Logging.MessageType.Info);
-                        }
-                        else if (actionTaken)
-                        {
-                            Logging.OnLogMessage(String.Format("{0} could not be kicked.", info.RemoteEndPoint.ToString()), Logging.MessageType.Warning);
-                        }
+                        Logging.OnLogMessage(String.Format("Disconnecting returned with {0}", ret), Logging.MessageType.Info);
                     }
                 }
             }
