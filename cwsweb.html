@@ -36,7 +36,33 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-       <p><a href="screenshots/cwsweb_preview.png" data-lightbox="screenshots-1" title="A development screenshot of the CWSWeb interface." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_preview_thumb.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 160px; max-width: 200px; float: right"></a>CWSWeb is the first external module for CWSRestart. It implements a basic web server, to display satistics to your users. CWSWeb is not included by default. Not everyone needs a server, so I didn't want to force people to have something they don't need. You'll need to download CWSWeb seperately instead. CWSWeb uses process to process communication to speak with CWSRestart.<br /><br />CWSWeb also includes an API, that allows you to receive data as JSON objects. The first version of CWSWeb will be available with the next release of CWSRestart.</p>
+       <p><a href="screenshots/cwsweb_preview.png" data-lightbox="screenshots-1" title="A development screenshot of the CWSWeb interface." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_preview_thumb.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 160px; max-width: 200px; float: right"></a>CWSWeb is the first external module for CWSRestart. It implements a basic web server, to display satistics to your users. CWSWeb is not included by default. Not everyone needs a server, so I didn't want to force people to have something they don't need. You'll need to download CWSWeb seperately instead. CWSWeb uses process to process communication to speak with CWSRestart.<br /><br />CWSWeb also includes an API, that allows you to receive data as JSON objects.</p>
+          <h2>General usage</h2>
+          <p>On the first start of CWSWeb, you might see a UAC prompt, asking you to allow netsh. This is necessary to add a Access List Entry that allows CWSWeb to listen for incoming traffic.</p>
+          <h3>CWSRestart configuration</h3>
+          <p>If you want to use CWSWeb, you first need to enable CWSProtocol in CWSRestart. You can do this with the <i>Start CWSProtocol</i>-button in CWSRestart. If CWSProtocol is disabled, you'll see the message <code>Connection to CWSRestart has timed out</code></p>
+          <p>CWSWeb can display statistics to your users, like the current amount of players and a recent activity chart. Administrators can also see a RAM usage chart, if stats are enabled. To display the numbers only, you simply need to enable statistics in CWSRestart in the bottom right corner. If you want the charts as well, you need to specify a location where CWSRestart can save logfiles. You can use the <i>Save statistics to...</i>-button to do this. Enabling statistics will also allow administrators to edit the access list online.</p>
+          <h3>Server console</h3>
+          <img src="/CWSRestart/screenshots/cwsweb_0.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 176px; max-width: 640px;">
+          <p>CWSWeb consists of a console and a web frontend. You can use the console to manage users and test communcation with CWSRestart. The following options are available:</p>
+          <ul>
+              <li><code>quit</code> to shut down the server</li>
+              <li><code>test</code> to test communication with CWSRestart</li>
+              <li><code>list</code> to retreive a list of all current admins</li>
+              <li><code>add</code> to add an admin. Admins are saved on the disc in the file users.db</li>
+              <li><code>remove</code> to remove an admin</li>
+              <li><code>save</code> to save users</li>
+              <li><code>load</code> to restore users</li>
+          </ul>
+          <p>Users are saved when you quit the server and restored when you start the server.</p>
+          <h3>Web frontend</h3>
+          <p><a href="screenshots/cwsweb_1.png" data-lightbox="screenshots-1" title="The CWSWeb frontend." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_1_small.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 400px; max-width: 376px;"></a><br />If statistics are enabled, users will be able to see the page above. Graphs are available, if you save your logfiles. The statistics are updated every five seconds. Red lines indicate server restarts.</p>
+          <h3>Administration</h3>
+          <p>To access the administration, point your browser at <code>http://<i>your-ip:8181</i>/admin</code>. If you are running CWSWeb on port 80, <code>http://<i>your-ip</i>/admin</code> should suffice.</p>
+          <p><a href="screenshots/cwsweb_2.png" data-lightbox="screenshots-1" title="The administration controlpanel." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_2_small.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 400px; max-width: 376px;"></a><br />The control panel allows you to control the server.exe. You can start and stop it. You can also quit the server, which will try to send the <i>q</i>-Key. If the server is not responding, you can chose to kill it. These operations will also affect the additional processes.<br/>You can also start and stop the watcher from here and change the interval. In addition, you are able to see the output from CWSRestart as well.</p>
+          <p><a href="screenshots/cwsweb_3.png" data-lightbox="screenshots-1" title="The access list management." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_3_small.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 400px; max-width: 376px;"></a><br />The access list allows you to manage the IP filter. You can specify the list mode and add players. You can also kick connected players. In order to use access control, CWSRestart has to run with elevated privileges, i.e. as admin.</p>
+          <p><a href="screenshots/cwsweb_4.png" data-lightbox="screenshots-1" title="The RAM statistics." data-lightbox="screenshot"><img src="/CWSRestart/screenshots/cwsweb_4_small.png" alt="Screenshot of CWSRestart" style="width: 100%; height: 100%; max-height: 400px; max-width: 376px;"></a><br />As administrator, you are able to see the RAM usage in relation to the amount of players. Statistics are updated every 5 to 10 seconds.</p>
+          <p></p>
           <h2>Configuration</h2>
           <p>At the moment, there isnt much to configure. You can change the port on which the web service is listening, by launching CWSWeb with <code>CWSWeb <i>port</i></code> (for instance, if you'd like to have CWSWeb listen on port 80, you can launch it with <code>CWSWeb 80</code>). The displayed graph is generated, by parsing the logfile. To enable the graph, you'll need to specify a save location for the logfile in CWSRestart (use the button <i>Save statistics to...</i> to do this). By default, the last 200 lines will be read. This equals around half an hour. If you want to increase the timespan, you have several possibilities:</p>
           <ul>
@@ -49,6 +75,11 @@
           <ul>
               <li><code>/API/stats</code> will return all available info, such as runtime and if the server is running</li>
               <li><code>/API/stats/playeractivity</code> will return the user activity over the past time</li>
+              <li><code>/API/stats/serverrestarts</code> will return timestamps, indicating when the server has been restarted</li>
+          </ul>
+          <p>The following urls are restricted to logged in users:</p>
+          <ul>
+              <li><code>/API/stats/memoryusage</code> will return the memory usage of the server</li>
           </ul>
           <p>You'll get the objects serialized as JSON. Timestamps are formated a bit odd. You can parse them to JavaScript dates with <code>new Date(parseInt(<i>timestamp</i>.substr(6)))</code></p>
       </section>

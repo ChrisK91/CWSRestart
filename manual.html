@@ -49,17 +49,17 @@
           <p>With <i>Validate configuration</i> you can check, if all settings are set.</p>
           <p>The checkboxes below the log can be used to filter messages.</p>
           <p>If you want to use <a href="cwsweb.html">CWSWeb</a>, you need to enable procces to process communication. You can start/stop comunication with the button <i>Start CWSProtocol</i></p>
-          </p>
                 
           <h2 id="stats">Statistics &amp; Access control</h2>
           <p>CWSRestart can also keep track on a few numbers. The statistics module is disabled by default. You can start it with the <i>Enable statistics</i> button in the bottom right corner.</p>
           <p>The statistics module can store collected data in a CSV file. Hit the <i>Save statistics to...</i> button, to select where CWSRestart should store the data.</p>
-          <p>Enabling the statistics module will grant you access to the <a href="/CWSRestart/screenshots/guide4.png" data-lightbox="IPfilter">IP Filter</a>. You can add/remove IPs by double clicking, or by using the textbox on the bottom right. Beneath the textbox, you can select the filter mode:</p>
+          <p>Enabling the statistics module will grant you access to the <a href="/CWSRestart/screenshots/guide4.png" data-lightbox="IPfilter">IP Filter</a>. You can add/remove IPs by double clicking on an entry in one of the two boxes to the left, or by using the textbox on the bottom right. If you want to add an IP manually, you can either add a range in the form of <code>XXX.XXX.XXX.XXX - XXX.XXX.XXX.XXX</code> or a single IP. You can save/restore the list with the buttons on the lower left. You can also edit the <i>iplist.txt</i> in the CWSRestart folder manually and use the <i>Restore</i> button, to load changes.<br /><br />Beneath the textbox, you can select the filter mode:</p>
           <ul>
               <li>Whitelist: Every player, that is not Whitelist will be kicked</li>
               <li>Blacklist: Every player, that is on the Blacklist will be kicked</li>
           </ul>
           <p>To use Access control, you need to run CWSRestart as administrator.</p>
+          <p>Disconnecting will display a return code in the log. <code>317</code> indicates, that CWSRestart has not enough privileges to terminate the connection. If everyting works fine, you should see a 0.</p>
           <p>When you are running CWSRestart as administrator, the server.exe will be started as administrator as well. If you want to run the server.exe as a restricted user, you have to start the server.exe through a .bat. Create a new file in the CubeWorld directory and rename it to <code>startRestricted.bat</code>. Now edit this file and insert the line <code>explorer server.exe</code>. Select the <code>startRestricted.bat</code> with the <i>Select...</i> button. The downside of this method is, that you'll lose the ability to see the server output in the log.</p>
           <h2 id="advanced">Advanced settings</h2>
           <p>There are some settings, that are only editable via the ServerService.dll.config in the CWSRestart folder.</p>
