@@ -43,6 +43,16 @@
           <p>To use the MITM server, you need to edit the server.exe to listen on port <code>12346</code>. You can do this by opening up the server.exe in the hexeditor of your choice, for instance in <a href="http://mh-nexus.de/en/hxd/" target="_blank">HxD</a>. Now you need to find the integer number <code>12345</code>. In hex, just look for <code>39 30 00 00</code>. Change this to the number <code>12345</code>, so you end up with <code>3A 30 00 00</code>. To verify that the change was succesful, run <code>netstat -a -b -n -p TCP</code> when you have started your modified server. Now you can fire up the MITM server. The MITM server will accept traffic from port <code>12345</code>, so you dont need to edit your client.</p>
           <img src="/CWSRestart/screenshots/mitm_small1.png" alt="MITM server" />
           <img src="/CWSRestart/screenshots/mitm_small2.png" alt="MITM server" />
+          <h2>Configuration</h2>
+          <p><img src="/CWSRestart/screenshots/mitm.png" alt="MITM server" style="float: right; width: 205px; height: 455px" />By default, the MITM server starts listening on any IP on port 12345 and redirects traffic to loopback on port 12346. You can change these settings by launching the MITM server this way</p>
+          <p><code>CubeWorldMITM [port1] [port2] [internal ip] [server ip]</code></p>
+          <p>Every option is optional. They have the following effetcts:</p>
+          <ul>
+              <li><code>port 1</code> specifies the port on which the MITM listens</li>
+              <li><code>port 2</code> sets the port on wich the server is listening</li>
+              <li><code>internal ip</code> specifies local IP, on which the MITM should listen</li>
+              <li><code>server ip</code> specifies the address on wich the CubeWorld server is running</li>
+          </ul><div style="clear: both"></div>
       </section>
     </div>
 
