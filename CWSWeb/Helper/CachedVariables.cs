@@ -32,8 +32,8 @@ namespace CWSWeb.Helper
                     if (rawData.ContainsKey("RUNTIME"))
                         Stats.FormatedRuntime = rawData["RUNTIME"].ToString();
 
-                    if (rawData.ContainsKey("LOGFILE"))
-                        Stats.UpdateFromCSV(rawData["LOGFILE"].ToString());
+                    if (rawData.ContainsKey("STATISTICSFILE"))
+                        Stats.RefreshStatisticsFromDB(rawData["STATISTICSFILE"].ToString());
 
                     if (rawData.ContainsKey("ENABLED"))
                         Stats.Enabled = Boolean.Parse(rawData["ENABLED"].ToString());
@@ -46,7 +46,7 @@ namespace CWSWeb.Helper
         }
 
         private static DateTime statsLastUpdated;
-        private static int[] memoryUsage;
+        private static long[] memoryUsage;
 
         public static Statistics Stats { get; private set; }
         public static string RestartsJSON { get; private set; }
@@ -96,11 +96,46 @@ namespace CWSWeb.Helper
                 public int Current;
             }
 
-            public void UpdateFromCSV(string path)
+            public async void RefreshStatisticsFromDB(string path)
             {
                 if (File.Exists(path))
                 {
-                    string data = ReadEndTokens(path, Settings.Instance.LinesToRead, Encoding.UTF8, Environment.NewLine);
+                    ServerService.Database.Statistics stats = new ServerService.Database.Statistics(path);
+                    List<ServerService.Database.Statistics.StatisticsEntry> entries = await stats.GetStatisticEntriesAsync();
+
+                    bool dropRestart = entries.Count > Settings.Instance.LinesToRead;
+
+                    Keys = new DateTime[entries.Count];
+                    ActivePlayers = new int[entries.Count];
+                    memoryUsage = new long[entries.Count];
+
+                    List<DateTime> tmpRestarts = new List<DateTime>();
+
+                    int prevRestarts = 0;
+
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        Keys[i] = entries[i].TimeStamp;
+                        ActivePlayers[i] = entries[i].CurrentPlayers;
+                        memoryUsage[i] = entries[i].CurrentMemory;
+
+                        if (entries[i].Restarts > prevRestarts)
+                        {
+                            if (dropRestart)
+                            {
+                                dropRestart = false;
+                            }
+                            else
+                            {
+                                tmpRestarts.Add(entries[i].TimeStamp);
+                            }
+                            prevRestarts = entries[i].Restarts;
+                        }
+                    }
+
+                    Restarts = tmpRestarts.ToArray();
+
+                    /*string data = ReadEndTokens(path, Settings.Instance.LinesToRead, Encoding.UTF8, Environment.NewLine);
 
                     string[] lines = data.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
@@ -162,9 +197,11 @@ namespace CWSWeb.Helper
                     }
 
                     Restarts = tmpRestarts.ToArray();
+                     */
                 }
             }
 
+            /*
             public static string ReadEndTokens(string path, Int64 numberOfTokens, Encoding encoding, string tokenSeparator)
             {
 
@@ -209,6 +246,7 @@ namespace CWSWeb.Helper
                     return "";
                 }
             }
+             */
         }
     }
 }

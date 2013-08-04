@@ -52,7 +52,7 @@ namespace CWSRestart
 
             Stats = new Statistics(1000, false);
             Infrastructure.Server.Instance.Statistics = Stats;
-            
+
             Infrastructure.Server.Instance.GetLog = () =>
             {
                 return LogControl.Messages.ToList();
@@ -77,10 +77,27 @@ namespace CWSRestart
             {
                 Helper.Logging.OnLogMessage("The application is running as administrator. Keep in mind, that everything that is launched from here, will run as administrator as well.", Logging.MessageType.Info);
             }
-
 #if DEBUG
             ToggleInterProcessCommunication_Click(null, null);
 #endif
+
+            if (Helper.Settings.Instance.AutostartCWSProtocol)
+            {
+                ToggleInterProcessCommunication_Click(null, null);
+            }
+
+            if (Helper.Settings.Instance.AutostartStatistics)
+            {
+                ToggleStatisticsButton_Click(null, null);
+            }
+
+            if (Helper.Settings.Instance.AutostartWatcher)
+            {
+                if (ServerService.Settings.Instance.Validates)
+                    ToggleWatcher_Click(null, null);
+                else
+                    Helper.Logging.OnLogMessage("Not all settings are set. Watcher not started.", Logging.MessageType.Warning);
+            }
         }
 
         void Logging_LogMessage(object sender, Logging.LogMessageEventArgs e)

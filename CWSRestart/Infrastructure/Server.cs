@@ -108,8 +108,8 @@ namespace CWSRestart.Infrastructure
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("RUNTIME {0:00}:{1:00}:{2:00}", Statistics.Runtime.TotalHours, Statistics.Runtime.Minutes, Statistics.Runtime.Seconds), serverStream);
                                                                 sendReply(Commands.Command.STATISTICS, String.Format("ENABLED {0}", Statistics.Enabled), serverStream);
 
-                                                                string logFolder = Path.Combine(Statistics.LogFolder, String.Format("{0}.{1}", Statistics.StartTime.ToString("yyyy-MM-dd_HH-mm-ss"), "csv"));
-                                                                sendReply(Commands.Command.STATISTICS, String.Format("LOGFILE {0}", logFolder), serverStream);
+                                                                if(Statistics.StatisticsDB != null)
+                                                                    sendReply(Commands.Command.STATISTICS, String.Format("STATISTICSFILE {0}", Statistics.StatisticsDB.Filename), serverStream);
                                                             }
 
                                                             sendReply(Commands.Command.ENDSTATISTICS, "", serverStream);

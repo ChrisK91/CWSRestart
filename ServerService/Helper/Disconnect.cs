@@ -123,7 +123,16 @@ namespace ServerService.Helper
                 GetTcpTable(buffer, ref iBytes, false);
                 int structCount = Marshal.ReadInt32(buffer);
                 IntPtr buffSubPointer = buffer;
-                buffSubPointer = (IntPtr)((int)buffer + 4);
+
+                if (IntPtr.Size == 8)
+                {
+                    buffSubPointer = (IntPtr)((long)buffer + 4);
+                }
+                else
+                {
+                    buffSubPointer = (IntPtr)((int)buffer + 4);
+                }
+
                 ConnectionInfo[] tcpRows = new ConnectionInfo[structCount];
                 
                 ConnectionInfo tmp = new ConnectionInfo();
@@ -132,19 +141,29 @@ namespace ServerService.Helper
                 for (int i = 0; i < structCount; i++)
                 {
                     tcpRows[i] = (ConnectionInfo)Marshal.PtrToStructure(buffSubPointer, typeof(ConnectionInfo));
-                    buffSubPointer = (IntPtr)((int)buffSubPointer + sizeOfTCPROW);
+
+                    if (IntPtr.Size == 8)
+                    {
+                        buffSubPointer = (IntPtr)((long)buffSubPointer + sizeOfTCPROW);
+                    }
+                    else
+                    {
+                        buffSubPointer = (IntPtr)((int)buffSubPointer + sizeOfTCPROW);
+                    }
                 }
 
                 return tcpRows;
             }
             catch (Exception ex)
             {
-                throw new Exception("getTcpTable failed! [" + ex.GetType().ToString() + "," + ex.Message + "]");
+                Logging.OnLogMessage("Could not get connected players! [" + ex.GetType().ToString() + "," + ex.Message + "]", Logging.MessageType.Error);
             }
             finally
             {
                 if (allocated) Marshal.FreeCoTaskMem(buffer);
             }
+
+            return new ConnectionInfo[0];
         }
 
         /// <summary>

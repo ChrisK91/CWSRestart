@@ -16,6 +16,7 @@ namespace CubeWorldMITM
     {
         private static TcpListener mitm;
         private static volatile bool shouldExit = false;
+        private static bool autosaveEnabled = false;
         private static EventWaitHandle wait;
 
         private static List<MITMMessageHandler> establishedConnections = new List<MITMMessageHandler>();
@@ -28,6 +29,8 @@ namespace CubeWorldMITM
 
         private static IPAddress mitmIP = IPAddress.Any;
         private static IPAddress cubeWorldIP = IPAddress.Loopback;
+
+        private static System.Timers.Timer autosave = new System.Timers.Timer();
 
         static void Main(string[] args)
         {
@@ -55,6 +58,28 @@ namespace CubeWorldMITM
             Console.WriteLine();
             Console.WriteLine();
 
+            parseSettings(args);
+
+            mitm = new TcpListener(mitmIP, (int)port);
+
+
+            Thread listenerThread = new Thread(new ThreadStart(ConnectionLoop));
+            listenerThread.Start();
+
+            messageLoop();
+
+            shouldExit = true;
+
+            Dictionary<string, MITMMessageHandler> tmp = new Dictionary<string, MITMMessageHandler>(ConnectedPlayers);
+            foreach (KeyValuePair<string, MITMMessageHandler> h in tmp)
+                if (h.Value.Connected)
+                    h.Value.Disconnect();
+
+            listenerThread.Abort();
+        }
+
+        private static void parseSettings(string[] args)
+        {
             if (args.Count() >= 1)
             {
                 if (UInt32.TryParse(args[0], out port) && port > 0)
@@ -90,23 +115,6 @@ namespace CubeWorldMITM
                 if (IPAddress.TryParse(args[3], out cubeWorldIP))
                     Console.WriteLine("CubeWorld Server IP: {0}", cubeWorldIP.ToString());
             }
-
-            mitm = new TcpListener(mitmIP, (int)port);
-
-
-            Thread listenerThread = new Thread(new ThreadStart(ConnectionLoop));
-            listenerThread.Start();
-
-            messageLoop();
-
-            shouldExit = true;
-
-            Dictionary<string, MITMMessageHandler> tmp = new Dictionary<string, MITMMessageHandler>(ConnectedPlayers);
-            foreach (KeyValuePair<string, MITMMessageHandler> h in tmp)
-                if (h.Value.Connected)
-                    h.Value.Disconnect();
-
-            listenerThread.Abort();
         }
 
         private static void messageLoop()
@@ -117,6 +125,8 @@ namespace CubeWorldMITM
                 Console.WriteLine("c - to receive a list of every currently connected player");
                 Console.WriteLine("n - to receive a list of every name that we know and the corresponding IP");
                 Console.WriteLine("a - about");
+                Console.WriteLine("s - to save a list of every known player");
+                Console.WriteLine("t - to enable/disable autosaving of playernames");
                 Console.WriteLine("quit - to quit");
 
                 string action = Console.ReadLine();
@@ -182,6 +192,45 @@ namespace CubeWorldMITM
 
                         break;
 
+                    case "s":
+                        centerText("--------------------------");
+                        centerText("Saving players");
+                        centerText("--------------------------");
+
+                        savePlayers();
+
+                        break;
+
+                    case "t":
+                        if (autosaveEnabled)
+                        {
+                            autosaveEnabled = false;
+                            autosave.Enabled = false;
+                            Console.WriteLine("Autosaving is now disabled.");
+                        }
+                        else
+                        {
+                            autosave.Elapsed += autosave_Elapsed;
+
+                            double timeout;
+                            Console.WriteLine("Enter the desired interval in seconds:");
+                            if (Double.TryParse(Console.ReadLine(), out timeout) && timeout > 0)
+                            {
+                                timeout = timeout * 1000;
+                                autosave.Interval = timeout;
+                                autosave.AutoReset = true;
+                                autosave.Enabled = true;
+                                autosaveEnabled = true;
+
+                                Console.WriteLine("Autosaving is now enabled.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("The timeout is not valid.");
+                            }
+                        }
+                        break;
+
                     case "quit":
                         shouldExit = true;
                         break;
@@ -189,6 +238,58 @@ namespace CubeWorldMITM
 
                 Console.WriteLine();
             }
+        }
+
+        private static void savePlayers()
+        {
+            string filename = String.Format("{0}.{1}", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), "txt");
+            string folder = Path.Combine(Environment.CurrentDirectory.ToString(), "output");
+            string output = Path.Combine(folder, filename);
+
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            if (!File.Exists(output))
+            {
+                try
+                {
+                    using (StreamWriter sw = new StreamWriter(File.Open(output, FileMode.Create, FileAccess.Write, FileShare.None)))
+                    {
+                        sw.WriteLine("Known players:");
+
+                        Dictionary<string, List<string>> tmp = new Dictionary<string, List<string>>(KnownNames);
+
+                        foreach (KeyValuePair<string, List<string>> k in tmp)
+                        {
+                            sw.Write("{0}: ", k.Key);
+                            foreach (string s in k.Value)
+                            {
+                                sw.Write("{0}, ", s);
+                            }
+                            sw.Write(Environment.NewLine);
+                        }
+                    }
+                    Console.WriteLine("Known players saved to {0}.", output);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error occured: {0}", ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("The file {0} already exists.", output);
+            }
+        }
+
+        static void autosave_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            autosave.Enabled = false;
+
+            savePlayers();
+
+            if (!shouldExit && autosaveEnabled)
+                autosave.Enabled = true;
         }
 
         private static void ConnectionLoop()

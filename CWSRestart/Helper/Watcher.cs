@@ -80,7 +80,7 @@ namespace CWSRestart.Helper
         }
 
         #region intervall
-        private UInt32 intervallSeconds = 60;
+        private UInt32 intervallSeconds = Settings.Instance.WatcherTimeout;
 
         public UInt32 IntervallSeconds
         {
@@ -90,11 +90,16 @@ namespace CWSRestart.Helper
             }
             set
             {
-                if (value == 0)
-                    value = 60;
+                if (intervallSeconds != value)
+                {
+                    if (value == 0)
+                        value = 60;
 
-                intervallSeconds = value;
-                notifyPropertyChanged();
+                    intervallSeconds = value;
+                    notifyPropertyChanged();
+
+                    Settings.Instance.WatcherTimeout = value;
+                }
             }
         }
         #endregion

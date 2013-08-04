@@ -34,8 +34,38 @@ namespace ServerService
 
             DoNotRedirectOutput = getAppSettingWithStandardValue("DoNotRedirectOutput", false);
             StatisticsInterval = getAppSettingWithStandardValue("StatisticsInterval", 1000);
-            SaveStatisticsEvery = getAppSettingWithStandardValue("SaveStatisticsEvery", 10);
+            SaveStatisticsEvery = getAppSettingWithStandardValue("SaveStatisticsEvery", 5);
+
+            Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+            SessionActive = getAppSettingWithStandardValue("SessionActiveDefault", true);
+            BypassSendQuit = getAppSettingWithStandardValue("BypassSendQuit", false);
         }
+
+        void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
+        {
+            if (e.Reason == Microsoft.Win32.SessionSwitchReason.SessionUnlock)
+            {
+                SessionActive = true;
+                Logging.OnLogMessage("The PC has been unlocked", Logging.MessageType.Info);
+            }
+            else if (e.Reason == Microsoft.Win32.SessionSwitchReason.SessionLock)
+            {
+                SessionActive = false;
+                Logging.OnLogMessage("The PC has been locked", Logging.MessageType.Info);
+            }
+            else if (e.Reason == Microsoft.Win32.SessionSwitchReason.RemoteDisconnect)
+            {
+                SessionActive = false;
+                Logging.OnLogMessage("A remote connection has been terminated", Logging.MessageType.Info);
+            }
+            else if (e.Reason == Microsoft.Win32.SessionSwitchReason.RemoteConnect)
+            {
+                SessionActive = true;
+                Logging.OnLogMessage("A remote connection has been initiated", Logging.MessageType.Info);
+            }
+        }
+
+        public bool SessionActive { get; private set; }
 
         public static Settings Instance
         {
@@ -556,5 +586,7 @@ namespace ServerService
         {
             setAppSetting(key, fallback.ToString());
         }
+
+        public bool BypassSendQuit { get; private set; }
     }
 }

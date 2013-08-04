@@ -24,6 +24,9 @@ namespace ServerService
         }
 
         private bool working = false;
+        /// <summary>
+        /// Indicates, if the Validator is currently working
+        /// </summary>
         public bool Working
         {
             get
@@ -196,6 +199,10 @@ namespace ServerService
             return serverHealth;
         }
 
+        /// <summary>
+        /// Checks if all settings are set
+        /// </summary>
+        /// <returns></returns>
         public Task<ServerErrors> Validates()
         {
             return Validates(Settings.Instance.IgnoreAccess);

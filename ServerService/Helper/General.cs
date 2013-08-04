@@ -26,7 +26,7 @@ namespace ServerService.Helper
             }
             get
             {
-                if (server == null && (Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length > 0))
+                if ((server == null || server.ProcessName != Settings.Instance.ServerProcessName) && (Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length > 0))
                 {
                     server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
                 }
@@ -52,26 +52,39 @@ namespace ServerService.Helper
         /// <returns>The external IP</returns>
         public async static Task<IPAddress> GetExternalIp()
         {
-            WebRequest request = WebRequest.Create(Settings.Instance.IPService);
-            WebResponse response = await request.GetResponseAsync();
-            string html;
-
-            using (Stream stream = response.GetResponseStream())
+            try
             {
-                using(StreamReader sr = new StreamReader(stream))
+                WebRequest request = WebRequest.Create(Settings.Instance.IPService);
+                WebResponse response = await request.GetResponseAsync();
+                string html;
+
+                using (Stream stream = response.GetResponseStream())
                 {
-                    html = await sr.ReadToEndAsync();
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        html = await sr.ReadToEndAsync();
+                    }
+                }
+
+                IPAddress externalIP;
+                if (IPAddress.TryParse(html, out externalIP))
+                {
+                    return externalIP;
+                }
+                else
+                {
+                    throw new Exception("The external IP could not be retrived");
                 }
             }
-
-            IPAddress externalIP;
-            if (IPAddress.TryParse(html, out externalIP))
+            catch (WebException)
             {
-                return externalIP;
+                Logging.OnLogMessage("Could not reach external service to retreive your IP", Logging.MessageType.Error);
+                return null;
             }
-            else
+            catch (Exception ex)
             {
-                throw new Exception("The external IP could not be retrived");
+                Logging.OnLogMessage(ex.Message, Logging.MessageType.Error);
+                return null;
             }
         }
 
@@ -118,11 +131,15 @@ namespace ServerService.Helper
                         Logging.OnLogMessage("Writing to process stream", Logging.MessageType.Info);
                         Server.StandardInput.WriteLine("q");
                     }
-                    else
+                    else if (Settings.Instance.SessionActive)
                     {
                         Logging.OnLogMessage("Sending key", Logging.MessageType.Info);
                         SetForegroundWindow(Server.MainWindowHandle);
                         System.Windows.Forms.SendKeys.SendWait("q{ENTER}");
+                    }
+                    else
+                    {
+                        Logging.OnLogMessage("The PC is either locked or the Server was not started through CWSRestart. Cannot send keypress...", Logging.MessageType.Warning);
                     }
                 }
                 catch(Exception ex)
@@ -161,13 +178,24 @@ namespace ServerService.Helper
         {
             if (Validator.Instance.IsRunning())
             {
-                Logging.OnLogMessage("Sending the q-Key", Logging.MessageType.Info);
-                SendQuit();
-                Logging.OnLogMessage(String.Format("Waiting {0} seconds to see if the server is able to quit", Settings.Instance.Timeout / 1000), Logging.MessageType.Info);
-                timeout = new System.Timers.Timer(Settings.Instance.Timeout);
-                timeout.AutoReset = false;
-                timeout.Elapsed += timeout_Elapsed;
-                timeout.Start();
+                if (Settings.Instance.SessionActive && !Settings.Instance.BypassSendQuit)
+                {
+                    Logging.OnLogMessage("Sending the q-Key", Logging.MessageType.Info);
+                    SendQuit();
+                    Logging.OnLogMessage(String.Format("Waiting {0} seconds to see if the server is able to quit", Settings.Instance.Timeout / 1000), Logging.MessageType.Info);
+                    timeout = new System.Timers.Timer(Settings.Instance.Timeout);
+                    timeout.AutoReset = false;
+                    timeout.Elapsed += timeout_Elapsed;
+                    timeout.Start();
+                }
+                else
+                {
+                    Logging.OnLogMessage("The machine is locked or CWSRestart is configured not to send the keypress...", Logging.MessageType.Info);
+                    timeout = new System.Timers.Timer(Settings.Instance.Timeout);
+                    timeout.AutoReset = false;
+                    timeout.Elapsed += timeout_Elapsed;
+                    timeout_Elapsed(null, null);
+                }
 
                 if (ServerRestarted != null)
                     ServerRestarted(null, null);
@@ -183,7 +211,7 @@ namespace ServerService.Helper
         {
             if (Validator.Instance.IsRunning())
             {
-                Logging.OnLogMessage("The server is still running. Now we force it to quit.", Logging.MessageType.Info);
+                Logging.OnLogMessage("Killing the server process...", Logging.MessageType.Info);
                 KillServer();
                 Logging.OnLogMessage("Waiting for a few seconds to give our processes enough time to exit...", Logging.MessageType.Info);
                 timeout.Start();  

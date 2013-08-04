@@ -86,10 +86,12 @@ namespace ServerService
                 {
                     logFolder = value;
                     notifyPropertyChanged();
+                    StatisticsDB = new Database.Statistics(Path.Combine(LogFolder, "statistics.db"));
                 }
             }
         }
 
+        public Database.Statistics StatisticsDB { get; private set; }
 
         private bool enabled = false;
         /// <summary>
@@ -316,40 +318,9 @@ namespace ServerService
                 {
                     AccessControl.Instance.Enforce();
 
-                    if (LogFolder != "")
+                    if (StatisticsDB != null)
                     {
-                        try
-                        {
-                            string targetFile = Path.Combine(LogFolder, String.Format("{0}.{1}", StartTime.ToString("yyyy-MM-dd_HH-mm-ss"), "csv"));
-
-                            StreamWriter sw = null;
-
-                            if (!File.Exists(targetFile))
-                            {
-                                File.Create(targetFile).Close();
-                                sw = File.AppendText(targetFile);
-                                sw.WriteLine("Timestamp;Runtime;Current players;Total players;Current memory;Max memory;Number of restarts");
-                            }
-
-                            if (sw == null)
-                                sw = File.AppendText(targetFile);
-
-                            sw.WriteLine("{0};{1};{2};{3};{4};{5};{6}",
-                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                                String.Format("{0}:{1:00}:{2:00}", Math.Floor(Runtime.TotalHours), Runtime.Minutes, Runtime.Seconds),
-                                ConnectedPlayers.Count,
-                                Players.Count,
-                                CurrentMemoryUsage,
-                                PeakMemoryUsage,
-                                RestartCount);
-
-                            sw.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.OnLogMessage(String.Format("Could not write to file: {0}", ex.Message), Logging.MessageType.Error);
-                            Logging.OnLogMessage("The log is now incomplete.", Logging.MessageType.Warning);
-                        }
+                        StatisticsDB.InsertStatisticsEntry(Runtime, ConnectedPlayers.Count, Players.Count, CurrentMemoryUsage, PeakMemoryUsage, RestartCount);
                     }
 
                     loggingIndicator = 1;
