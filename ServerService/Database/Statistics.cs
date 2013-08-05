@@ -53,12 +53,13 @@ namespace ServerService.Database
             executeCommand(command);
         }
 
-        public async Task<List<StatisticsEntry>> GetStatisticEntriesAsync()
+        public async Task<List<StatisticsEntry>> GetStatisticEntriesAsync(int limit)
         {
             connection.Open();
 
             List<StatisticsEntry> ret = new List<StatisticsEntry>();
-            SQLiteCommand command = new SQLiteCommand("SELECT ID, Timestamp, Runtime, CurrentPlayers, TotalPlayers, CurrentMemory, MaximumMemory, Restarts FROM statistics", connection);
+            SQLiteCommand command = new SQLiteCommand("SELECT ID, Timestamp, Runtime, CurrentPlayers, TotalPlayers, CurrentMemory, MaximumMemory, Restarts FROM statistics ORDER BY Timestamp DESC Limit $limit", connection);
+            command.Parameters.AddWithValue("$limit", limit);
             DbDataReader reader = await command.ExecuteReaderAsync();
 
             while (reader.Read())

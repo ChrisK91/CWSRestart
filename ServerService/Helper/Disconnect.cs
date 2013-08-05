@@ -86,14 +86,17 @@ namespace ServerService.Helper
         /// Close all connection to the remote IP
         /// </summary>
         /// <param name="IP">IP to close</param>
-        public static int CloseRemoteIP(string IP)
+        /// <param name="remotePort">The remote port, wildcard 0</param>
+        public static int CloseRemoteIP(string IP, int remotePort = 0)
         {
             int ret = -1;
 
             ConnectionInfo[] rows = getTcpTable();
             for (int i = 0; i < rows.Length; i++)
             {
-                if (rows[i].dwRemoteAddr == IPStringToInt(IP))
+                if (rows[i].dwRemoteAddr == IPStringToInt(IP)
+                    && (remotePort == 0 || (ntohs(rows[i].dwRemotePort) == remotePort))
+                    )
                 {
                     rows[i].dwState = (int)ConnectionState.Delete_TCB;
                     IntPtr ptr = GetPtrToNewObject(rows[i]);
@@ -134,10 +137,10 @@ namespace ServerService.Helper
                 }
 
                 ConnectionInfo[] tcpRows = new ConnectionInfo[structCount];
-                
+
                 ConnectionInfo tmp = new ConnectionInfo();
                 int sizeOfTCPROW = Marshal.SizeOf(tmp);
-                
+
                 for (int i = 0; i < structCount; i++)
                 {
                     tcpRows[i] = (ConnectionInfo)Marshal.PtrToStructure(buffSubPointer, typeof(ConnectionInfo));

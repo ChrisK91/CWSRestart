@@ -101,7 +101,7 @@ namespace CWSWeb.Helper
                 if (File.Exists(path))
                 {
                     ServerService.Database.Statistics stats = new ServerService.Database.Statistics(path);
-                    List<ServerService.Database.Statistics.StatisticsEntry> entries = await stats.GetStatisticEntriesAsync();
+                    List<ServerService.Database.Statistics.StatisticsEntry> entries = await stats.GetStatisticEntriesAsync(Settings.Instance.LinesToRead);
 
                     bool dropRestart = entries.Count > Settings.Instance.LinesToRead;
 
@@ -134,119 +134,8 @@ namespace CWSWeb.Helper
                     }
 
                     Restarts = tmpRestarts.ToArray();
-
-                    /*string data = ReadEndTokens(path, Settings.Instance.LinesToRead, Encoding.UTF8, Environment.NewLine);
-
-                    string[] lines = data.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-
-                    bool dropRestart;
-
-                    if (1 < lines.Length && lines.Length < Settings.Instance.LinesToRead)
-                    {
-                        Keys = new DateTime[lines.Length - 2];
-                        ActivePlayers = new int[lines.Length - 2];
-                        memoryUsage = new int[lines.Length - 2];
-                        dropRestart = false;
-                    }
-                    else
-                    {
-                        Keys = new DateTime[lines.Length - 1];
-                        ActivePlayers = new int[lines.Length - 1];
-                        memoryUsage = new int[lines.Length - 1];
-                        dropRestart = true;
-                    }
-
-                    List<DateTime> tmpRestarts = new List<DateTime>();
-
-                    int index = 0;
-                    int prevRestarts = 0;
-
-                    foreach (string line in lines)
-                    {
-                        string[] value = line.Split(new string[] { ";" }, StringSplitOptions.None);
-                        if (value.Length == 7 && value[0] != "Timestamp")
-                        {
-                            DateTime dt = DateTime.ParseExact(value[0], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-                            int current = Int32.Parse(value[2]);
-                            int memory = Int32.Parse(value[4]);
-                            int currentRestarts = Int32.Parse(value[6]);
-
-
-                            if (dt.Year > 1)
-                            {
-                                Keys[index] = dt;
-                                ActivePlayers[index] = current;
-                                memoryUsage[index] = memory;
-
-                                if (currentRestarts > prevRestarts)
-                                {
-                                    if (!dropRestart)
-                                    {
-                                        tmpRestarts.Add(dt);
-                                    }
-                                    else
-                                    {
-                                        dropRestart = false;
-                                    }
-                                    prevRestarts = currentRestarts;
-                                }
-
-                                index++;
-                            }
-                        }
-                    }
-
-                    Restarts = tmpRestarts.ToArray();
-                     */
                 }
             }
-
-            /*
-            public static string ReadEndTokens(string path, Int64 numberOfTokens, Encoding encoding, string tokenSeparator)
-            {
-
-                try
-                {
-                    int sizeOfChar = encoding.GetByteCount("\n");
-                    byte[] buffer = encoding.GetBytes(tokenSeparator);
-
-
-                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                    {
-                        Int64 tokenCount = 0;
-                        Int64 endPosition = fs.Length / sizeOfChar;
-
-                        for (Int64 position = sizeOfChar; position < endPosition; position += sizeOfChar)
-                        {
-                            fs.Seek(-position, SeekOrigin.End);
-                            fs.Read(buffer, 0, buffer.Length);
-
-                            if (encoding.GetString(buffer) == tokenSeparator)
-                            {
-                                tokenCount++;
-                                if (tokenCount == numberOfTokens)
-                                {
-                                    byte[] returnBuffer = new byte[fs.Length - fs.Position];
-                                    fs.Read(returnBuffer, 0, returnBuffer.Length);
-                                    return encoding.GetString(returnBuffer);
-                                }
-                            }
-                        }
-
-                        // handle case where number of tokens in file is less than numberOfTokens
-                        fs.Seek(0, SeekOrigin.Begin);
-                        buffer = new byte[fs.Length];
-                        fs.Read(buffer, 0, buffer.Length);
-                        return encoding.GetString(buffer);
-                    }
-                }
-                catch (IOException)
-                {
-                    //File in use
-                    return "";
-                }
-            }
-             */
         }
     }
 }

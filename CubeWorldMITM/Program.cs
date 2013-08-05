@@ -318,46 +318,68 @@ namespace CubeWorldMITM
         private static void OnConnect(IAsyncResult ar)
         {
             TcpClient client = mitm.EndAcceptTcpClient(ar);
-            wait.Set();
-
-            TcpClient toServer = new TcpClient();
-            toServer.Connect(cubeWorldIP, (int)serverPort);
-
-            NetworkStream clientStream = client.GetStream();
-            NetworkStream serverStream = toServer.GetStream();
-
-            IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
-
-            Console.WriteLine("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString());
-
-            MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
-
-            handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
+            if (Helper.Settings.Instance.PlayerLimit < 0 || ConnectedPlayers.Count <= Helper.Settings.Instance.PlayerLimit)
             {
-                if (ConnectedPlayers.ContainsKey(h.IP))
-                    ConnectedPlayers.Remove(h.IP);
-            });
+                wait.Set();
 
-            handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
-            {
-                if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
-                    KnownNames[h.IP].Add(h.Name);
-                else if (!KnownNames.ContainsKey(h.IP))
+                TcpClient toServer = new TcpClient();
+                toServer.Connect(cubeWorldIP, (int)serverPort);
+
+                NetworkStream clientStream = client.GetStream();
+                NetworkStream serverStream = toServer.GetStream();
+
+                IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
+
+                Console.WriteLine("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString());
+
+                MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
+
+                handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
                 {
-                    List<string> tmp = new List<string>();
-                    tmp.Add(h.Name);
-                    KnownNames.Add(h.IP, tmp);
+                    if (ConnectedPlayers.ContainsKey(h.IP))
+                        ConnectedPlayers.Remove(h.IP);
+                });
+
+                handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
+                {
+                    if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
+                        KnownNames[h.IP].Add(h.Name);
+                    else if (!KnownNames.ContainsKey(h.IP))
+                    {
+                        List<string> tmp = new List<string>();
+                        tmp.Add(h.Name);
+                        KnownNames.Add(h.IP, tmp);
+                    }
+
+                    if (!levelAllowed(h.Level))
+                    {
+                        h.Disconnect();
+                        Console.WriteLine("{0} was kicked, because the level {1} is not allowed.", h.Name, h.Level);
+                    }
+                });
+
+                if (ConnectedPlayers.ContainsKey(handler.IP))
+                {
+                    ConnectedPlayers[handler.IP].Disconnect();
+                    ConnectedPlayers.Remove(handler.IP);
                 }
-            });
+                ConnectedPlayers.Add(handler.IP, handler);
 
-            if (ConnectedPlayers.ContainsKey(handler.IP))
-            {
-                ConnectedPlayers[handler.IP].Disconnect();
-                ConnectedPlayers.Remove(handler.IP);
+                establishedConnections.Add(handler);
             }
-            ConnectedPlayers.Add(handler.IP, handler);
+            else
+            {
+                client.Close();
+            }
+        }
 
-            establishedConnections.Add(handler);
+        private static bool levelAllowed(uint p)
+        {
+            if (Helper.Settings.Instance.MinLevel < Helper.Settings.Instance.MaxLevel)
+            {
+                return (p > Helper.Settings.Instance.MinLevel) && (p < Helper.Settings.Instance.MaxLevel);
+            }
+            return true;
         }
 
         private static void centerText(String text)

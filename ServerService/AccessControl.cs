@@ -77,7 +77,7 @@ namespace ServerService
 
                                 if(!playerFound)
                                 {
-                                    ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
+                                    ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString(), info.RemoteEndPoint.Port);
                                     actionTaken = true;
                                 }
                                 
@@ -87,7 +87,7 @@ namespace ServerService
 
                                 if(playerFound)
                                 {
-                                    ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString());
+                                    ret = Helper.DisconnectWrapper.CloseRemoteIP(info.RemoteEndPoint.Address.ToString(), info.RemoteEndPoint.Port);
                                     actionTaken = true;
                                 }
 

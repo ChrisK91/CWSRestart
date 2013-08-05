@@ -689,7 +689,7 @@ namespace CubeWorldMITM.Networking
 
         private void logError(Exception ex, [CallerMemberName] string memberName = "")
         {
-            if (!(ex is IOException))
+            if (!(ex is IOException) && !(ex is ObjectDisposedException))
             {
                 Console.WriteLine("An error occured: {0} - {1}", ex.GetType().ToString(), ex.Message);
                 Console.WriteLine("In: {0}", memberName);
