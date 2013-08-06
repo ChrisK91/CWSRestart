@@ -24,11 +24,15 @@ namespace CubeWorldMITM.Helper
             MinLevel = getAppSettingWithStandardValue("MinLevel", -1);
             MaxLevel = getAppSettingWithStandardValue("MaxLevel", -1);
             PlayerLimit = getAppSettingWithStandardValue("PlayerLimit", -1);
+            StartServer = getAppSettingWithStandardValue("StartServer", false);
+            ServerLocation = getAppSettingWithStandardValue("ServerLocation", "");
         }
 
         public int MinLevel { get; private set; }
         public int MaxLevel { get; private set; }
         public int PlayerLimit { get; private set; }
+        public bool StartServer { get; private set; }
+        public string ServerLocation { get; private set; }
 
         private string getAppSettingWithStandardValue(string key, string fallback)
         {

@@ -78,11 +78,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\Launcher.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\ZLibHelper.cs" />
     <Compile Include="Networking\MITMMessageHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerConfigurators\IConfigurator.cs" />
+    <Compile Include="ServerConfigurators\StandardConfigurator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

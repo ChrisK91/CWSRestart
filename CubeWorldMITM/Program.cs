@@ -60,8 +60,18 @@ namespace CubeWorldMITM
 
             parseSettings(args);
 
-            mitm = new TcpListener(mitmIP, (int)port);
+            if (Helper.Settings.Instance.StartServer == true)
+            {
+                if (File.Exists(Helper.Settings.Instance.ServerLocation))
+                    Helper.Launcher.LaunchServerConfigured(Helper.Settings.Instance.ServerLocation);
+                else
+                    Console.WriteLine("The specified file does not exist: {0}", Helper.Settings.Instance.ServerLocation);
 
+                Console.WriteLine();
+                Console.WriteLine();
+            }
+
+            mitm = new TcpListener(mitmIP, (int)port);
 
             Thread listenerThread = new Thread(new ThreadStart(ConnectionLoop));
             listenerThread.Start();
