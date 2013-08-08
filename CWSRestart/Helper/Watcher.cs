@@ -48,7 +48,7 @@ namespace CWSRestart.Helper
 
                     Helper.Logging.OnLogMessage("Time to check if the server is still running", ServerService.Logging.MessageType.Info);
 
-                    ServerService.Validator.ServerErrors errors = await ServerService.Validator.Instance.Validates(ServerService.Settings.Instance.IgnoreAccess);
+                    ServerService.Validator.ServerErrors errors = await ServerService.Validator.Instance.Validates(ServerService.Helper.Settings.Instance.IgnoreAccess);
 
                     if (errors != 0)
                     {

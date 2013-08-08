@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWSProtocol", "CWSProtocol\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeWorldMITM", "CubeWorldMITM\CubeWorldMITM.csproj", "{C677FBBF-B48E-4C27-BE9C-A838D894A43C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{70FCA487-0A21-4EF8-81C1-F74B41A1AD09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{C677FBBF-B48E-4C27-BE9C-A838D894A43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C677FBBF-B48E-4C27-BE9C-A838D894A43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C677FBBF-B48E-4C27-BE9C-A838D894A43C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70FCA487-0A21-4EF8-81C1-F74B41A1AD09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70FCA487-0A21-4EF8-81C1-F74B41A1AD09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70FCA487-0A21-4EF8-81C1-F74B41A1AD09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70FCA487-0A21-4EF8-81C1-F74B41A1AD09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

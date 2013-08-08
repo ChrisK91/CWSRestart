@@ -19,16 +19,18 @@ namespace CWSRestart.Helper
         }
 
         private static Settings instance = new Settings();
+        Utilities.Settings settings;
 
         private Settings()
         {
-            createSettingsIfNotExists();
+            string file = Path.Combine(Directory.GetCurrentDirectory(), "CWSRestart.exe.config");
+            settings = new Utilities.Settings(file);
 
-            AutostartCWSProtocol = getAppSettingWithStandardValue("AutostartCWSProtocol", false);
-            AutostartStatistics = getAppSettingWithStandardValue("AutostartStatistics", false);
-            AutostartWatcher = getAppSettingWithStandardValue("AutostartWatcher", false);
+            AutostartCWSProtocol = settings.GetAppSettingWithStandardValue("AutostartCWSProtocol", false);
+            AutostartStatistics = settings.GetAppSettingWithStandardValue("AutostartStatistics", false);
+            AutostartWatcher = settings.GetAppSettingWithStandardValue("AutostartWatcher", false);
 
-            WatcherTimeout = (uint)getAppSettingWithStandardValue("WatcherTimeout", 60);
+            WatcherTimeout = settings.GetAppSettingWithStandardValue("WatcherTimeout", (uint)60);
         }
 
         public bool AutostartCWSProtocol { get; private set; }
@@ -47,74 +49,9 @@ namespace CWSRestart.Helper
                 if (watchertimeout != value)
                 {
                     watchertimeout = value;
-                    setAppSetting("WatcherTimeout", (int)value);
+                    settings.SetAppSetting("WatcherTimeout", value);
                 }
             }
-        }
-
-        private string getAppSettingWithStandardValue(string key, string fallback)
-        {
-            if (getAppSetting(key) != null)
-                return getAppSetting(key);
-
-            setAppSetting(key, fallback);
-            return fallback;
-        }
-
-        private bool getAppSettingWithStandardValue(string key, bool fallback)
-        {
-            bool ret;
-            if (getAppSetting(key) != null && Boolean.TryParse(getAppSetting(key), out ret))
-                return ret;
-
-            setAppSetting(key, fallback.ToString());
-            return fallback;
-        }
-
-        private int getAppSettingWithStandardValue(string key, int fallback)
-        {
-            int ret;
-            if (getAppSetting(key) != null && Int32.TryParse(getAppSetting(key), out ret))
-                return ret;
-
-            setAppSetting(key, fallback);
-            return fallback;
-        }
-
-        private string getAppSetting(string key)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
-            return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null;
-        }
-
-        private void createSettingsIfNotExists()
-        {
-            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "CWSRestart.exe.config")))
-                using (Stream resource = GetType().Assembly.GetManifestResourceStream("CWSRestart.CWSRestart.exe.config"))
-                {
-                    using (Stream output = File.OpenWrite(Path.Combine(Directory.GetCurrentDirectory(), "CWSRestart.exe.config")))
-                    {
-                        resource.CopyTo(output);
-                    }
-                }
-        }
-
-        private void setAppSetting(string key, string value)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
-
-            if (config.AppSettings.Settings[key] != null)
-            {
-                config.AppSettings.Settings.Remove(key);
-            }
-
-            config.AppSettings.Settings.Add(key, value);
-            config.Save(ConfigurationSaveMode.Modified);
-        }
-
-        private void setAppSetting(string key, int fallback)
-        {
-            setAppSetting(key, fallback.ToString());
         }
     }
 }

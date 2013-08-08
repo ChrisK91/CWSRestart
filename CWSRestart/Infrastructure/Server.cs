@@ -136,9 +136,9 @@ namespace CWSRestart.Infrastructure
                                                             sendReply(Commands.Command.WATCHER, String.Format("ENABLED {0}", Helper.Watcher.Instance.IsRunning), serverStream);
                                                             sendReply(Commands.Command.WATCHER, String.Format("BLOCKED {0}", Helper.Watcher.Instance.IsBlocked), serverStream);
                                                             sendReply(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", Helper.Watcher.Instance.IntervallSeconds.ToString()), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKINTERNET {0}", ServerService.Settings.Instance.CheckInternet), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLAN {0}", ServerService.Settings.Instance.CheckLAN), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLOOPBACK {0}", ServerService.Settings.Instance.CheckLoopback), serverStream);
+                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKINTERNET {0}", ServerService.Helper.Settings.Instance.CheckInternet), serverStream);
+                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLAN {0}", ServerService.Helper.Settings.Instance.CheckLAN), serverStream);
+                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLOOPBACK {0}", ServerService.Helper.Settings.Instance.CheckLoopback), serverStream);
                                                             break;
 
                                                         case Commands.Command.LOG:
@@ -275,15 +275,15 @@ namespace CWSRestart.Infrastructure
                                                                                             switch (parts[i])
                                                                                             {
                                                                                                 case "CHECKINTERNET":
-                                                                                                    ServerService.Settings.Instance.CheckInternet = check;
+                                                                                                    ServerService.Helper.Settings.Instance.CheckInternet = check;
                                                                                                     break;
 
                                                                                                 case "CHECKLAN":
-                                                                                                    ServerService.Settings.Instance.CheckLAN = check;
+                                                                                                    ServerService.Helper.Settings.Instance.CheckLAN = check;
                                                                                                     break;
 
                                                                                                 case "CHECKLOOPBACK":
-                                                                                                    ServerService.Settings.Instance.CheckLoopback = check;
+                                                                                                    ServerService.Helper.Settings.Instance.CheckLoopback = check;
                                                                                                     break;
                                                                                             }
                                                                                         }

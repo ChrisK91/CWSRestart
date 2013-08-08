@@ -65,18 +65,18 @@ namespace CWSRestart.Dialogs
         {
             string processName = ((ListBoxItem)sender).Content.ToString();
 
-            if (ServerService.Settings.Instance.AdditionalProcesses.Contains(processName))
-                ServerService.Settings.Instance.AdditionalProcesses.Remove(processName);
+            if (ServerService.Helper.Settings.Instance.AdditionalProcesses.Contains(processName))
+                ServerService.Helper.Settings.Instance.AdditionalProcesses.Remove(processName);
             else
-                ServerService.Settings.Instance.AdditionalProcesses.Add(processName);
+                ServerService.Helper.Settings.Instance.AdditionalProcesses.Add(processName);
         }
 
         private void ProcessNameTextbox_KeyDown(object sender, KeyEventArgs e)
         {
             if (ProcessNameTextbox.Text != String.Empty && e.Key == Key.Enter)
             {
-                if (!ServerService.Settings.Instance.AdditionalProcesses.Contains(ProcessNameTextbox.Text))
-                    ServerService.Settings.Instance.AdditionalProcesses.Add(ProcessNameTextbox.Text);
+                if (!ServerService.Helper.Settings.Instance.AdditionalProcesses.Contains(ProcessNameTextbox.Text))
+                    ServerService.Helper.Settings.Instance.AdditionalProcesses.Add(ProcessNameTextbox.Text);
                 e.Handled = true;
             }
         }

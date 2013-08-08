@@ -387,7 +387,7 @@ namespace CubeWorldMITM
         {
             if (Helper.Settings.Instance.MinLevel < Helper.Settings.Instance.MaxLevel)
             {
-                return (p > Helper.Settings.Instance.MinLevel) && (p < Helper.Settings.Instance.MaxLevel);
+                return (p >= Helper.Settings.Instance.MinLevel) && (p <= Helper.Settings.Instance.MaxLevel);
             }
             return true;
         }

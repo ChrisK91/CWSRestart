@@ -93,7 +93,7 @@ namespace CWSRestart
 
             if (Helper.Settings.Instance.AutostartWatcher)
             {
-                if (ServerService.Settings.Instance.Validates)
+                if (ServerService.Helper.Settings.Instance.Validates)
                     ToggleWatcher_Click(null, null);
                 else
                     Helper.Logging.OnLogMessage("Not all settings are set. Watcher not started.", Logging.MessageType.Warning);
@@ -141,12 +141,12 @@ namespace CWSRestart
 
         private async void RefreshExternalButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Settings.Instance.Internet = await ServerService.Helper.General.GetExternalIp();
+            ServerService.Helper.Settings.Instance.Internet = await ServerService.Helper.General.GetExternalIp();
         }
 
         private async void RefreshLanButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.Settings.Instance.LAN = await ServerService.Helper.General.GetLocalIP();
+            ServerService.Helper.Settings.Instance.LAN = await ServerService.Helper.General.GetLocalIP();
         }
 
         private void SelectServerButton_Click(object sender, RoutedEventArgs e)
@@ -159,7 +159,7 @@ namespace CWSRestart
 
             if (result == true)
             {
-                ServerService.Settings.Instance.ServerPath = selectServer.FileName;
+                ServerService.Helper.Settings.Instance.ServerPath = selectServer.FileName;
             }
         }
 
@@ -245,7 +245,7 @@ namespace CWSRestart
 
         private void UPnPButton_Click(object sender, RoutedEventArgs e)
         {
-            Dialogs.UPnPDialog dlg = new Dialogs.UPnPDialog(Settings.Instance.LAN.ToString());
+            Dialogs.UPnPDialog dlg = new Dialogs.UPnPDialog(ServerService.Helper.Settings.Instance.LAN.ToString());
             dlg.ShowDialog();
         }
 

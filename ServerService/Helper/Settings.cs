@@ -7,7 +7,7 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace ServerService
+namespace ServerService.Helper
 {
     /// <summary>
     /// This class contains all settings for the Server Service
@@ -15,30 +15,39 @@ namespace ServerService
     public sealed class Settings : INotifyPropertyChanged
     {
         private static readonly Settings instance = new Settings();
+        private Utilities.Settings settings;
 
         private Settings() {
-            createSettingsIfNotExists();
+            string file = Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config");
+            settings = new Utilities.Settings(file);
 
-            IPService = new Uri(getAppSettingWithStandardValue("IPService", "http://bot.whatismyipaddress.com/"));
-            Loopback = getAppSettingWithStandardValue("Loopback", IPAddress.Loopback);
-            Port = getAppSettingWithStandardValue("Port", 12345);
-            LAN = getAppSettingIP("LAN");
-            Internet = getAppSettingIP("Internet");
-            ServerProcessName = getAppSettingWithStandardValue("ServerProcessName", "Server");
-            Timeout = getAppSettingWithStandardValue("Timeout", 10000);
-            ServerPath = getAppSettingWithStandardValue("ServerPath", "");
+            IPService = new Uri(settings.GetAppSettingWithStandardValue("IPService", "http://bot.whatismyipaddress.com/"));
+            Loopback = settings.GetAppSettingWithStandardValue("Loopback", IPAddress.Loopback);
+            Port = settings.GetAppSettingWithStandardValue("Port", 12345);
 
-            CheckLoopback = getAppSettingWithStandardValue("CheckLoopback", false);
-            CheckLAN = getAppSettingWithStandardValue("CheckLAN", true);
-            CheckInternet = getAppSettingWithStandardValue("CheckInternet", true);
+            IPAddress tmp;
 
-            DoNotRedirectOutput = getAppSettingWithStandardValue("DoNotRedirectOutput", false);
-            StatisticsInterval = getAppSettingWithStandardValue("StatisticsInterval", 1000);
-            SaveStatisticsEvery = getAppSettingWithStandardValue("SaveStatisticsEvery", 5);
+            if (settings.GetAppSettingValue("LAN") != null && IPAddress.TryParse(settings.GetAppSettingValue("LAN"), out tmp))
+                LAN = tmp;
+
+            if (settings.GetAppSettingValue("Internet") != null && IPAddress.TryParse(settings.GetAppSettingValue("Internet"), out tmp))
+                Internet = tmp;
+
+            ServerProcessName = settings.GetAppSettingWithStandardValue("ServerProcessName", "Server");
+            Timeout = settings.GetAppSettingWithStandardValue("Timeout", 10000);
+            ServerPath = settings.GetAppSettingWithStandardValue("ServerPath", "");
+
+            CheckLoopback = settings.GetAppSettingWithStandardValue("CheckLoopback", false);
+            CheckLAN = settings.GetAppSettingWithStandardValue("CheckLAN", true);
+            CheckInternet = settings.GetAppSettingWithStandardValue("CheckInternet", true);
+
+            DoNotRedirectOutput = settings.GetAppSettingWithStandardValue("DoNotRedirectOutput", false);
+            StatisticsInterval = settings.GetAppSettingWithStandardValue("StatisticsInterval", 1000);
+            SaveStatisticsEvery = settings.GetAppSettingWithStandardValue("SaveStatisticsEvery", 5);
 
             Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
-            SessionActive = getAppSettingWithStandardValue("SessionActiveDefault", true);
-            BypassSendQuit = getAppSettingWithStandardValue("BypassSendQuit", false);
+            SessionActive = settings.GetAppSettingWithStandardValue("SessionActiveDefault", true);
+            BypassSendQuit = settings.GetAppSettingWithStandardValue("BypassSendQuit", false);
         }
 
         void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
@@ -91,7 +100,7 @@ namespace ServerService
                 {
                     saveStatisticsEvery = value;
                     notifyPropertyChanged();
-                    setAppSetting("SaveStatisticsEvery", value);
+                    settings.SetAppSetting("SaveStatisticsEvery", value);
                 }
             }
         }
@@ -109,7 +118,7 @@ namespace ServerService
                 {
                     statisticsInterval = value;
                     notifyPropertyChanged();
-                    setAppSetting("StatisticsInterval", value);
+                    settings.SetAppSetting("StatisticsInterval", value);
                 }
             }
         }
@@ -131,7 +140,7 @@ namespace ServerService
                 {
                     ipservice = value;
                     notifyPropertyChanged();
-                    setAppSetting("IPService", value.ToString());
+                    settings.SetAppSetting("IPService", value.ToString());
                 }
             }
         }
@@ -155,7 +164,7 @@ namespace ServerService
                 {
                     loopback = value;
                     notifyPropertyChanged();
-                    setAppSetting("Loopback", value);
+                    settings.SetAppSetting("Loopback", value);
                 }
             }
         }
@@ -178,7 +187,7 @@ namespace ServerService
                 {
                     port = value;
                     notifyPropertyChanged();
-                    setAppSetting("Port", value);
+                    settings.SetAppSetting("Port", value);
                 }
             }
         }
@@ -203,7 +212,7 @@ namespace ServerService
                     lan = value;
                     notifyPropertyChanged();
                     Revalidate();
-                    setAppSetting("LAN", value);
+                    settings.SetAppSetting("LAN", value);
                 }
             }
         }
@@ -228,7 +237,7 @@ namespace ServerService
                     internet = value;
                     notifyPropertyChanged();
                     Revalidate();
-                    setAppSetting("Internet", value);
+                    settings.SetAppSetting("Internet", value);
                 }
             }
         }
@@ -251,7 +260,7 @@ namespace ServerService
                 {
                     serverProcessName = value;
                     notifyPropertyChanged();
-                    setAppSetting("ServerProcessName", value);
+                    settings.SetAppSetting("ServerProcessName", value);
                 }
             }
         }
@@ -274,7 +283,7 @@ namespace ServerService
                 {
                     timeout = value;
                     notifyPropertyChanged();
-                    setAppSetting("Timeout", value);
+                    settings.SetAppSetting("Timeout", value);
                 }
             }
         }
@@ -298,7 +307,7 @@ namespace ServerService
                     serverPath = value;
                     notifyPropertyChanged();
                     Revalidate();
-                    setAppSetting("ServerPath", value);
+                    settings.SetAppSetting("ServerPath", value);
                 }
             }
         }
@@ -329,7 +338,7 @@ namespace ServerService
                     notifyPropertyChanged();
                     notifyPropertyChanged("IgnoreAccess");
 
-                    setAppSetting("CheckLoopback", value.ToString());
+                    settings.SetAppSetting("CheckLoopback", value.ToString());
                 }
             }
         }
@@ -352,7 +361,7 @@ namespace ServerService
                     notifyPropertyChanged();
                     notifyPropertyChanged("IgnoreAccess");
 
-                    setAppSetting("CheckInternet", value.ToString());
+                    settings.SetAppSetting("CheckInternet", value.ToString());
                 }
             }
         }
@@ -375,7 +384,7 @@ namespace ServerService
                     notifyPropertyChanged();
                     notifyPropertyChanged("IgnoreAccess");
 
-                    setAppSetting("CheckLAN", value.ToString());
+                    settings.SetAppSetting("CheckLAN", value.ToString());
                 }
             }
         }
@@ -401,6 +410,8 @@ namespace ServerService
         }
         #endregion
 
+        public bool BypassSendQuit { get; private set; }
+
         private bool doNotRedirectOutput;
         public bool DoNotRedirectOutput
         {
@@ -415,7 +426,7 @@ namespace ServerService
                     doNotRedirectOutput = value;
                     notifyPropertyChanged();
 
-                    setAppSetting("DoNotRedirectOutput", value.ToString());
+                    settings.SetAppSetting("DoNotRedirectOutput", value.ToString());
                 }
             }
         }
@@ -497,96 +508,5 @@ namespace ServerService
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        private string getAppSettingWithStandardValue(string key, string fallback)
-        {
-            if (getAppSetting(key) != null)
-                return getAppSetting(key);
-
-            setAppSetting(key, fallback);
-            return fallback;
-        }
-
-        private IPAddress getAppSettingWithStandardValue(string key, IPAddress fallback)
-        {
-            IPAddress ret;
-            if (getAppSetting(key) != null && IPAddress.TryParse(getAppSetting(key), out ret))
-                return ret;
-
-            setAppSetting(key, fallback);
-            return fallback;
-        }
-
-        private bool getAppSettingWithStandardValue(string key, bool fallback)
-        {
-            bool ret;
-            if (getAppSetting(key) != null && Boolean.TryParse(getAppSetting(key), out ret))
-                return ret;
-
-            setAppSetting(key, fallback.ToString());
-            return fallback;
-        }
-
-        private int getAppSettingWithStandardValue(string key, int fallback)
-        {
-            int ret;
-            if (getAppSetting(key) != null && Int32.TryParse(getAppSetting(key), out ret))
-                return ret;
-
-            setAppSetting(key, fallback);
-            return fallback;
-        }
-
-        private string getAppSetting(string key)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
-            return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null; 
-        }
-
-        private IPAddress getAppSettingIP(string key)
-        {
-            IPAddress ret;
-            if (IPAddress.TryParse((string)getAppSetting(key), out ret))
-                return ret;
-            return null;
-        }
-
-        private void createSettingsIfNotExists()
-        {
-            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config")))
-                using (Stream resource = GetType().Assembly.GetManifestResourceStream("ServerService.ServerService.dll.config"))
-                {
-                    using (Stream output = File.OpenWrite(Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config")))
-                    {
-                        resource.CopyTo(output);
-                    }
-                }
-        }
-
-        private void setAppSetting(string key, string value)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
-
-            if (config.AppSettings.Settings[key] != null)
-            {
-                config.AppSettings.Settings.Remove(key);
-            }
-
-            config.AppSettings.Settings.Add(key, value);
-            config.Save(ConfigurationSaveMode.Modified);
-        }
-
-        private void setAppSetting(string key, IPAddress fallback)
-        {
-            setAppSetting(key, fallback.ToString());
-        }
-
-
-        private void setAppSetting(string key, int fallback)
-        {
-            setAppSetting(key, fallback.ToString());
-        }
-
-        public bool BypassSendQuit { get; private set; }
     }
 }

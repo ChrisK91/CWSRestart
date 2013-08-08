@@ -174,8 +174,8 @@ namespace CWSRestart.Dialogs
                 {
                     try
                     {
-                        mappings.Add(ServerService.Settings.Instance.Port, "UDP", ServerService.Settings.Instance.Port, ip, true, "CubeWorld UDP");
-                        mappings.Add(ServerService.Settings.Instance.Port, "TCP", ServerService.Settings.Instance.Port, ip, true, "CubeWorld TCP");
+                        mappings.Add(ServerService.Helper.Settings.Instance.Port, "UDP", ServerService.Helper.Settings.Instance.Port, ip, true, "CubeWorld UDP");
+                        mappings.Add(ServerService.Helper.Settings.Instance.Port, "TCP", ServerService.Helper.Settings.Instance.Port, ip, true, "CubeWorld TCP");
 
                         RefreshButton_Click(null, null);
                     }
@@ -199,10 +199,10 @@ namespace CWSRestart.Dialogs
                     try
                     {
                         if (UDPopen)
-                            mappings.Remove(ServerService.Settings.Instance.Port, "UDP");
+                            mappings.Remove(ServerService.Helper.Settings.Instance.Port, "UDP");
 
                         if (TCPopen)
-                            mappings.Remove(ServerService.Settings.Instance.Port, "TCP");
+                            mappings.Remove(ServerService.Helper.Settings.Instance.Port, "TCP");
 
                         RefreshButton_Click(null, null);
                     }
