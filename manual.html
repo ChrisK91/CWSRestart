@@ -71,6 +71,13 @@
               <li><code>Timeout</code> is the time that the Server.exe has to exit, before it gets killed</li>
               <li><code>StatisticsInterval</code> is the delay between two statistics-updates (in ms)</li>
               <li><code>SaveStatisticsEvery</code> is the frequency, how often statistics will be saved. Also, this is the frequency for the Whitelist/Blacklist checks. Basically these checks will run ever <i>X</i> statistics-updates.</li>
+              <li><code>SessionActiveDefault</code> indicates, if CWSRestart is started while a user/RDP-session is active. Windows prevents CWSRestart from sending keypresses when the machine is locked. If you are starting CWSRestart on a locked machine with an autostart script, set this to <code>false</code></li>
+              <li><code>BypassSendQuit</code> can be used to bypass the graceful shutdown. If this value is set to <code>true</code> the server will be killed if it stops responding.</li>
+          </ul>
+          <p>There is also a CWSRestart.exe.config file with the following settings</p>
+          <ul>
+              <li><code>AutostartCWSProtocol</code>, <code>AutostartStatistics</code> and <code>AutostartWatcher</code> can be used to automatically start the related modules. Might come in handy, if you have CWSRestart in your autostart.</li>
+              <li><code>WatcherTimeout</code> is the interval of the watcher (in seconds)</li>
           </ul>
       </section>
     </div>

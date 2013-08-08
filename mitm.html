@@ -36,14 +36,16 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-          <h2>The MITM server</h2>
+          <p>Jump to <a href="#mitm">MITM Server</a> &dash; <a href="#usage">Usage</a> &dash; <a href="#config">Configuration</a></p>
+          <h2 id="mitm">The MITM server</h2>
           <p>Currently, there is no clean way to get a list of connected players from the server. To work around this issue, I created a small man-in-the-middle server. This server sits between the client and the real CubeWorld server and looks for the client name. When it has retrieved the name, it just relays the traffic.</p>
+          <p>This MITM server can also enforce a level range and limit the maximum number of players, that are allowed to join.</p>
           <p>A very big amount of code in this project has been taken from <a href="https://github.com/amPerl/Coob/">Coob</a>, a .Net implementation of the cubeworld server.</p>
-          <h2>Usage</h2>
+          <h2 id="usage">Usage</h2>
           <p>To use the MITM server, you need to edit the server.exe to listen on port <code>12346</code>. You can do this by opening up the server.exe in the hexeditor of your choice, for instance in <a href="http://mh-nexus.de/en/hxd/" target="_blank">HxD</a>. Now you need to find the integer number <code>12345</code>. In hex, just look for <code>39 30 00 00</code>. Change this to the number <code>12345</code>, so you end up with <code>3A 30 00 00</code>. To verify that the change was succesful, run <code>netstat -a -b -n -p TCP</code> when you have started your modified server. Now you can fire up the MITM server. The MITM server will accept traffic from port <code>12345</code>, so you dont need to edit your client.</p>
           <img src="/CWSRestart/screenshots/mitm_small1.png" alt="MITM server" />
           <img src="/CWSRestart/screenshots/mitm_small2.png" alt="MITM server" />
-          <h2>Configuration</h2>
+          <h2 id="config">Configuration</h2>
           <p><img src="/CWSRestart/screenshots/mitm.png" alt="MITM server" style="float: right; width: 205px; height: 455px" />By default, the MITM server starts listening on any IP on port 12345 and redirects traffic to loopback on port 12346. You can change these settings by launching the MITM server this way</p>
           <p><code>CubeWorldMITM [port1] [port2] [internal ip] [server ip]</code></p>
           <p>Every option is optional. They have the following effetcts:</p>
@@ -52,7 +54,16 @@
               <li><code>port 2</code> sets the port on wich the server is listening</li>
               <li><code>internal ip</code> specifies local IP, on which the MITM should listen</li>
               <li><code>server ip</code> specifies the address on wich the CubeWorld server is running</li>
-          </ul><div style="clear: both"></div>
+          </ul>
+          <p>You can also specify some settings in the CubeWorldMITM.exe.config file:</p>
+          <blockquote class="notice">There is currently an issue with the minimum and maximum level. Please set it to one below and one above the desired range (e.g. 0 and 101 instead of 1 and 100)</blockquote>
+          <ul>
+              <li><code>MinLevel</code> the minimum level required to join</li>
+              <li><code>MaxLevel</code> the maximum level allowed to join</li>
+              <li><code>PlayerLimit</code> the maximum amount of players that is allowed to join. If this number is reach, additional connections will be dropped and won't even reach th server.</li>
+          </ul>
+          <p>You can set the values to any negative number, to disable limits.</p>
+          <div style="clear: both"></div>
       </section>
     </div>
 
