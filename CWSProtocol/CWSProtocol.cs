@@ -34,7 +34,8 @@ namespace CWSProtocol
             CONNECTED,
             KICK,
             ACCESSMODE,
-            ACCESSLIST
+            ACCESSLIST,
+            PRESET
         }
     }
 }

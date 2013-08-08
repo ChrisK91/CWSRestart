@@ -370,5 +370,19 @@ namespace CWSProtocol
                 disconnectClient();
             }
         }
+
+        public bool SendPreset(string filename, bool deleteFile)
+        {
+            if (tryConnect())
+            {
+                sendCommand(Commands.Command.PRESET, String.Format("{0} {1}", deleteFile ? "DELETE" : "PERSISTENT", filename), Commands.Actions.POST);
+                disconnectClient();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

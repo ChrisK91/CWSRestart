@@ -334,6 +334,20 @@ namespace CWSRestart.Infrastructure
 
                                                             break;
 
+                                                        case Commands.Command.PRESET:
+                                                            string[] content = message.Split(new string[]{" "}, 2, StringSplitOptions.RemoveEmptyEntries);
+
+                                                            if (content.Length == 2 && (content[0] == "DELETE" || content[0] == "PERSISTENT") && File.Exists(content[1]))
+                                                            {
+                                                                Helper.Settings.Instance.LoadPreset(content[1]);
+
+                                                                if (content[0] == "DELETE")
+                                                                    File.Delete(content[1]);
+                                                            }
+
+
+                                                            break;
+
                                                     }
                                                     break;
                                             }

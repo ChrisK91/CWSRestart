@@ -11,6 +11,9 @@ namespace CubeWorldMITM.Helper
 {
     internal static class Launcher
     {
+        public static string ServerLocation { get; private set; }
+        public static string ServerName { get; private set; }
+
         private static Dictionary<string, List<IConfigurator>> _configurators;
 
         public static Dictionary<string, List<IConfigurator>> Configurators
@@ -72,7 +75,10 @@ namespace CubeWorldMITM.Helper
 
             ProcessStartInfo pi = new ProcessStartInfo(path);
             pi.WorkingDirectory = originalPath;
-            Process.Start(pi);
+            Process p = Process.Start(pi);
+
+            ServerLocation = path;
+            ServerName = p.ProcessName;
         }
     }
 }

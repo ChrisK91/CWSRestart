@@ -26,7 +26,21 @@ namespace Utilities.Settings
         public ReadOnlyCollection<string> AdditionalProcesses { get; private set; }
         public ReadOnlyDictionary<string, bool> Checks { get; private set; }
 
-        private Preset() { }
+        public const string LANAccess = "LAN";
+        public const string LoopbackAccess = "Loopback";
+        public const string InternetAccess = "Internet";
+
+        public Preset(string name = null, string serverLocation = null, string processName = null, int? port = null, bool? doNotRedirectOutput = null, bool? bypassSendQuit = null, IEnumerable<string> additionalProcesses = null, IDictionary<string, bool> checks = null)
+        {
+            this.Name = name;
+            this.ServerLocation = serverLocation;
+            this.ProcessName = processName;
+            this.Port = port;
+            this.DoNotRedirectOutput = doNotRedirectOutput;
+            this.BypassSendQuit = bypassSendQuit;
+            this.AdditionalProcesses = additionalProcesses != null ? new ReadOnlyCollection<string>(new List<string>(additionalProcesses)) : null;
+            this.Checks = checks != null ? new ReadOnlyDictionary<string,bool>(checks) : null;
+        }
 
         public static Preset Load(string filename)
         {
@@ -64,11 +78,11 @@ namespace Utilities.Settings
                                     };
 
             var proccesesEntries = from item in preset.Descendants("AdditionalProcesses").Descendants("Process")
-                                      where item.Attribute("Process") != null
-                                      select new
-                                      {
-                                          name = item.Attribute("Process").Value
-                                      };
+                                   where item.Attribute("Process") != null
+                                   select new
+                                   {
+                                       name = item.Attribute("Process").Value
+                                   };
 
             name = presetElement.Attribute("Name") != null ? presetElement.Attribute("Name").Value : "undefined";
 
@@ -101,6 +115,62 @@ namespace Utilities.Settings
                 AdditionalProcesses = new ReadOnlyCollection<string>(additionalProcesses),
                 Checks = new ReadOnlyDictionary<string, bool>(checks)
             };
+        }
+
+        public void Save(string filename)
+        {
+            XDocument doc = new XDocument();
+            XElement root = new XElement("Preset", new XAttribute("Name", Name ?? "undefined"));
+
+            if ((ServerLocation != null) || (ProcessName != null) || (Port != null) || (DoNotRedirectOutput != null) || (BypassSendQuit != null) || (Checks != null && Checks.Count > 0))
+            {
+                XElement server = new XElement("Server");
+
+                if (ServerLocation != null)
+                    server.Add(new XAttribute("Location", ServerLocation));
+
+                if (Port != null)
+                    server.Add(new XAttribute("Port", Port));
+
+                if (ProcessName != null)
+                    server.Add(new XAttribute("Process", ProcessName));
+
+                if (DoNotRedirectOutput != null)
+                    server.Add(new XAttribute("DoNotRedirectOutput", DoNotRedirectOutput));
+
+                if (BypassSendQuit != null)
+                    server.Add(new XAttribute("BypassSendQuit", BypassSendQuit));
+
+                if (Checks != null && Checks.Count > 0)
+                {
+                    XElement checks = new XElement("Checks");
+
+                    foreach (KeyValuePair<string, bool> kvp in Checks)
+                    {
+                        checks.Add(
+                            new XElement("Check",
+                                new XAttribute("Name", kvp.Key),
+                                new XAttribute("Enabled", kvp.Value))
+                            );
+                    }
+                    server.Add(checks);
+                }
+
+                root.Add(server);
+            }
+
+            if (AdditionalProcesses != null && AdditionalProcesses.Count > 0)
+            {
+                XElement additional = new XElement("AdditionalProcesses");
+
+                foreach (string s in AdditionalProcesses)
+                    additional.Add(new XElement("Process", new XAttribute("Name", s)));
+
+                root.Add(additional);
+            }
+
+            doc.Add(root);
+            doc.Save(filename);
         }
     }
 }

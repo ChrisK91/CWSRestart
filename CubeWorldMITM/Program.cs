@@ -137,6 +137,7 @@ namespace CubeWorldMITM
                 Console.WriteLine("a - about");
                 Console.WriteLine("s - to save a list of every known player");
                 Console.WriteLine("t - to enable/disable autosaving of playernames");
+                Console.WriteLine("x - to configure CWSRestart via CWSProtocol");
                 Console.WriteLine("quit - to quit");
 
                 string action = Console.ReadLine();
@@ -239,6 +240,36 @@ namespace CubeWorldMITM
                                 Console.WriteLine("The timeout is not valid.");
                             }
                         }
+                        break;
+
+                    case "x":
+
+                        Dictionary<string, bool> checks = new Dictionary<string, bool>();
+                        checks.Add(Utilities.Settings.Preset.InternetAccess, false);
+                        checks.Add(Utilities.Settings.Preset.LANAccess, true);
+                        checks.Add(Utilities.Settings.Preset.LoopbackAccess, true);
+
+                        Utilities.Settings.Preset p = new Utilities.Settings.Preset("CWSProtocol", Helper.Launcher.ServerLocation, Helper.Launcher.ServerName, (int?)serverPort, null, null, null, checks);
+
+                        string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                        Guid name = Guid.NewGuid();
+
+                        folder = Path.Combine(folder, "CubeWorldMITM");
+
+                        if (!Directory.Exists(folder))
+                            Directory.CreateDirectory(folder);
+
+                        string filename = Path.Combine(folder, name.ToString() + ".xml");
+
+                        p.Save(filename);
+
+                        CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
+                        if (!c.SendPreset(filename, true))
+                        {
+                            File.Delete(filename);
+                            Console.WriteLine("Could not send preset.");
+                        }
+
                         break;
 
                     case "quit":
