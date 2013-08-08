@@ -20,11 +20,11 @@ namespace CubeWorldMITM.Helper
             }
         }
 
-        private Utilities.Settings settings;
+        private Utilities.Settings.Settings settings;
 
         private Settings() {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "CubeWorldMITM.exe.config");
-            settings = new Utilities.Settings(path);
+            settings = new Utilities.Settings.Settings(path);
 
             MinLevel = settings.GetAppSettingWithStandardValue("MinLevel", -1);
             MaxLevel = settings.GetAppSettingWithStandardValue("MaxLevel", -1);

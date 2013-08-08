@@ -7,7 +7,7 @@ using System.IO;
 using System.Configuration;
 using System.Net;
 
-namespace Utilities
+namespace Utilities.Settings
 {
     /// <summary>
     /// A settings class, that reads and writes from/to *.config files

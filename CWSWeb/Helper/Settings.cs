@@ -24,12 +24,12 @@ namespace CWSWeb.Helper
 
         public volatile CWSProtocol.Client Client;
         public int LinesToRead;
-        private Utilities.Settings settings;
+        private Utilities.Settings.Settings settings;
 
         private Settings()
         {
             string file = Path.Combine(Directory.GetCurrentDirectory(), "CWSWeb.exe.config");
-            settings = new Utilities.Settings(file);
+            settings = new Utilities.Settings.Settings(file);
 
             LinesToRead = settings.GetAppSettingWithStandardValue("LinesToRead", 201);
         }

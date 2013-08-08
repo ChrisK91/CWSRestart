@@ -15,11 +15,11 @@ namespace ServerService.Helper
     public sealed class Settings : INotifyPropertyChanged
     {
         private static readonly Settings instance = new Settings();
-        private Utilities.Settings settings;
+        private Utilities.Settings.Settings settings;
 
         private Settings() {
             string file = Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config");
-            settings = new Utilities.Settings(file);
+            settings = new Utilities.Settings.Settings(file);
 
             IPService = new Uri(settings.GetAppSettingWithStandardValue("IPService", "http://bot.whatismyipaddress.com/"));
             Loopback = settings.GetAppSettingWithStandardValue("Loopback", IPAddress.Loopback);
@@ -410,7 +410,7 @@ namespace ServerService.Helper
         }
         #endregion
 
-        public bool BypassSendQuit { get; private set; }
+        public bool BypassSendQuit { get; set; }
 
         private bool doNotRedirectOutput;
         public bool DoNotRedirectOutput

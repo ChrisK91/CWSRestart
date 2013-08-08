@@ -79,6 +79,8 @@ namespace CWSRestart
             }
 #if DEBUG
             ToggleInterProcessCommunication_Click(null, null);
+            if (File.Exists("SamplePreset.xml"))
+                Helper.Settings.Instance.LoadPreset("SamplePreset.xml");
 #endif
 
             if (Helper.Settings.Instance.AutostartCWSProtocol)

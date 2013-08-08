@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- This is a sample preset file that can be used to set settings in CWSRestart -->
+<Preset Name="CubeWorldMITM">
+  <Server Port="12345" Location="C:\Test\Server.exe" Process="Server" DoNotRedirectOutput="false" BypassSendQuit="false">
+    <Checks>
+      <Check Name="Internet" Enabled="True" />
+      <Check Name="LAN" Enabled="false" />
+      <Check Name="Loopback" Enabled="True" />
+    </Checks>
+  </Server>
+  <AdditionalProcesses>
+    <Process Process="Notepad" />
+    <Process Process="Calc" />
+  </AdditionalProcesses>
+</Preset>
