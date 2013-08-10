@@ -27,7 +27,8 @@ p code, li code {
     font-family: Consolas, "Liberation Mono", Courier, monospace;
 }
 
-ul {
+div ul:not([class])
+{
     list-style-type: square;
-    padding-left: 2em;
+    padding-left: 1.5em;
 }
