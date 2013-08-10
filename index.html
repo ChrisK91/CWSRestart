@@ -27,7 +27,7 @@ title: CWSRestart &dash; More than just a restarter
         <div class="large-4 columns">
             <h4>{{ post.title }} <small style="white-space: nowrap">{{ post.date | date_to_long_string  }}</small></h4>
             {{ post.excerpt | truncatewords: 50  }}
-            <a class="right" href="{{ post.url }}">Read more</a>
+            <a class="right" href="{{ site.newsbase }}{{ post.url }}">Read more</a>
         </div>
     {% endfor %}
     <div class="large-12 columns">

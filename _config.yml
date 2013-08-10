@@ -1,6 +1,7 @@
 paginate: 5
 paginate_path: "news/page:num"
 baseurl: "/CWSRestart/"
+newsbase: "/CWSRestart"
 authors:
     chris:
         name: ChrisK91
