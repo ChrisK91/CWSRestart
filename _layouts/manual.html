@@ -8,7 +8,7 @@ layout: default
             {% for item in site.pages %}
             {% if item.manual != nil %}
             {% if item.manual == 'cwsrestart' %}
-            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            <li><a href="{{ site.newsbase }}{{ item.url }}">{{ item.nav }}</a></li>
             {% endif %}
             {% endif %}
             {% endfor %} 
@@ -17,7 +17,7 @@ layout: default
             {% for item in site.pages %}
             {% if item.manual != nil %}
             {% if item.manual == 'cwsweb' %}
-            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            <li><a href="{{ site.newsbase }}{{ item.url }}">{{ item.nav }}</a></li>
             {% endif %}
             {% endif %}
             {% endfor %} 
@@ -26,7 +26,7 @@ layout: default
             {% for item in site.pages %}
             {% if item.manual != nil %}
             {% if item.manual == 'mitm' %}
-            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            <li><a href="{{ site.newsbase }}{{ item.url }}">{{ item.nav }}</a></li>
             {% endif %}
             {% endif %}
             {% endfor %} 
@@ -35,7 +35,7 @@ layout: default
             {% for item in site.pages %}
             {% if item.manual != nil %}
             {% if item.manual == 'serverservice' %}
-            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            <li><a href="{{ site.newsbase }}{{ item.url }}">{{ item.nav }}</a></li>
             {% endif %}
             {% endif %}
             {% endfor %} 
