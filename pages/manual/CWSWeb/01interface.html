@@ -1,0 +1,22 @@
+---
+layout: manual
+title: CWSWeb Interface
+manual: cwsweb
+nav: Web interface
+modal: <div id="img1" class="reveal-modal"><img src="%BASEURL%img/screenshots/cwsweb_2.png" alt="Screenshot of CWSRestart" class="centerBlock" /><a class="close-reveal-modal">&#215;</a></div><div id="img2" class="reveal-modal"><img src="%BASEURL%img/screenshots/cwsweb_3.png" alt="Screenshot of CWSRestart" class="centerBlock" /><a class="close-reveal-modal">&#215;</a></div><div id="img3" class="reveal-modal"><img src="%BASEURL%img/screenshots/cwsweb_4.png" alt="Screenshot of CWSRestart" class="centerBlock" /><a class="close-reveal-modal">&#215;</a></div>
+---
+<h2>Web interface</h2>
+<p>Normal users will see a statistics page if statistics are enabled in CWSRestart. If you chose to disable them, they will see a 403 page.</p>
+<h3 class="subheading">Administration</h3>
+<p>You can access the administration at <code>http://your-server-ip:8181/admin</code>, where you'll be asked to log in.</p>
+<h4 class="subheading">Controlpanel</h4>
+<a href="#" data-reveal-id="img1"><img src="{{ site.baseurl }}img/screenshots/cwsweb_2_small.png" alt="Screenshot of CWSRestart" class="centerBlock" /></a>
+<p>The main control panel allows you to start, restart, quit and kill the server. You can also configure the watcher from here. This page also displays the log from CWSRestart.</p>
+
+<h4 class="subheading">Access control</h4>
+<a href="#" data-reveal-id="img2"><img src="{{ site.baseurl }}img/screenshots/cwsweb_3_small.png" alt="Screenshot of CWSRestart" class="centerBlock" /></a>
+<p>The access list allows you to manage the IP filter. You can specify the list mode and add players. You can also kick connected players. In order to use access control, CWSRestart has to run with elevated privileges, i.e. as admin.</p>
+
+<h4 class="subheading">Statistics</h4>
+<a href="#" data-reveal-id="img3"><img src="{{ site.baseurl }}img/screenshots/cwsweb_4_small.png" alt="Screenshot of CWSRestart" class="centerBlock" /></a>
+<p>As administrator, you are able to see the RAM usage in relation to the amount of players. Statistics are updated every 5 to 10 seconds.</p>

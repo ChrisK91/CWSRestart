@@ -1,0 +1,27 @@
+---
+layout: manual
+title: CubeWorldMITM Console
+manual: mitm
+nav: Console
+---
+<h2>Console</h2>
+<h3 class="subheader">Parameters</h3>
+<p>By default, the MITM server starts listening on any IP on port 12345 and redirects traffic to loopback on port 12346. You can change these settings by launching the MITM server this way</p>
+<p><i>CubeWorldMITM [port1] [port2] [internal ip] [server ip]</i></p>
+<p>Every option is optional. They have the following effetcts:</p>
+<ul>
+    <li><i>port 1</i> specifies the port on which the MITM listens</li>
+    <li><i>port 2</i> sets the port on wich the server is listening</li>
+    <li><i>internal ip</i> specifies local IP, on which the MITM should listen</li>
+    <li><i>server ip</i> specifies the address on wich the CubeWorld server is running</li>
+</ul>
+<h3 class="subheader">Commands</h3>
+<p>The server has the following commands</p>
+<ul>
+    <li><i>c</i> - to receive a list of every currently connected player</li>
+    <li><i>n</i> - to receive a list of every name that we know and the corresponding IP</li>
+    <li><i>a</i> - about</li>
+    <li><i>s</i> - to save a list of every known player</li>
+    <li><i>t</i> - to enable/disable autosaving of playernames</li>
+    <li><i>x</i> - to configure CWSRestart via CWSProtocol <i>currently only available if you compile the MITM server yourself</i></li>
+</ul>

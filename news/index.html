@@ -1,0 +1,51 @@
+---
+title: CWSRestart &dash; News
+layout: default
+---
+<div class="row">
+    <div class="large-12 columns"><a href="{{ site.baseurl }}news/feed.xml" class="button right small secondary">RSS</a><h2>News</h2></div>
+</div>
+{% for post in paginator.posts %}
+{% assign author = site.authors[post.author] %}
+<div class="row">
+    <div class="large-12 columns">
+        <h3>{{ post.title }} <small>from {{ post.date | date_to_long_string }} by {{ author.name }}</small></h3>
+        <p>{{ post.excerpt | truncatewords: 150 }}</p>
+        <p><a href="{{ post.url }}">Read more...</a></p>
+    </div>
+</div>
+{% endfor %}
+<div class="row">
+    <div class="large-12 columns">
+        <div class="pagination-centered">
+          <ul class="pagination">
+            {% if paginator.previous_page %}
+              {% if paginator.previous_page == 1 %}
+              <li class="arrow"><a href="{{ site.baseurl }}news">&laquo;</a></li>
+              {% else %}
+              <li class="arrow"><a href="{{ site.baseurl }}news/page{{ paginator.previous_page }}">&laquo;</a></li>
+              {% endif %}
+            {% else %}
+            <li class="arrow unavailable"><a href="">&laquo;</a></li>
+            {% endif %}
+            {% if paginator.page == 1 %}
+            <li class="current"><a href="#">1</a></li>
+            {% else %}
+            <li><a href="{{ site.baseurl }}news">1</a></li>
+            {% endif %}
+            {% for count in (2..paginator.total_pages) %}
+              {% if count == paginator.page %}
+              <li class="current"><a href="">{{ count }}</a></li>
+              {% else %}
+              <li><a href="{{ site.baseurl }}news/page{{ count }}">{{ count }}</a></li>
+              {% endif %}
+            {% endfor %}
+            {% if paginator.next_page %}
+            <li class="arrow"><a href="{{ site.baseurl }}news/page{{ paginator.next_page }}">&raquo;</a></li>
+            {% else %}
+            <li class="arrow unavailable"><a href="">&raquo;</a></li>
+            {% endif %}
+          </ul>
+        </div>
+    </div>
+</div>

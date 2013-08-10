@@ -1,0 +1,50 @@
+---
+layout: default
+title: CWSRestart - FAQ
+---
+<div class="row">
+    <div class="large-12 columns">
+        <h2>Frequently Asked Questions</h2>
+        <h4 class="subheading">CWSRestart</h4>
+        <ul class="no-bullet">
+            {% for item in site.pages %}
+            {% if item.topic != nil %}
+            {% if item.topic == 'cwsrestart' %}
+            <li><a href="#{{ item.url | remove:'.html' | remove:'/' | cgi_escape | remove:'%' }}">{{ item.title }}</a></li>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </ul>
+        <hr>
+        <h4 class="subheading">CWSWeb</h4>
+        <ul class="no-bullet">
+            {% for item in site.pages %}
+            {% if item.topic != nil %}
+            {% if item.topic == 'cwsweb' %}
+            <li><a href="#{{ item.url | remove:'.html' | remove:'/' | cgi_escape | remove:'%' }}">{{ item.title }}</a></li>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </ul>
+        <hr>
+        {% for item in site.pages %}
+        {% if item.topic != nil %}
+        {% if item.topic == 'cwsrestart' %}
+        <h3 class="subheading" id="{{ item.url | remove:'.html' | remove:'/' | cgi_escape | remove:'%' }}">{{ item.title }}</h3>
+        <p>{{ item.content | unindent | markdownify }}</p>
+        <hr>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% for item in site.pages %}
+        {% if item.topic != nil %}
+        {% if item.topic == 'cwsweb' %}
+        <h3 class="subheading" id="{{ item.url | remove:'.html' | remove:'/' | cgi_escape | remove:'%' }}">{{ item.title }}</h3>
+        <p>{{ item.content | unindent | markdownify  }}</p>
+        <hr>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>

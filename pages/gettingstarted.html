@@ -1,0 +1,53 @@
+---
+layout: default
+title: CWSRestart &dash; Getting started
+---
+<div class="row">
+    <div class="large-12 columns">
+        <h2>Getting started with CWSRestart</h2>
+        <p>Hello there! This little guide will walk you through the process of setting up a small server with CWSRestart.</p>
+        <div data-magellan-expedition="fixed" class="hide-for-small">
+            <dl class="sub-nav">
+                <dt>Navigation: </dt>
+                <dd data-magellan-arrival="stock-server"><a href="#stock-server">Using CWSRestart with the stock server.exe</a></dd>
+                <dd data-magellan-arrival="custom-launcher"><a href="#custom-launcher">Using CWSRestart with a custom launcher</a></dd>
+            </dl>
+        </div>
+        <hr>
+        <h3 id="stock-server" data-magellan-destination="stock-server">Using CWSRestart with the stock server.exe</h3>
+        <h4 class="subheader">Requirements</h4>
+        <p>
+            To follow along, you need of course a CubeWorld server. In this case, we'll use the <em>server.exe</em>, that comes with CubeWorld. It should be located in your CubeWorld directory. If you want to host a server that is accessbile from the web, you should either forward your ports or enable UPnP. You can read on how to do that in your routers manual.<br><br>
+            You also need the most recent build of CWSRestart. Head to the <a href="https://github.com/ChrisK91/CWSRestart/releases" target="_blank">download page over at GitHub</a>, and look for the version with the green <em>Latest Release</em> sign next to it. Then download the <em>CWSRestart.zip</em>.<br><br>
+            You may also need to install the <a href="http://www.microsoft.com/en-US/download/details.aspx?id=30653" target="_blank">.NET Framework 4.5</a>, if not already installed.
+        </p>
+        <h4 class="subheader">Basic settings</h4>
+        <p>
+            Now that everything is in place, we can get started. Simply open CWSRestart and you will be greeted with the default interface. You can use the small arrows to hide certain areas of the interface.<br><img src="{{ site.baseurl }}img/guide/1.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            <strong>For UPnP users:</strong> Press the <i>UPnP</i> button, to open up the UPnP wizzard. Now press <i>Refresh</i> followed by <i>Open ports</i> to open port <i>12345</i><br><img src="{{ site.baseurl }}img/guide/4.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            The first thing we need to do, is to enter the LAN and Internet IP into the two textboxes. You can also click "Refresh" to get your IP automatically. Then you need to hit <i>Select...</i> and browse for your <i>server.exe</i>. After everything is done, the interface should look like this:<br><img src="{{ site.baseurl }}img/guide/2.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            The next step is to configure the watcher. The watcher will run every 60 seconds and check if <i>server.exe</i> is still running. It will also try to connect to your IP, to see if the server is still answering to connections. To start the watcher, click the <i>Start watcher</i> button on the left side. A progressbar will indicate when the next check is scheduled. You can change the interval by editing the 60. Let's change this value to something else. Enter 30 and press <kbd>Enter</kbd>. After 30 seconds, the <i>server.exe</i> will be started by CWSRestart (in case you haven't started it already). If you want to host a LAN only server, uncheck the <i>Internet</i> checkbox.<br><img src="{{ site.baseurl }}img/guide/3.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            This is the basic setup. If you want to stop CWSRestart, just press the <i>Stop Watcher</i> button. You can stop the server with the buttons on the bottom left (you might need to resize your windows, if you can't see those buttons).<br><br>
+            You will see everything that CWSRestart is doing in the log area. The log will keep the last 500 entries. Everything older will be discarded, to save memory. You can filter the log by ticking the boxes below the log area.
+        </p>
+        <hr>
+        <h3 id="custom-launcher" data-magellan-destination="custom-launcher">Using CWSRestart with a custom launcher</h3>
+        <p>
+            Some people like to modify the server with DLL injections. There are quite some custom launchers out there, so let's take a look at how to use them with CWSRestart. First things first: Start CWSRestart and fill in your IP. Then use the <i>Select...</i> button to browse for your launcher (or for a .bat file that launches your launcher).<br><img src="{{ site.baseurl }}img/guide/5.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            Now click the start button in the lower left corner. This should start your custom launcher. If your launcher closes after starting the server, you are already finished. But if your launcher starts multiple process, we need to let CWSRestart know which processes belong to your launcher. Go ahead and click the <i>Additional processes</i> button on the right side. Either search the process in the upper list and double click it, <em>or</em> enter the name in the <i>Add</i> box and press <kbd>Enter</kbd>. You can remove entries by double clicking on them.<br><img src="{{ site.baseurl }}img/guide/6.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            Close the dialog and you should be ready to go. The additional processes aren't saved (currently), so you have to reselect them everytime you restart CWSRestart. But I'm working on that...
+        </p>
+    </div>
+</div>

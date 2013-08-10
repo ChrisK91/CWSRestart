@@ -1,0 +1,18 @@
+---
+layout: manual
+title: CWSRestart configuration file
+manual: cwsrestart
+nav: Configuration file
+---
+<h2>Configuration file</h2>
+<p>The following settings can be changes in the <i>CWSRestart.exe.config</i></p>
+<ul>
+    <li><i>AutostartCWSProtocol</i> allows you to automatically start CWSProtocol when you start CWSRestart.</li>
+    <li><i>AutostartStatistics</i> indicates, if statistics should be enabled on startup.</li>
+    <li><i>AutostartWatcher</i> sets, if the watcher should be started on startup.</li>
+    <li><i>WatcherTimeout</i> defines the value between to watcher checks in seconds.</li>
+</ul>
+<div class="panel">
+    <p>There are more settings in the <i>ServerService.dll.config</i>. These settings are discussed in the ServerService section of the manual, since ServerService is a library that is shared across multiple modules.</p>
+    <a class="button secondary" href="{{ site.baseurl }}pages/manual/ServerService/01configuration.html">ServerService &raquo;</a>
+</div>

@@ -1,0 +1,33 @@
+h3:target {
+    color:  #2ba6cb;
+}
+
+.orbit-slides-container li img {
+    margin: 0.3em auto;
+}
+
+.centerBlock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h4.date {
+    color: #2284a1;
+    font-weight: lighter;
+}
+
+img.profile {
+    margin: 0.4em;
+}
+
+p code, li code {
+    display: inline-block;
+    color: #7f0a0c;
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+ul {
+    list-style-type: square;
+    padding-left: 2em;
+}

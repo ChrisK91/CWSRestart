@@ -1,0 +1,69 @@
+---
+title: CWSRestart Interface Manual
+layout: manual
+manual: cwsrestart
+nav: Interface
+---
+<h2>Interface</h2>
+<div data-magellan-expedition="fixed" class="hide-for-small">
+    <dl class="sub-nav">
+        <dt>Navigation: </dt>
+        <dd data-magellan-arrival="configuration"><a href="#configuration">Configuration</a></dd>
+        <dd data-magellan-arrival="general"><a href="#general">General</a></dd>
+        <dd data-magellan-arrival="watcher"><a href="#watcher">Watcher</a></dd>
+        <dd data-magellan-arrival="stats"><a href="#stats">Statistics</a></dd>
+        <dd data-magellan-arrival="log"><a href="#log">Log</a></dd>
+        <dd data-magellan-arrival="ipfilter"><a href="#ipfilter">IP Filter</a></dd>
+        <dd data-magellan-arrival="additional-processes"><a href="#additional-processes">Additional processes</a></dd>
+        <dd data-magellan-arrival="upnp"><a href="#upnp">UPnP</a></dd>
+    </dl>
+</div>
+
+<img src="{{ site.baseurl }}img/guide/1.png" alt="CWSRestart interface" class="centerBlock">
+
+<h3 class="subheader" id="configuration" data-magellan-destination="configuration">Configuration</h3>
+<ul class="square">
+    <li><i>External IP</i> contains the IP under which your PC is known in the world wide web. The access check from the internet will use this IP. Use the <i>Refresh</i> button to get your IP automatically.</li>
+    <li><i>LAN IP</i> contains your local network IP. If CWSRestart checks for access from LAN, this IP will be used. You can get it automatically with the <i>Refresh</i> button.</li>
+    <li><i>When the server is not responding, restart with:</i> usually contains the path to your <i>server.exe</i>. If CWSRestart needs to restart your server, the specified file will be executed. You can browser for your server with the <i>Select...</i> button. You can also chose a BAT file, if you want.</li>
+    <li><i>Check access from</i> specifies, from wich networks CWSRestart should check access for your server. For instance: If Loopback is selected, CWSRestart will try to connect to <i>127.0.0.1</i>.</li>
+    <li><i>Process</i> is the name of the server process without extension.</li>
+    <li><i>Additional processes</i> see section <a href="#additional-processes">Additional processes</a>.</li>
+</ul>
+
+<h3 class="subheader" id="general" data-magellan-destination="general">General</h3>
+<ul class="square">
+    <li><i>Validate configuration</i> will run a single check and display the results in the log.</li>
+    <li><i>Check for updates</i> will connect to this website and see if the version you are using is up to date.</li>
+    <li><i>UPnP</i> see section <a href="#upnp">UPnP</a>.</li>
+    <li><i>Save statistics to...</i> will allow you to select a folder where statistics are saved. Statistics are saved into SQLite databases and can be read by other modules.</li>
+    <li><i>Start CWSProtocol</i> will enable process to process communication. This allows other modules to talk to CWSRestart.</li>
+</ul>
+
+<h3 class="subheader" id="watcher" data-magellan-destination="watcher">Watcher</h3>
+<ul class="square">
+    <li><i>Start watcher</i> will start the watcher and turn into the <i>Stop watcher</i> button. The watcher will check your server periodically.</li>
+    <li><i>Intervall in seconds</i> is the time between two checks. You can change this value and set it with <kbd>Enter</kbd></li>
+    <li>The <i>progressbar</i> indicates, when the next check is scheduled. An endlessly scrolling bar means that the watcher is currently working and cannot be stopped right now.</li>
+</ul>
+
+<h3 class="subheader" id="stats" data-magellan-destination="stats">Statistics</h3>
+<p>You can enable statistics in the lower right corner with the <i>Enable statistics</i>. If you haven't selected a location for your logfiles, the log will contain a message about that. You don't need to save your statistics if they aren't required by another program. The number of players is not updated in real time to improve performance.</p>
+
+<h3 class="subheader" id="log" data-magellan-destination="log">Log</h3>
+<p>The log contains messages from CWSRestart. It will contain a maximum of 500 entries. If this limit is reached, older entries will be discarded. You can clear the log yourself with the <i>Clear log</i> button. You can also filter the entries with the checkboxes below the log.</p>
+
+<h3 class="subheader" id="ipfilter" data-magellan-destination="ipfilter">IP Filter</h3>
+<img src="{{ site.baseurl }}img/guide/7.png" alt="CWSRestart interface" class="centerBlock">
+<p>The <i>IP Filter</i> dialog can be opened via the <i>IP Filter</i> button. In order to enable this button, you need to enable statistics. You also need to run CWSRestart as administrator.</p>
+<p>The left list contains currently connected players. Double click on a player to add/remove them to/from your blacklist or whitelist. You can kick players by pressing the <kbd>Delete</kbd> key while having a player selected.</p>
+<p>The list in the middle contains all players that ever visited your server. Double clicl a player to add/remove them to/from your list.</p>
+<p>The right list is your blacklist or whitelist. You can select the mode in the bottom right. You can remove entries with a double click. Use the <i>Add</i> textbox to add a single IP or an IP range (e.g. <code>192.0.0.0 - 192.0.0.255</code>). Use the buttons ons the lower left to save and restore your lists. The lists are saved automatically when you exit CWSRestart and loaded when you start CWSRestart. The file is located in the CWSRestart folder and named <i>iplist.txt</i>.</p>
+
+<h3 class="subheader" id="additional-processes" data-magellan-destination="additional-processes">Additional processes</h3>
+<img src="{{ site.baseurl }}img/guide/6.png" alt="CWSRestart interface" class="centerBlock">
+<p>The <i>Additional processes</i> dialog allows you to select processes, that belong to your server. When CWSRestart terminates the server, any process listed here will be terminated as well. Double click a process to add/remove it from the list. You can also add processes by typing into the <i>Add</i> textbox and pressing <kbd>Enter</kbd></p>
+
+<h3 class="subheader" id="upnp" data-magellan-destination="upnp">UPnP</h3>
+<img src="{{ site.baseurl }}img/guide/4.png" alt="CWSRestart interface" class="centerBlock">
+<p>You can use the <i>UPnP</i> dialog to forward the UDP/TCP port 12345. If the ports are already forwarded, you can use this function to remove the forwarding entry. This feature requires your router to have UPnP enabled.</p>

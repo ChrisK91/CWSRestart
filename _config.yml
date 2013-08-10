@@ -1,0 +1,9 @@
+paginate: 5
+paginate_path: "news/page:num"
+authors:
+    chris:
+        name: ChrisK91
+        gravatar: 993a2b929d2e0aa274db190d2cb44cde
+        twitter: ChrisK91
+        github: ChrisK91
+        about: Chris created the first CWSRestart version in July 2013. In real life he is a student in Germany. He can be usually found on Reddit under the same name /u/ChrisK91. Besides CubeWorld, his frequently played games are of course Minecraft and Kerbal Space Program.

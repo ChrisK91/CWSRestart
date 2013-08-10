@@ -1,0 +1,105 @@
+---
+layout: post
+author: chris
+title: Cleaning up the settings
+excerpt: <p>If you ever looked at the CWSRestart code, you might have noticed that every settings class had a fairly good amount of copy-and-pasted Spaghetti code. So I took the time to abstract the config loading into its own class, that can either be inherited or instantiated, to save and load configuration files. Let's take a look on how to create such a class.</p>
+---
+<p>If you ever looked at the CWSRestart code, you might have noticed that every settings class had a fairly good amount of copy-and-pasted <a href="http://en.wikipedia.org/wiki/Spaghetti_code" target="_blank">Spaghetti code</a>. So I took the time to abstract the <code>config</code> loading into its own class, that can either be inherited or instantiated, to save and load configuration files. Let's take a look on how to create such a class.</p>
+<p>The assembly has an empty configuration file located in the subfolder <i>Embedded</i>, with the build action set to embedded ressource:</p>
+<pre><code data-language="html">&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;configuration&gt;
+  &lt;appSettings&gt;
+  &lt;/appSettings&gt;
+&lt;/configuration&gt;</code></pre>
+<p>The constructor of the settings class requires one parameter: the filename of the configuration file. This parameter is stored in the <a href="http://msdn.microsoft.com/en-us/library/ms173118.aspx" target="_blank">private field</a> <code>file</code>. When the class is instantiated, the constructor will check if the given file exists. If not, the configuration file from the embedded ressource is copied to the given location.</p>
+<pre><code data-language="csharp">Settings(string ConfigurationFile)
+{
+    file = ConfigurationFile;
+
+    if (!File.Exists(file))
+    {
+        //Replace Embedded with your folder name
+        using (Stream resource = GetType().Assembly.GetManifestResourceStream("Utilities.Embedded.empty.config"))
+        {
+            using (Stream output = File.OpenWrite(file))
+            {
+                resource.CopyTo(output);
+            }
+        }
+    }
+}</code></pre>
+<p>Now that we have created the file, we need a function to open the configuration. Add a reference to <code>System.Configuration</code> and a using directive at the top with <code>using System.Configuration;</code>. Now we can create the function to open the file with <a href="http://msdn.microsoft.com/en-us/library/ms134269.aspx" target="_blank">OpenMappedExeConfiguration</a>:</p>
+<pre><code data-language="csharp">private Configuration openConfiguration()
+{
+    ExeConfigurationFileMap configurationMap = new ExeConfigurationFileMap();
+    configurationMap.ExeConfigFilename = file;
+
+    Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configurationMap, ConfigurationUserLevel.None);
+    return config;
+}</code></pre>
+<h4 class="subheading">Reading and saving values</h4>
+<p>Now that everything is in place, we can actually get a value from the configuration file. I created a small helper method to do this. It utilizes the <code>openConfiguration</code> method we created above:</p>
+<pre><code data-language="csharp">public string GetAppSettingValue(string key)
+{
+    Configuration config = openConfiguration();
+    return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null;
+}</code></pre>
+<p>To prevent exceptions, we first check if the given key exists in our configuration file. If it does, we return the value, otherwise we return null. If you are unfamiliar with the <code>? :</code> notation:</p>
+<pre><code data-language="csharp">return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null;
+
+//Will expand to
+
+if(config.AppSettings.Settings[key] != null)
+    { return config.AppSettings.Settings[key].Value; }
+else
+    { return null; }</code></pre>
+<p>Now we still need a way to save values. We can do this with the following function:</p>
+<pre><code data-language="csharp">public void SetAppSetting(string Key, object Value)
+{
+    Configuration config = openConfiguration();
+
+    if (config.AppSettings.Settings[Key] != null)
+        config.AppSettings.Settings.Remove(Key);
+
+    config.AppSettings.Settings.Add(Key, Value.ToString());
+    config.Save(ConfigurationSaveMode.Modified);
+}</code></pre>
+<p>This function will check if the setting already exists. In this case, the setting is removed. Then a new setting is added with the given key and value. Finally, the modified values are saved to the file.</p>
+<h4 class="subheading">Getting values with the correct type</h4>
+<p>Not every setting is a string. CWSRestart for instance stores booleans, IPAddresses, integers and many more types in the configuration file. Therefore it would be nice, if we could add methods that return the correct type. Also, since we use an empty config file as template, we need to add default values if settings are not present.</p>
+<p>Basically we need a function <code>GetAppSettingWithStandardValue(string key, <i>Type</i> fallback)</code>, that returns the value for <code>key</code> if present. If <code>key</code> does not exist in the settings, we create it with <code>fallback</code> as value and return fallback. We could use a generic method that boxes the value to <code>T</code> like</p>
+<pre><code data-language="csharp">
+//pseudo code
+public T GetAppSettingWithStandardValue&lt;T&gt;(string key, T fallback)
+{
+    return (T)GetAppSettingValue(key);
+}
+</code></pre>
+<p>However, this function could throw errors if someone messes with our config file. The best thing would be a generic TryParse, however there is no such thing. But here is a small workaround. First, we create generic TryParseHandler&lt;T&gt;:</p>
+<pre><code data-language="csharp">private delegate bool TryParseHandler&lt;T&gt;(string value, out T result);</code></pre>
+<p>This delegate matches every TryParse method out there. Now we create a helper function that uses this delegate to parse our value and create a setting if parsing fails (or no setting is present):</p>
+<code><pre data-language="csharp">private T readOrCreateValue&lt;T&gt;(string key, T value, TryParseHandler&lt;T&gt; handler)
+{
+    if (!(GetAppSettingValue(key) != null && handler(GetAppSettingValue(key), out value)))
+    {
+        SetAppSetting(key, value);
+    }
+    return value;
+}</pre></code>
+<p>Now we can create overloaded functions to get settings with the correct type:</p>
+<code><pre data-language="csharp">public int GetAppSettingWithStandardValue(string key, int fallback)
+{
+    return readOrCreateValue&lt;int&gt;(key, fallback, int.TryParse);
+}
+
+public bool GetAppSettingWithStandardValue(string key, bool fallback)
+{
+    return readOrCreateValue&lt;bool&gt;(key, fallback, Boolean.TryParse);
+}
+
+public IPAddress GetAppSettingWithStandardValue(string key, IPAddress fallback)
+{
+    return readOrCreateValue&lt;IPAddress&gt;(key, fallback, IPAddress.TryParse);
+}</pre></code>
+<h4 class="subheading">Conclusion</h4>
+<p>Creating a settings class isn't really rocket science. A generic TryParse (or an interface with TryParse) would be helpful. You could use reflection to find your TryParse method, but if you have only a small number of types you can use overloaded functions as well. The full code can bew viewed at <a href="https://github.com/ChrisK91/CWSRestart/blob/8d4409c22eef427c19465551dfc0bde90ed019bf/Utilities/Settings/Settings.cs">GitHub</a>.</p>

@@ -1,0 +1,12 @@
+---
+title: CubeWorldMITM
+layout: default
+---
+<div class="row">
+    <div class="large-12 columns">
+        <h2>CubeWorld MITM Server</h2><br><img src="{{ site.baseurl }}img/screenshots/mitm_new.png" alt="CWSRestart interface" class="centerBlock"><br>
+        <p><img src="{{ site.baseurl }}img/screenshots/mitm.png" alt="CWSRestart interface" class="right">Some people wan't to know, who is currently on their server. And frankly, most custom launchers do some magic and ready those lists from the memory. I wanted such a feature for CWSRestart as well, but I still wanted to stay independent of the server.exe. So I decided, that a man-in-the-middle server would be the best idea.</p>
+        <p>A man-in-the-middle server sits between your CubeWorld server and the client. The client (in our case the player) send a command to the man-in-the-middle server. CubeWorldMITM then analyzes the package and redirects it to your server. The server sends an answer that is redirect to the client. Neither the client, nor the server won't know that there is something between them.</p>
+        <p>This tool can also restrict the allowed levels and limit the amount of players that are allowed to join.</p>
+    </div>
+</div>

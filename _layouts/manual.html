@@ -1,0 +1,45 @@
+---
+layout: default
+---
+<div class="row">
+    <div class="large-3 columns panel">
+        <ul class="side-nav">
+            <li><h4>CWSRestart</h4></li>
+            {% for item in site.pages %}
+            {% if item.manual != nil %}
+            {% if item.manual == 'cwsrestart' %}
+            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            {% endif %}
+            {% endif %}
+            {% endfor %} 
+            <li class="divider"></li> 
+            <li><h4>CWSWeb</h4></li> 
+            {% for item in site.pages %}
+            {% if item.manual != nil %}
+            {% if item.manual == 'cwsweb' %}
+            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            {% endif %}
+            {% endif %}
+            {% endfor %} 
+            <li class="divider"></li>
+            <li><h4>CubeWorldMITM</h4></li> 
+            {% for item in site.pages %}
+            {% if item.manual != nil %}
+            {% if item.manual == 'mitm' %}
+            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            {% endif %}
+            {% endif %}
+            {% endfor %} 
+            <li class="divider"></li>
+            <li><h4>ServerService</h4></li>
+            {% for item in site.pages %}
+            {% if item.manual != nil %}
+            {% if item.manual == 'serverservice' %}
+            <li><a href="{{ item.url }}">{{ item.nav }}</a></li>
+            {% endif %}
+            {% endif %}
+            {% endfor %} 
+        </ul>
+    </div>
+    <div class="large-9 columns">{{ content }}</div>
+</div>
