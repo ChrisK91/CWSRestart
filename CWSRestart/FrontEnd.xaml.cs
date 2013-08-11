@@ -69,6 +69,9 @@ namespace CWSRestart
             if (File.Exists(Dialogs.IPFilter.ListLocation))
                 AccessControl.Instance.RestoreList(Dialogs.IPFilter.ListLocation);
 
+            if (File.Exists(ServerService.Helper.Settings.Instance.AdditionalProcessesLocation))
+                ServerService.Helper.Settings.Instance.RestoreAdditionalProcceses(ServerService.Helper.Settings.Instance.AdditionalProcessesLocation);
+
             if (!ServerService.Helper.UacHelper.IsProcessElevated && ServerService.Helper.UacHelper.IsUacEnabled)
             {
                 Helper.Logging.OnLogMessage("The application is not running as administrator. Features like banning might not work.", Logging.MessageType.Warning);
@@ -79,8 +82,6 @@ namespace CWSRestart
             }
 #if DEBUG
             ToggleInterProcessCommunication_Click(null, null);
-            if (File.Exists("SamplePreset.xml"))
-                Helper.Settings.Instance.LoadPreset("SamplePreset.xml");
 #endif
 
             if (Helper.Settings.Instance.AutostartCWSProtocol)
@@ -274,6 +275,7 @@ namespace CWSRestart
                 Infrastructure.Server.Instance.ToggleServer();
 
             AccessControl.Instance.SaveList(Dialogs.IPFilter.ListLocation);
+            ServerService.Helper.Settings.Instance.SaveAdditionalProcesses(ServerService.Helper.Settings.Instance.AdditionalProcessesLocation);
         }
     }
 }

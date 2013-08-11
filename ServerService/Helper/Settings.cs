@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace ServerService.Helper
 {
@@ -430,6 +431,7 @@ namespace ServerService.Helper
                 }
             }
         }
+
         #region AdditionalProcesses
         private ObservableCollection<string> additionalProcesses = new ObservableCollection<string>();
         public ObservableCollection<string> AdditionalProcesses
@@ -448,6 +450,43 @@ namespace ServerService.Helper
             }
         }
         #endregion
+
+        private string additionalProcessesLocation = Path.Combine(Directory.GetCurrentDirectory(), "additionalprocesses.txt");
+        public string AdditionalProcessesLocation
+        {
+            get
+            {
+                return additionalProcessesLocation;
+            }
+        }
+
+        public void RestoreAdditionalProcceses(string filepath)
+        {
+            using (FileStream fs = File.Open(filepath, FileMode.Open, FileAccess.Read))
+            {
+                AdditionalProcesses = new ObservableCollection<string>();
+                StreamReader sr = new StreamReader(fs);
+
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (!AdditionalProcesses.Contains(line.Trim()))
+                        AdditionalProcesses.Add(line.Trim());
+                }
+
+                sr.Close();
+            }
+        }
+
+        public void SaveAdditionalProcesses(string filepath)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (String s in AdditionalProcesses)
+                sb.AppendLine(s);
+
+            File.WriteAllText(filepath, sb.ToString());
+        }
 
         /// <summary>
         /// Describes some access locations
