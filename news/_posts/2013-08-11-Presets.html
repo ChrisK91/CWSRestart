@@ -1,0 +1,23 @@
+---
+layout: post
+author: chris
+title: Presets
+---
+<p>The new version of CWSRestart will allow you to import presets. This can help you to deploy settings to a larger number of PCs. Another case where presets are useful are custom servers. Presets can be imported via the CWSProtocol. Or you can copy a preset into the <i>preset</i> subfolder, to load it automatically.</p>
+<p>Presets are simple XML files. A sample preset would look like this:</p>
+<pre><code data-language="html">&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;!-- This is a sample preset file that can be used to set settings in CWSRestart --&gt;
+&lt;Preset Name="CubeWorldMITM"&gt;
+  &lt;Server Port="12345" Location="C:\Test\Server.exe" Process="Server" DoNotRedirectOutput="false" BypassSendQuit="false"&gt;
+    &lt;Checks&gt;
+      &lt;Check Name="Internet" Enabled="True" /&gt;
+      &lt;Check Name="LAN" Enabled="false" /&gt;
+      &lt;Check Name="Loopback" Enabled="True" /&gt;
+    &lt;/Checks&gt;
+  &lt;/Server&gt;
+  &lt;AdditionalProcesses&gt;
+    &lt;Process Process="Notepad" /&gt;
+    &lt;Process Process="Calc" /&gt;
+  &lt;/AdditionalProcesses&gt;
+&lt;/Preset&gt;</code></pre>
+<p>As you can see, the structure is pretty self explaining. The only required element is the root element <code>Preset</code> with the <code>Name</code> attribute. Everything else is purely optional. The upcoming version of CubeWorld MITM will use presets to automatically configure CWSRestart. This way you don't have to edit the config file anymore :)</p>
