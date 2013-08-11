@@ -128,7 +128,8 @@ namespace CWSRestart
 
             try
             {
-                Application.Current.Dispatcher.BeginInvoke(new Action<Controls.LogFilter.LogMessage>((m) => LogControl.Messages.Add(m)), new Controls.LogFilter.LogMessage(e.message, t));
+                if(Application.Current != null)
+                    Application.Current.Dispatcher.BeginInvoke(new Action<Controls.LogFilter.LogMessage>((m) => LogControl.Messages.Add(m)), new Controls.LogFilter.LogMessage(e.message, t));
             }
             catch (NullReferenceException)
             {

@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -94,6 +95,10 @@
     <ProjectReference Include="..\CWSProtocol\CWSProtocol.csproj">
       <Project>{0ef0ff1f-a55e-43ac-aaaa-02a07890fd81}</Project>
       <Name>CWSProtocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServerService\ServerService.csproj">
+      <Project>{1cab7bee-1ae8-4222-8cdb-498b3decf641}</Project>
+      <Name>ServerService</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{70fca487-0a21-4ef8-81c1-f74b41a1ad09}</Project>

@@ -35,7 +35,8 @@ namespace CWSProtocol
             KICK,
             ACCESSMODE,
             ACCESSLIST,
-            PRESET
+            PRESET,
+            PLAYERSDATABASE
         }
     }
 }

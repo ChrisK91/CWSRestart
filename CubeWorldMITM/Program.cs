@@ -1,4 +1,5 @@
 ﻿using CubeWorldMITM.Networking;
+using ServerService.Database;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +32,8 @@ namespace CubeWorldMITM
         private static IPAddress cubeWorldIP = IPAddress.Loopback;
 
         private static System.Timers.Timer autosave = new System.Timers.Timer();
+
+        private static KnownPlayers knownPlayers;
 
         static void Main(string[] args)
         {
@@ -129,6 +132,8 @@ namespace CubeWorldMITM
 
         private static void messageLoop()
         {
+            CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
+
             while (shouldExit != true)
             {
                 Console.WriteLine("Enter one of the following options");
@@ -138,6 +143,7 @@ namespace CubeWorldMITM
                 Console.WriteLine("s - to save a list of every known player");
                 Console.WriteLine("t - to enable/disable autosaving of playernames");
                 Console.WriteLine("x - to configure CWSRestart via CWSProtocol");
+                Console.WriteLine("d - to enable sharing connected players with CWSRestart");
                 Console.WriteLine("quit - to quit");
 
                 string action = Console.ReadLine();
@@ -263,11 +269,27 @@ namespace CubeWorldMITM
 
                         p.Save(filename);
 
-                        CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
                         if (!c.SendPreset(filename, true))
                         {
                             File.Delete(filename);
                             Console.WriteLine("Could not send preset.");
+                        }
+
+                        break;
+
+                    case "d":
+
+                        string database;
+
+                        if((database = c.GetPlayersDatabase()) != null)
+                        {
+                            Console.WriteLine("Playerdatabase: {0}", database);
+                            knownPlayers = new KnownPlayers(database);
+
+                            knownPlayers.ClearConnectedPlayers();
+
+                            foreach (KeyValuePair<string, MITMMessageHandler> kvp in ConnectedPlayers)
+                                knownPlayers.AddConnectedPlayer(kvp.Value.IP, kvp.Value.Name);
                         }
 
                         break;
@@ -382,6 +404,9 @@ namespace CubeWorldMITM
                     {
                         if (ConnectedPlayers.ContainsKey(h.IP))
                             ConnectedPlayers.Remove(h.IP);
+
+                        if (knownPlayers != null)
+                            knownPlayers.RemoveConnectedPlayer(h.IP);
                     });
 
                     handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
@@ -393,6 +418,14 @@ namespace CubeWorldMITM
                             List<string> tmp = new List<string>();
                             tmp.Add(h.Name);
                             KnownNames.Add(h.IP, tmp);
+                        }
+
+                        if (knownPlayers != null)
+                        {
+                            if (ConnectedPlayers.ContainsKey(h.IP))
+                                knownPlayers.AddConnectedPlayer(h.IP, h.Name);
+
+                            knownPlayers.AddKnownPlayer(h.IP, h.Name);
                         }
 
                         if (!levelAllowed(h.Level))
@@ -407,6 +440,7 @@ namespace CubeWorldMITM
                         ConnectedPlayers[handler.IP].Disconnect();
                         ConnectedPlayers.Remove(handler.IP);
                     }
+
                     ConnectedPlayers.Add(handler.IP, handler);
 
                     establishedConnections.Add(handler);

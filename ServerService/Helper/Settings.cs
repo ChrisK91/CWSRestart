@@ -88,6 +88,25 @@ namespace ServerService.Helper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public Database.KnownPlayers KnownPlayers {get; private set;}
+        
+        public string KnownPlayersLocation
+        {
+            get
+            {
+                return KnownPlayers.Filename;
+            }
+            set
+            {
+                if (File.Exists(value))
+                {
+                    KnownPlayers = new Database.KnownPlayers(value);
+                    notifyPropertyChanged();
+                    notifyPropertyChanged("KnownPlayers");
+                }
+            }
+        }
+
         private int saveStatisticsEvery;
         public int SaveStatisticsEvery
         {

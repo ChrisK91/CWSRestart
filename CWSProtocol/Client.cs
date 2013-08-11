@@ -384,5 +384,16 @@ namespace CWSProtocol
                 return false;
             }
         }
+
+        public string GetPlayersDatabase()
+        {
+            if (sendCommand(Commands.Command.PLAYERSDATABASE))
+            {
+                Tuple<Commands.Command, string> answer = readResponse();
+                disconnectClient();
+                return answer == null ? null : answer.Item2;
+            }
+            return null;
+        }
     }
 }

@@ -368,7 +368,6 @@ namespace ServerService
 
 #if DEBUG
             //Time for some debug data
-
             Random rnd = new Random();
             int playersToGenerate = rnd.Next(1, 10);
 

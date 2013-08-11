@@ -14,19 +14,24 @@ namespace ServerService.Database
         protected SQLiteConnection connection;
 
         /// <summary>
-        /// Initializes the Database. Calls setUpDatabase()
+        /// Initializes the Database. Calls setUpDatabase() if the file is created
         /// </summary>
         /// <param name="Filename">The database file. Will be created if it doesnt exist</param>
         public Database(string Filename)
         {
             this.Filename = Filename;
+            bool setUp = false;
 
             if (!File.Exists(Filename))
+            {
                 SQLiteConnection.CreateFile(Filename);
+                setUp = true;
+            }
 
             connection = new SQLiteConnection(String.Format("Data Source=\"{0}\"", Filename));
 
-            setUpDatabase();
+            if (setUp)
+                setUpDatabase();
         }
 
         protected abstract void setUpDatabase();
@@ -43,6 +48,22 @@ namespace ServerService.Database
             command.ExecuteNonQuery();
 
             connection.Close();
+        }
+
+        /// <summary>
+        /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored. 
+        /// </summary>
+        /// <param name="command">The command to execute</param>
+        /// <returns>The first column of the first row returned by the query</returns>
+        protected object executeScalar(SQLiteCommand command)
+        {
+            connection.Open();
+
+            command.Connection = connection;
+            object ret = command.ExecuteScalar();
+
+            connection.Close();
+            return ret;
         }
 
         /// <summary>
@@ -72,6 +93,7 @@ namespace ServerService.Database
 
             foreach (SQLiteCommand c in commands)
             {
+                c.Connection = connection;
                 c.ExecuteNonQuery();
             }
 

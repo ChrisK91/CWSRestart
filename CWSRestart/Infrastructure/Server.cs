@@ -230,6 +230,11 @@ namespace CWSRestart.Infrastructure
                                                         case Commands.Command.ACCESSMODE:
                                                             sendReply(Commands.Command.ACCESSMODE, AccessControl.Instance.Mode.ToString(), serverStream);
                                                             break;
+
+                                                        case Commands.Command.PLAYERSDATABASE:
+                                                            Helper.Settings.Instance.SetUpPlayersdatabase();
+                                                            sendReply(Commands.Command.PLAYERSDATABASE, Helper.Settings.Instance.KnownPlayersLocation, serverStream);
+                                                            break;
                                                     }
 
                                                     break;
@@ -344,7 +349,6 @@ namespace CWSRestart.Infrastructure
                                                                 if (content[0] == "DELETE")
                                                                     File.Delete(content[1]);
                                                             }
-
 
                                                             break;
 

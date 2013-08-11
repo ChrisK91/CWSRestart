@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using ServerService.Database;
 
 namespace CWSRestart.Helper
 {
@@ -20,6 +21,7 @@ namespace CWSRestart.Helper
 
         private static Settings instance = new Settings();
         Utilities.Settings.Settings settings;
+        public string KnownPlayersLocation { get; private set; }
 
         private Settings()
         {
@@ -168,6 +170,14 @@ namespace CWSRestart.Helper
                     settings.SetAppSetting("WatcherTimeout", value);
                 }
             }
+        }
+
+        public void SetUpPlayersdatabase()
+        {
+            KnownPlayersLocation = Path.Combine(Directory.GetCurrentDirectory(), "players.db");
+            ServerService.Helper.Settings.Instance.KnownPlayersLocation = KnownPlayersLocation;
+
+            Helper.Logging.OnLogMessage("Now ready to identify players...", ServerService.Logging.MessageType.Info);
         }
     }
 }

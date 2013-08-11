@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="AccessControl.cs" />
     <Compile Include="Database\Database.cs" />
+    <Compile Include="Database\KnownPlayers.cs" />
     <Compile Include="Database\Statistics.cs" />
     <Compile Include="Helper\AccessIP.cs" />
     <Compile Include="Helper\AccessIPRange.cs" />
