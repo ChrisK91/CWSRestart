@@ -43,10 +43,7 @@ namespace Utilities.Settings
         /// <param name="Value">The value</param>
         public void SetAppSetting(string Key, object Value)
         {
-            ExeConfigurationFileMap configurationMap = new ExeConfigurationFileMap();
-            configurationMap.ExeConfigFilename = file;
-
-            Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configurationMap, ConfigurationUserLevel.None);
+            Configuration config = openConfiguration();
 
             if (config.AppSettings.Settings[Key] != null)
                 config.AppSettings.Settings.Remove(Key);
@@ -62,12 +59,22 @@ namespace Utilities.Settings
         /// <returns>The value. Null if the setting was not found.</returns>
         public string GetAppSettingValue(string key)
         {
+            Configuration config = openConfiguration();
+
+            return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null;
+        }
+
+        /// <summary>
+        /// Opens the configuration file
+        /// </summary>
+        /// <returns>The opened configuation</returns>
+        private Configuration openConfiguration()
+        {
             ExeConfigurationFileMap configurationMap = new ExeConfigurationFileMap();
             configurationMap.ExeConfigFilename = file;
 
             Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configurationMap, ConfigurationUserLevel.None);
-
-            return config.AppSettings.Settings[key] != null ? config.AppSettings.Settings[key].Value : null;
+            return config;
         }
 
         /// <summary>
@@ -86,6 +93,11 @@ namespace Utilities.Settings
             return readOrCreateValue<bool>(key, fallback, Boolean.TryParse);
         }
 
+        public IPAddress GetAppSettingWithStandardValue(string key, IPAddress fallback)
+        {
+            return readOrCreateValue<IPAddress>(key, fallback, IPAddress.TryParse);
+        }
+
         public string GetAppSettingWithStandardValue(string key, string fallback)
         {
             if (GetAppSettingValue(key) == null)
@@ -95,11 +107,6 @@ namespace Utilities.Settings
             }
 
             return GetAppSettingValue(key);
-        }
-
-        public IPAddress GetAppSettingWithStandardValue(string key, IPAddress fallback)
-        {
-            return readOrCreateValue<IPAddress>(key, fallback, IPAddress.TryParse);
         }
 
         public uint GetAppSettingWithStandardValue(string key, uint fallback)
@@ -118,9 +125,5 @@ namespace Utilities.Settings
         }
 
         private delegate bool TryParseHandler<T>(string value, out T result);
-        private bool tryParse<T>(string value, out T result, TryParseHandler<T> handler)
-        {
-            return handler(value, out result);
-        }
     }
 }

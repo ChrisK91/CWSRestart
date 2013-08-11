@@ -358,59 +358,73 @@ namespace CubeWorldMITM
 
         private static void OnConnect(IAsyncResult ar)
         {
-            TcpClient client = mitm.EndAcceptTcpClient(ar);
-            if (Helper.Settings.Instance.PlayerLimit < 0 || ConnectedPlayers.Count <= Helper.Settings.Instance.PlayerLimit)
+            TcpClient client = null;
+            try
             {
-                wait.Set();
-
-                TcpClient toServer = new TcpClient();
-                toServer.Connect(cubeWorldIP, (int)serverPort);
-
-                NetworkStream clientStream = client.GetStream();
-                NetworkStream serverStream = toServer.GetStream();
-
-                IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
-
-                Console.WriteLine("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString());
-
-                MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
-
-                handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
+                client = mitm.EndAcceptTcpClient(ar);
+                if (Helper.Settings.Instance.PlayerLimit < 0 || ConnectedPlayers.Count <= Helper.Settings.Instance.PlayerLimit)
                 {
-                    if (ConnectedPlayers.ContainsKey(h.IP))
-                        ConnectedPlayers.Remove(h.IP);
-                });
+                    wait.Set();
 
-                handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
-                {
-                    if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
-                        KnownNames[h.IP].Add(h.Name);
-                    else if (!KnownNames.ContainsKey(h.IP))
+                    TcpClient toServer = new TcpClient();
+                    toServer.Connect(cubeWorldIP, (int)serverPort);
+
+                    NetworkStream clientStream = client.GetStream();
+                    NetworkStream serverStream = toServer.GetStream();
+
+                    IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
+
+                    Console.WriteLine("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString());
+
+                    MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
+
+                    handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
                     {
-                        List<string> tmp = new List<string>();
-                        tmp.Add(h.Name);
-                        KnownNames.Add(h.IP, tmp);
-                    }
+                        if (ConnectedPlayers.ContainsKey(h.IP))
+                            ConnectedPlayers.Remove(h.IP);
+                    });
 
-                    if (!levelAllowed(h.Level))
+                    handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
                     {
-                        h.Disconnect();
-                        Console.WriteLine("{0} was kicked, because the level {1} is not allowed.", h.Name, h.Level);
-                    }
-                });
+                        if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
+                            KnownNames[h.IP].Add(h.Name);
+                        else if (!KnownNames.ContainsKey(h.IP))
+                        {
+                            List<string> tmp = new List<string>();
+                            tmp.Add(h.Name);
+                            KnownNames.Add(h.IP, tmp);
+                        }
 
-                if (ConnectedPlayers.ContainsKey(handler.IP))
-                {
-                    ConnectedPlayers[handler.IP].Disconnect();
-                    ConnectedPlayers.Remove(handler.IP);
+                        if (!levelAllowed(h.Level))
+                        {
+                            h.Disconnect();
+                            Console.WriteLine("{0} was kicked, because the level {1} is not allowed.", h.Name, h.Level);
+                        }
+                    });
+
+                    if (ConnectedPlayers.ContainsKey(handler.IP))
+                    {
+                        ConnectedPlayers[handler.IP].Disconnect();
+                        ConnectedPlayers.Remove(handler.IP);
+                    }
+                    ConnectedPlayers.Add(handler.IP, handler);
+
+                    establishedConnections.Add(handler);
                 }
-                ConnectedPlayers.Add(handler.IP, handler);
-
-                establishedConnections.Add(handler);
+                else
+                {
+                    client.Close();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                client.Close();
+                if (ex is SocketException)
+                    Console.WriteLine("An error occured while connecting to your server. Is the CubeWorld server running?");
+                else
+                    Console.WriteLine("An error occured: {0}", ex.Message);
+
+                if(client != null && client.Connected)
+                    client.Close();
             }
         }
 
