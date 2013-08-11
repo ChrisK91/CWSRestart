@@ -27,6 +27,9 @@ namespace CWSWeb
                 Int32.TryParse(args[0], out port);
             }
 
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Files")))
+                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Files"));
+
             HostConfiguration config = new HostConfiguration();
 
             config.UrlReservations.CreateAutomatically = true;

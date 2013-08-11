@@ -20,6 +20,7 @@ namespace CWSWeb
         protected override void ConfigureConventions(NancyConventions nancyConventions)
         {
             nancyConventions.StaticContentsConventions.Add(Nancy.Embedded.Conventions.EmbeddedStaticContentConventionBuilder.AddDirectory("Static", GetType().Assembly));
+            nancyConventions.StaticContentsConventions.Add(StaticContentConventionBuilder.AddDirectory("Files", "Files", ".png"));
 
             base.ConfigureConventions(nancyConventions);
         }

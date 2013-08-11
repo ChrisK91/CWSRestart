@@ -24,6 +24,7 @@ namespace CWSWeb.Helper
             updater.Enabled = false;
 
             CachedVariables.UpdateCachedVariables();
+            UserbarCreator.GenerateUserbar(CachedVariables.Stats);
 
             updater.Enabled = true;
         }

@@ -79,6 +79,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Razor.Unofficial">
       <HintPath>..\packages\System.Web.Razor.Unofficial.2.0.2\lib\net40\System.Web.Razor.Unofficial.dll</HintPath>
@@ -97,6 +98,7 @@
     <Compile Include="Helper\DataContainer.cs" />
     <Compile Include="Helper\HashProvider.cs" />
     <Compile Include="Helper\Settings.cs" />
+    <Compile Include="Helper\UserbarCreator.cs" />
     <Compile Include="Helper\Users.cs" />
     <Compile Include="Models\Admin\Access.cs" />
     <Compile Include="Models\Error.cs" />
@@ -113,6 +115,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <EmbeddedResource Include="CWSWeb.exe.config" />
+    <None Include="Content\font.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\API\stats.cshtml" />
     <EmbeddedResource Include="Views\API\statsData.cshtml" />
@@ -160,6 +165,11 @@
   <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Views\Admin\index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\base.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
