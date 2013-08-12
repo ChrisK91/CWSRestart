@@ -38,6 +38,10 @@ namespace CWSWeb.Helper
                     if (rawData.ContainsKey("ENABLED"))
                         Stats.Enabled = Boolean.Parse(rawData["ENABLED"].ToString());
 
+                    PlayeridentificationEnabled = Helper.Settings.Instance.Client.GetPlayerIdentification();
+
+                    if (PlayeridentificationEnabled)
+                        KnownPlayersLocation = Helper.Settings.Instance.Client.GetPlayersDatabase();
                 }
 
                 statsLastUpdated = DateTime.Now;
@@ -47,6 +51,29 @@ namespace CWSWeb.Helper
 
         private static DateTime statsLastUpdated;
         private static long[] memoryUsage;
+        private static string knownPlayersLocation;
+
+        public static bool PlayeridentificationEnabled { get; private set; }
+        public static ServerService.Database.KnownPlayers KnownPlayers { get; private set; }
+
+        public static string KnownPlayersLocation
+        {
+            get
+            {
+                return knownPlayersLocation;
+            }
+            set
+            {
+                if (knownPlayersLocation != value)
+                {
+                    if (File.Exists(value))
+                    {
+                        knownPlayersLocation = value;
+                        KnownPlayers = new ServerService.Database.KnownPlayers(value);
+                    }
+                }
+            }
+        }
 
         public static Statistics Stats { get; private set; }
         public static string RestartsJSON { get; private set; }

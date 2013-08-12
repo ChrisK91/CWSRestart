@@ -97,6 +97,7 @@
     <Compile Include="Helper\CacheUpdater.cs" />
     <Compile Include="Helper\DataContainer.cs" />
     <Compile Include="Helper\HashProvider.cs" />
+    <Compile Include="Helper\PlayerIdentification.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\UserbarCreator.cs" />
     <Compile Include="Helper\Users.cs" />

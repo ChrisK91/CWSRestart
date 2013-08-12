@@ -155,6 +155,10 @@ namespace CWSWeb.Modules
 
                 List<string> connected = c.GetConnectedPlayers();
                 List<string> accessList = c.GetAccessListEntries();
+
+                /*if (Helper.CachedVariables.PlayeridentificationEnabled)
+                    Helper.PlayerIdentification.IdentifyPlayers(ref accessList);*/
+
                 ServerService.AccessControl.AccessMode mode = c.GetAccessMode();
 
                 Models.Admin.Access m = new Models.Admin.Access(connected, accessList, mode);

@@ -388,6 +388,8 @@ namespace ServerService
                         all.Add(tmp);
                 }
             }
+
+            current.Add(IPAddress.Parse("192.168.178.1"));
 #endif
 
             ConnectedPlayers = current;
