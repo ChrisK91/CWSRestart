@@ -32,3 +32,37 @@ div ul:not([class])
     list-style-type: square;
     padding-left: 1.5em;
 }
+
+div.fixed nav.top-bar
+{
+    margin-bottom: 0px;
+}
+
+.gsc-control-cse  * {
+ -moz-box-sizing: content-box !important;
+ -webkit-box-sizing: content-box !important;
+ box-sizing:  content-box !important;
+}
+
+.gsc-control-cse input {
+ box-shadow: none !important;
+}
+
+.gsc-control-cse input:focus {
+    outline: none;
+}
+
+.gsc-control-cse table {
+ border: none;
+ background: transparent;
+ vertical-align: middle;
+}
+
+.gsc-input-box, .gsc-search-box .gsc-input>input, .gsc-input-box-hover {
+ -moz-box-shadow: none !important;
+ -webkit-box-shadow: none !important;
+ box-shadow: none !important;
+ margin-bottom: 0px;
+ margin-top: 0px;
+ height: 100%;
+}

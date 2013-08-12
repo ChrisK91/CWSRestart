@@ -15,7 +15,7 @@
         <script src="{{ site.baseurl }}js/vendor/custom.modernizr.js"></script>
     </head>
     <body>
-        <div class="contain-to-grid">
+        <div class="contain-to-grid sticky">
             <nav class="top-bar">
                 <ul class="title-area">
                     <li class="name">
@@ -46,11 +46,16 @@
                         </li>
                         <li class="divider"></li>
                         <li><a href="{{ site.baseurl }}pages/contact.html">Contact</a></li>
+                        <li class="divider"></li>
+                        <li></li>
                     </ul>
                 </section>
             </nav>
         </div>
         <div>{{ content }}</div>
+        <div class="row">
+            <div class="large-12 columns"><gcse:search></gcse:search></div>
+        </div>
         {% if page.modal != nil %}
         {{ page.modal | replace:'%BASEURL%',site.baseurl }}
         {% endif %}
@@ -76,6 +81,18 @@
 
             ga('create', 'UA-42314518-1', 'chrisk91.github.io');
             ga('send', 'pageview');
+        </script>
+        <script>
+            (function() {
+                var cx = '006324111106527928200:usp30nxudw8';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                    '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+            })();
         </script>
     </body>
 </html>
