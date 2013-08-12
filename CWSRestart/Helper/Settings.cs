@@ -156,6 +156,9 @@ namespace CWSRestart.Helper
         public bool AutoPresetLoading { get; private set; }
 
         private uint watchertimeout = 60;
+
+        public bool PlayeridentificationEnabled;
+
         public uint WatcherTimeout
         {
             get
@@ -176,8 +179,6 @@ namespace CWSRestart.Helper
         {
             KnownPlayersLocation = Path.Combine(Directory.GetCurrentDirectory(), "players.db");
             ServerService.Helper.Settings.Instance.KnownPlayersLocation = KnownPlayersLocation;
-
-            Helper.Logging.OnLogMessage("Now ready to identify players...", ServerService.Logging.MessageType.Info);
         }
     }
 }

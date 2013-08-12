@@ -77,6 +77,8 @@ namespace ServerService.Database
                 ret.Add(tmp);
             }
 
+            reader.Close();
+
             connection.Close();
             return ret;
         }

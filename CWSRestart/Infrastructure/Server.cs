@@ -235,6 +235,13 @@ namespace CWSRestart.Infrastructure
                                                             Helper.Settings.Instance.SetUpPlayersdatabase();
                                                             sendReply(Commands.Command.PLAYERSDATABASE, Helper.Settings.Instance.KnownPlayersLocation, serverStream);
                                                             break;
+
+                                                        case Commands.Command.PLAYERIDENTIFICATION:
+                                                            if (Helper.Settings.Instance.PlayeridentificationEnabled)
+                                                                sendReply(Commands.Command.PLAYERIDENTIFICATION, "ENABLED", serverStream);
+                                                            else
+                                                                sendReply(Commands.Command.PLAYERIDENTIFICATION, "DISABLED", serverStream);
+                                                            break;
                                                     }
 
                                                     break;
@@ -349,6 +356,16 @@ namespace CWSRestart.Infrastructure
                                                                 if (content[0] == "DELETE")
                                                                     File.Delete(content[1]);
                                                             }
+
+                                                            break;
+
+                                                        case Commands.Command.PLAYERIDENTIFICATION:
+                                                            if(message.ToLowerInvariant() == "enable")
+                                                                Helper.Settings.Instance.PlayeridentificationEnabled = true;
+                                                            else
+                                                                Helper.Settings.Instance.PlayeridentificationEnabled = false;
+
+                                                            Helper.Logging.OnLogMessage("Now ready to identify players...", ServerService.Logging.MessageType.Info);
 
                                                             break;
 

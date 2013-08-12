@@ -281,7 +281,7 @@ namespace CubeWorldMITM
 
                         string database;
 
-                        if((database = c.GetPlayersDatabase()) != null)
+                        if((database = c.GetPlayersDatabase()) != null && c.SetPlayerIdentification(true))
                         {
                             Console.WriteLine("Playerdatabase: {0}", database);
                             knownPlayers = new KnownPlayers(database);
@@ -290,6 +290,15 @@ namespace CubeWorldMITM
 
                             foreach (KeyValuePair<string, MITMMessageHandler> kvp in ConnectedPlayers)
                                 knownPlayers.AddConnectedPlayer(kvp.Value.IP, kvp.Value.Name);
+
+#if DEBUG
+                            knownPlayers.AddKnownPlayer("192.168.178.1", "Name 1-1");
+                            knownPlayers.AddKnownPlayer("192.168.178.2", "Name 2-2");
+                            knownPlayers.AddKnownPlayer("192.168.178.2", "Name 3-2");
+                            knownPlayers.AddKnownPlayer("192.168.178.3", "Name 4-3");
+                            knownPlayers.AddKnownPlayer("192.168.178.3", "Name 5-3");
+                            knownPlayers.AddKnownPlayer("192.168.178.5", "Name 6-5");
+#endif
                         }
 
                         break;

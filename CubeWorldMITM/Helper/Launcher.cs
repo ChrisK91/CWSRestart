@@ -74,7 +74,7 @@ namespace CubeWorldMITM.Helper
             }
 
             ProcessStartInfo pi = new ProcessStartInfo(path);
-            pi.WorkingDirectory = originalPath;
+            pi.WorkingDirectory = Path.GetDirectoryName(originalPath);
             Process p = Process.Start(pi);
 
             ServerLocation = path;

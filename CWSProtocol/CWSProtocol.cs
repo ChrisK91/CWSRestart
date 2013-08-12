@@ -36,7 +36,8 @@ namespace CWSProtocol
             ACCESSMODE,
             ACCESSLIST,
             PRESET,
-            PLAYERSDATABASE
+            PLAYERSDATABASE,
+            PLAYERIDENTIFICATION
         }
     }
 }

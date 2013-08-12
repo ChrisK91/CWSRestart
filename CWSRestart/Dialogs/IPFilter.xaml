@@ -5,7 +5,7 @@
         xmlns:Helper="clr-namespace:CWSRestart.Helper"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
 
-        Title="IP Filter" Height="400" Width="600" ResizeMode="NoResize" x:Name="IPFilterDialog">
+        Title="IP Filter" MinHeight="400" MinWidth="600" ResizeMode="CanResize" x:Name="IPFilterDialog">
     <Window.Resources>
         <Helper:IPAddressToNamedIPStringConverter x:Key="IPAddressToNamedIPStringConverter" />
     </Window.Resources>
@@ -52,7 +52,13 @@
         </GroupBox>
 
         <GroupBox Grid.Row="0" Grid.Column="1" Header="All players">
-            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.Players, ElementName=IPFilterDialog}" />
+            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.Players, ElementName=IPFilterDialog}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource IPAddressToNamedIPStringConverter}}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </GroupBox>
 
         <GroupBox Grid.Row="0" Grid.Column="2" Header="Whitelist / Blacklist">
@@ -62,6 +68,11 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource IPAddressToNamedIPStringConverter}}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
                 <TextBox Grid.Row="1" x:Name="AddIPTextBox" KeyDown="AddIPTextBox_KeyDown" />
             </Grid>

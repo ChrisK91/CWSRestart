@@ -395,5 +395,28 @@ namespace CWSProtocol
             }
             return null;
         }
+
+        public bool SetPlayerIdentification(bool enabled)
+        {
+            if (sendCommand(Commands.Command.PLAYERIDENTIFICATION, enabled ? "ENABLE" : "DISABLE", Commands.Actions.POST))
+            {
+                disconnectClient();
+                return true;
+            }
+            return false;
+        }
+
+        public bool GetPlayerIdentification()
+        {
+            if (sendCommand(Commands.Command.PLAYERIDENTIFICATION))
+            {
+                Tuple<Commands.Command, string> answer = readResponse();
+                disconnectClient();
+
+                return answer != null && answer.Item2.ToLowerInvariant() == "enabled" ? true : false;
+            }
+
+            return false;
+        }
     }
 }

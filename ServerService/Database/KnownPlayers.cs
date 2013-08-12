@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
 using System.Net;
@@ -164,10 +165,46 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             if (count == 0)
                 return null;
 
-            command = new SQLiteCommand("SELECT names.Name FROM connectedPlayers LEFT JOIN names ON names.ID = connectedPlayers.Name WHERE IP = $ip ");
+            command = new SQLiteCommand("SELECT names.Name FROM connectedPlayers LEFT JOIN names ON names.ID = connectedPlayers.Name WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
             return executeScalar(command).ToString();
+        }
+
+        public List<string> GetKnownNames(string ip)
+        {
+            List<string> ret = new List<string>();
+            long ipId = getIPID(ip);
+
+            SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM knownPlayers WHERE IP = $ip");
+            command.Parameters.AddWithValue("$ip", ipId);
+
+            long count = (long)executeScalar(command);
+
+            if (count > 0)
+            {
+                connection.Open();
+
+                command = new SQLiteCommand("SELECT names.Name as Name FROM knownPlayers LEFT JOIN names ON names.ID = knownPlayers.Name WHERE IP = $ip");
+                command.Parameters.AddWithValue("$ip", ipId);
+                command.Connection = connection;
+
+                DbDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string name = (string)reader["Name"];
+                    ret.Add(name);
+                }
+
+                reader.Close();
+
+                connection.Close();
+
+                ret.Sort();
+            }
+
+            return ret;
         }
     }
 }
