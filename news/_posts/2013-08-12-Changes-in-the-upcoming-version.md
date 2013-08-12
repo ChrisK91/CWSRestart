@@ -11,7 +11,7 @@ There are some other minor improvements as well. There has been some [restructur
 
 ![Userbar]({{ site.baseurl }}img/manual/userbar.png)
 
-Now you can show your server status everywhere. CWSRestart will also save your additional processes in the upcoming version. If you are hosting on multiple machines, you can configure CWSRestart with (preset)[http://chrisk91.github.io/CWSRestart/news/2013/08/11/Presets.html].
+Now you can show your server status everywhere. CWSRestart will also save your additional processes in the upcoming version. If you are hosting on multiple machines, you can configure CWSRestart with [preset](http://chrisk91.github.io/CWSRestart/news/2013/08/11/Presets.html).
 
 So stay tuned for the release. I still have some testing to do, but everything should be ready tomorrow if I don't come across major bugs.
 

@@ -3,16 +3,16 @@ layout: default
 ---
 {% assign author = site.authors[page.author] %}
 <div class="row">
-    <div class="large-12 columns">
-        <h2>{{ page.title }}</h2>
+    <div class="large-12 columns" itemscope itemtype="http://schema.org/Article">
+        <h2 itemprop="name headline">{{ page.title }}</h2>
         <hr>
         <div class="row">
-            <div class="large-8 columns">
+            <div class="large-8 columns" itemprop="articleBody">
                 {{ content }}
             </div>
             <div class="large-4 columns">
-                <h4 class="subheader date"><small>from </small>{{ page.date | date_to_long_string }}<small> by {{ author.name }}</small></h4>
-                <p style="text-align: justify"><img alt="profile picture" src="http://www.gravatar.com/avatar/{{ author.gravatar }}.jpg?s=80" class="left profile">{{ author.about }}</p>
+                <h4 class="subheader date"><small>from </small><time itemprop="dateCreated" datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date_to_long_string }}</time><small> by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ author.name }}</span></span></small></h4>
+                <p style="text-align: justify" itemprop="author" itemscope itemtype="http://schema.org/Person"><img itemprop="image" alt="profile picture" src="http://www.gravatar.com/avatar/{{ author.gravatar }}.jpg?s=80" class="left profile">{{ author.about }}</p>
                 <iframe src="http://ghbtns.com/github-btn.html?user={{ author.github }}&amp;type=follow" style="border: none; overflow: hidden" width="132" height="20"></iframe>
                 <a href="https://twitter.com/{{ author.twitter }}" class="twitter-follow-button" data-show-count="false">Follow @{{ author.twitter }}</a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
             </div>
