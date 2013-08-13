@@ -134,6 +134,9 @@ namespace CubeWorldMITM
         {
             CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
 
+            if (Helper.Settings.Instance.AutoIdentifyPlayers)
+                EnablePlayerIdentification(c);
+
             while (shouldExit != true)
             {
                 Console.WriteLine("Enter one of the following options");
@@ -279,27 +282,7 @@ namespace CubeWorldMITM
 
                     case "d":
 
-                        string database;
-
-                        if((database = c.GetPlayersDatabase()) != null && c.SetPlayerIdentification(true))
-                        {
-                            Console.WriteLine("Playerdatabase: {0}", database);
-                            knownPlayers = new KnownPlayers(database);
-
-                            knownPlayers.ClearConnectedPlayers();
-
-                            foreach (KeyValuePair<string, MITMMessageHandler> kvp in ConnectedPlayers)
-                                knownPlayers.AddConnectedPlayer(kvp.Value.IP, kvp.Value.Name);
-
-#if DEBUG
-                            knownPlayers.AddKnownPlayer("192.168.178.1", "Name 1-1");
-                            knownPlayers.AddKnownPlayer("192.168.178.2", "Name 2-2");
-                            knownPlayers.AddKnownPlayer("192.168.178.2", "Name 3-2");
-                            knownPlayers.AddKnownPlayer("192.168.178.3", "Name 4-3");
-                            knownPlayers.AddKnownPlayer("192.168.178.3", "Name 5-3");
-                            knownPlayers.AddKnownPlayer("192.168.178.5", "Name 6-5");
-#endif
-                        }
+                        EnablePlayerIdentification(c);
 
                         break;
 
@@ -309,6 +292,31 @@ namespace CubeWorldMITM
                 }
 
                 Console.WriteLine();
+            }
+        }
+
+        private static void EnablePlayerIdentification(CWSProtocol.Client c)
+        {
+            string database;
+
+            if ((database = c.GetPlayersDatabase()) != null && c.SetPlayerIdentification(true))
+            {
+                Console.WriteLine("Playerdatabase: {0}", database);
+                knownPlayers = new KnownPlayers(database);
+
+                knownPlayers.ClearConnectedPlayers();
+
+                foreach (KeyValuePair<string, MITMMessageHandler> kvp in ConnectedPlayers)
+                    knownPlayers.AddConnectedPlayer(kvp.Value.IP, kvp.Value.Name);
+
+#if DEBUG
+                knownPlayers.AddKnownPlayer("192.168.178.1", "Name 1-1");
+                knownPlayers.AddKnownPlayer("192.168.178.2", "Name 2-2");
+                knownPlayers.AddKnownPlayer("192.168.178.2", "Name 3-2");
+                knownPlayers.AddKnownPlayer("192.168.178.3", "Name 4-3");
+                knownPlayers.AddKnownPlayer("192.168.178.3", "Name 5-3");
+                knownPlayers.AddKnownPlayer("192.168.178.5", "Name 6-5");
+#endif
             }
         }
 
