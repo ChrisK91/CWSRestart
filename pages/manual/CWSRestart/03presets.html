@@ -1,0 +1,24 @@
+---
+layout: manual
+title: Presets
+manual: cwsrestart
+nav: Presets
+---
+<h2>Presets</h2>
+<p>If you want to import settings from another application into CWSRestart, you can use presets. Presets are XML files, with the following structure:</p>
+<pre><code data-language="html">&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;!-- This is a sample preset file that can be used to set settings in CWSRestart --&gt;
+&lt;Preset Name="CubeWorldMITM"&gt;
+  &lt;Server Port="12345" Location="C:\Test\Server.exe" Process="Server" DoNotRedirectOutput="false" BypassSendQuit="false"&gt;
+    &lt;Checks&gt;
+      &lt;Check Name="Internet" Enabled="True" /&gt;
+      &lt;Check Name="LAN" Enabled="false" /&gt;
+      &lt;Check Name="Loopback" Enabled="True" /&gt;
+    &lt;/Checks&gt;
+  &lt;/Server&gt;
+  &lt;AdditionalProcesses&gt;
+    &lt;Process Process="Notepad" /&gt;
+    &lt;Process Process="Calc" /&gt;
+  &lt;/AdditionalProcesses&gt;
+&lt;/Preset&gt;</code></pre>
+<p>Only the <i>Preset</i> element with the <i>Name</i> attribute is required, everything else is optional. Presets can either be sent to CWSRestart via the <i>Client.SendPreset(string filename, bool deleteFile)</i> method from CWSProtocol. If you want to import presets manually you can paste them into the <i>presets</i> folder in your CWSRestart directory. Loaded presets will be moved to the <i>imported</i> folder.</p>
