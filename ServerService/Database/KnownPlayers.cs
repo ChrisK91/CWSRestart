@@ -63,8 +63,9 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
 
         public void RemoveConnectedPlayer(string ip)
         {
+            long ipId = getIPID(ip);
             SQLiteCommand command = new SQLiteCommand("DELETE FROM connectedPlayers WHERE IP = $ip");
-            command.Parameters.AddWithValue("$ip", ip);
+            command.Parameters.AddWithValue("$ip", ipId);
             executeCommand(command);
         }
 
