@@ -20,7 +20,7 @@ $cwsFiles = (
     "Nancy.Hosting.Self.dll",
     "Nancy.ViewEngines.Razor",
     "System.Web.Razor.Unofficial.dll",
-    "Utilities.exe")
+    "Utilities.dll")
 $cwsWebName = "CWSWeb.exe"
 
 "Current directory: " + $dir
