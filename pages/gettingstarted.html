@@ -11,6 +11,7 @@ title: CWSRestart - Getting started
                 <dt>Navigation: </dt>
                 <dd data-magellan-arrival="stock-server"><a href="#stock-server">Using CWSRestart with the stock server.exe</a></dd>
                 <dd data-magellan-arrival="custom-launcher"><a href="#custom-launcher">Using CWSRestart with a custom launcher</a></dd>
+                <dd data-magellan-arrival="cwsweb"><a href="#cwsweb">Setting up CWSWeb</a></dd>
             </dl>
         </div>
         <hr>
@@ -46,8 +47,32 @@ title: CWSRestart - Getting started
         <p>
             Now click the start button in the lower left corner. This should start your custom launcher. If your launcher closes after starting the server, you are already finished. But if your launcher starts multiple process, we need to let CWSRestart know which processes belong to your launcher. Go ahead and click the <i>Additional processes</i> button on the right side. Either search the process in the upper list and double click it, <em>or</em> enter the name in the <i>Add</i> box and press <kbd>Enter</kbd>. You can remove entries by double clicking on them.<br><img src="{{ site.baseurl }}img/guide/6.png" alt="CWSRestart interface" class="centerBlock"><br>
         </p>
+        <h3 id="cwsweb" data-magellan-destination="cwsweb">Setting up CWSWeb</h3>
         <p>
-            Close the dialog and you should be ready to go. The additional processes aren't saved (currently), so you have to reselect them everytime you restart CWSRestart. But I'm working on that...
+            CWSWeb adds a web interface to your server. It allows you to display statistics to your users and you can do some administrative tasks through your webbrowser. To get started, you'll need to download CWSWeb from the <a href="https://github.com/ChrisK91/CWSRestart/releases">Releases page on GitHub</a>. Extract it to a folder of your choice. Now we need to unblock the downloaded files. By default, Windows marks files from the web as untrusted, and on some setups this will prevent CWSWeb from working. You can either rightclick every dll and exe and go to <i>Properties</i>. There you will find an <i>Unblock</i> button. Or you can use a small setup script:
+        </p>
+        <h4 class="subheading">The setup script</h4>
+        <p>
+            Download the <a href="https://raw.github.com/ChrisK91/CWSRestart/master/Tools/Setup.ps1" target="_blank">setup script</a> (rightclick &arr; save as) from the <a href="https://github.com/ChrisK91/CWSRestart/tree/master/Tools" target="_blank">Tools</a> folder and save it in your CWSWeb directory. Start PowerShell as Administrator and <code>cd</code> to your CWSWeb directory (for instance with <code>cd "C:\Program Files\CWSWeb\"</code>). In this directory, start the script with <code>.\setup</code>. You will now be asked, if you want to unblock the CWSWeb files. Type <code>y</code>. If you want, you can add a firewall rule for port 8181 as well.
+        </p>
+        <h4 class="subheading">Starting CWSWeb</h4>
+        <p>
+            Now we are ready to start CWSWeb. Start CWSRestart, and click <i>Enable CWSProtocol</i>. Now start CWSWeb to open the server console. On the first start, you might see an UAC prompt. This prompt is needed to allow CWSWeb to listen for incoming connections. You need to confirm this prompt in order for CWSWeb to work. <em>Optional:</em> if you want to run CWSWeb on a diffrent port, start it from the console with the port as parameter. For instance with <code>CWSWeb 80</code>.<br><img src="{{ site.baseurl }}img/guide/cwsweb_console.png" alt="CWSRestart interface" class="centerBlock"><br>
+        </p>
+        <p>
+            You can now see the command list displayed above. Feel free to try out every command. You can't break anything. I'd suggest you start with <code>test</code>. If everything is configured correctly, you should see a <i>Connection succesful</i> message. If not, make sure you have CWSProtocol enabled in CWSRestart.
+        </p>
+        <h4 class="subheading">Adding administrators</h4>
+        <p>
+            To add an administrator, simply type <code>add</code> in the server console. This will prompt you for the username and the password. After adding an administrator, you can confirm the users with the <code>list</code> command. To log into CWSWeb, point your browser to <code>http://<i>server-ip</i>:8181</code> and log in with your username and password. The various webpages are described in the <a href="{{ site.baseurl }}pages/manual/CWSWeb/01interface.html">manual</a>.
+        </p>
+        <h4 class="subheading">Statistics</h4>
+        <p>
+            By default, users will see a <i>403</i> page when pointing to your server ip on the given port. If you want to display statistics do the following: In CWSRestart, click the <i>Enable statistics</i> button in the bottom right corner. This will allow visitors to see the current amount of players, the total amount of players and the uptime of your server. If you want to display an activity graph as well, hit the <i>Save statistics to...</i> button, and select a folder where you want to save your statistics files. After a few seconds, your users should see activity charts. The statistics will update every few seconds, and the data on the server is cached to increase performance.
+        </p>
+        <h4 class="userbars">Userbars</h4>
+        <p>
+            The customization of userbars is described in the <a href="{{ site.baseurl }}pages/manual/CWSWeb/04Userbars.html">manual</a>.
         </p>
     </div>
 </div>

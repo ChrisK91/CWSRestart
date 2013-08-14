@@ -19,4 +19,9 @@ modal: <div id="img1" class="reveal-modal"><img src="%BASEURL%img/screenshots/cw
 
 <h4 class="subheading">Statistics</h4>
 <a href="#" data-reveal-id="img3"><img src="{{ site.baseurl }}img/screenshots/cwsweb_4_small.png" alt="Screenshot of CWSRestart" class="centerBlock" /></a>
-<p>As administrator, you are able to see the RAM usage in relation to the amount of players. Statistics are updated every 5 to 10 seconds.</p>
+<p>As administrator, you are able to see the RAM usage in relation to the amount of players. Statistics are updated every 5 to 10 seconds. If you want to display more data in your graphs you have the following options:</p>
+<ul>
+    <li>Increase the <code>StatisticsInterval</code> in the ServerService.dll.config (in the CWSRestart folder): This setting contains the delay between two statistic updates (in ms).</li>
+    <li>Increase the <code>SaveStatisticsEvery</code> in the ServerService.dll.config (in the CWSRestart folder): This setting is the frequency, how often the statistics are saved to your logfiles. The statistics will be saved every <i>x</i> rounds of updates, with <i>x</i> = <code>SaveStatisticsEvery</code>.</li>
+    <li>Increase the <code>LinesToRead</code> in CWSWeb.exe.config: This setting tells CWSWeb how many lines should be read (starting at the end). High numbers can increase CPU and HDD usage.</li>
+</ul>
