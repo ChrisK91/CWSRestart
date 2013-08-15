@@ -52,7 +52,20 @@ namespace CWSRestart.Dialogs
 
         private void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            AccessListEntry address = ParseText(((ListBoxItem)sender).DataContext.ToString());
+            ListBoxItem lbi = sender as ListBoxItem;
+
+            AccessListEntry address = null;
+
+            if (lbi.DataContext is PlayerInfo)
+            {
+                PlayerInfo pi = lbi.DataContext as PlayerInfo;
+                address = ParseText(pi.Address.ToString());
+            }
+            else if (lbi.DataContext is AccessListEntry)
+            {
+                address = lbi.DataContext as AccessListEntry;
+            }
+            //AccessListEntry address = ParseText(((ListBoxItem)sender).DataContext.ToString());
 
             if (address != null)
             {
@@ -110,10 +123,10 @@ namespace CWSRestart.Dialogs
         {
             if (e.Key == Key.Delete)
             {
-                IPAddress add = ActivePlayersList.SelectedItem as IPAddress;
+                PlayerInfo add = ActivePlayersList.SelectedItem as PlayerInfo;
 
                 if(add != null)
-                    DisconnectWrapper.CloseRemoteIP(add.ToString());
+                    DisconnectWrapper.CloseRemoteIP(add.Address.ToString());
             }
         }
     }
