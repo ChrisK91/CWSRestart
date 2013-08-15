@@ -445,10 +445,10 @@ namespace CubeWorldMITM
                             knownPlayers.AddKnownPlayer(h.IP, h.Name);
                         }
 
-                        if (!levelAllowed(h.Level))
+                        if (!playerAllowed(h.Level, h.HP))
                         {
                             h.Disconnect();
-                            Console.WriteLine("{0} was kicked, because the level {1} is not allowed.", h.Name, h.Level);
+                            Console.WriteLine("{0} was kicked, because his character is not allowed (HP:{2}, Level:{1}).", h.Name, h.Level, h.HP);
                         }
                     });
 
@@ -479,13 +479,21 @@ namespace CubeWorldMITM
             }
         }
 
-        private static bool levelAllowed(uint p)
+        private static bool playerAllowed(uint level, float hp)
         {
+            bool ret = true;
+
             if (Helper.Settings.Instance.MinLevel < Helper.Settings.Instance.MaxLevel)
             {
-                return (p >= Helper.Settings.Instance.MinLevel) && (p <= Helper.Settings.Instance.MaxLevel);
+                ret = (level >= Helper.Settings.Instance.MinLevel) && (level <= Helper.Settings.Instance.MaxLevel);
             }
-            return true;
+
+            if (ret && (Helper.Settings.Instance.MinHP < Helper.Settings.Instance.MaxHP))
+            {
+                ret = (hp >= Helper.Settings.Instance.MinHP) && (hp <= Helper.Settings.Instance.MaxHP);
+            }
+
+            return ret;
         }
 
         private static void centerText(String text)

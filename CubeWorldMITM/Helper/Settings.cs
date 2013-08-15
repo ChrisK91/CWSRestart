@@ -28,6 +28,8 @@ namespace CubeWorldMITM.Helper
 
             MinLevel = settings.GetAppSettingWithStandardValue("MinLevel", -1);
             MaxLevel = settings.GetAppSettingWithStandardValue("MaxLevel", -1);
+            MinHP = settings.GetAppSettingWithStandardValue("MinHP", -1f);
+            MaxHP = settings.GetAppSettingWithStandardValue("MaxHP", -1f);
             PlayerLimit = settings.GetAppSettingWithStandardValue("PlayerLimit", -1);
             StartServer = settings.GetAppSettingWithStandardValue("StartServer", false);
             ServerLocation = settings.GetAppSettingWithStandardValue("ServerLocation", "");
@@ -40,5 +42,7 @@ namespace CubeWorldMITM.Helper
         public bool StartServer { get; private set; }
         public string ServerLocation { get; private set; }
         public bool AutoIdentifyPlayers { get; private set; }
+        public float MinHP { get; private set; }
+        public float MaxHP { get; private set; }
     }
 }

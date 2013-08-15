@@ -98,6 +98,11 @@ namespace Utilities.Settings
             return readOrCreateValue<IPAddress>(key, fallback, IPAddress.TryParse);
         }
 
+        public float GetAppSettingWithStandardValue(string key, float fallback)
+        {
+            return readOrCreateValue<float>(key, fallback, float.TryParse);
+        }
+
         public string GetAppSettingWithStandardValue(string key, string fallback)
         {
             if (GetAppSettingValue(key) == null)

@@ -41,6 +41,7 @@ namespace CubeWorldMITM.Networking
         public string Name { get; private set; }
         public string IP { get; private set; }
         public uint Level { get; private set; }
+        public float HP { get; private set; }
 
         public bool Connected { get; private set; }
 
@@ -399,6 +400,7 @@ namespace CubeWorldMITM.Networking
                         if (bitArray.Get(23))
                         {
                             reader.ReadSingle();
+                            //charged MP
                         }
                         if (bitArray.Get(24))
                         {
@@ -420,11 +422,13 @@ namespace CubeWorldMITM.Networking
                         }
                         if (bitArray.Get(27))
                         {
-                            reader.ReadSingle();
+                            HP = reader.ReadSingle();
+                            Console.WriteLine("HP {0}", HP);
                         }
                         if (bitArray.Get(28))
                         {
                             reader.ReadSingle();
+                            //MP
                         }
                         if (bitArray.Get(29))
                         {
