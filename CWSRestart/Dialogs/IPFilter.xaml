@@ -6,9 +6,6 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
 
         Title="IP Filter" MinHeight="400" MinWidth="600" ResizeMode="CanResize" x:Name="IPFilterDialog">
-    <Window.Resources>
-        <Helper:IPAddressToNamedIPStringConverter x:Key="IPAddressToNamedIPStringConverter" />
-    </Window.Resources>
     <Grid>
         <Grid.Background>
             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
@@ -42,22 +39,12 @@
         </Grid.ColumnDefinitions>
         
         <GroupBox Grid.Row="0" Grid.Column="0" Header="Active players">
-            <ListBox x:Name="ActivePlayersList" ItemContainerStyle="{StaticResource ActivePlayersStyle}" ItemsSource="{Binding Statistics.ConnectedPlayers, ElementName=IPFilterDialog}" KeyDown="ListBox_KeyDown" >
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource IPAddressToNamedIPStringConverter}}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+            <ListBox x:Name="ActivePlayersList" ItemContainerStyle="{StaticResource ActivePlayersStyle}" ItemsSource="{Binding Statistics.ConnectedPlayers, ElementName=IPFilterDialog}" KeyDown="ListBox_KeyDown" DisplayMemberPath="FriendlyName" >
             </ListBox>
         </GroupBox>
 
         <GroupBox Grid.Row="0" Grid.Column="1" Header="All players">
-            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.Players, ElementName=IPFilterDialog}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource IPAddressToNamedIPStringConverter}}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+            <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" ItemsSource="{Binding Statistics.Players, ElementName=IPFilterDialog}" DisplayMemberPath="FriendlyName">
             </ListBox>
         </GroupBox>
 
@@ -67,12 +54,7 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" >
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource IPAddressToNamedIPStringConverter}}" />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
+                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" DisplayMemberPath="FriendlyName" >
                 </ListBox>
                 <TextBox Grid.Row="1" x:Name="AddIPTextBox" KeyDown="AddIPTextBox_KeyDown" />
             </Grid>

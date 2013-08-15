@@ -103,7 +103,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             executeCommand(command);
         }
 
-        private long getIPID(string ip)
+        private long getIPID(string ip, bool dontInsert = false)
         {
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM ips WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ip);
@@ -117,6 +117,10 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
 
                 return (long)executeScalar(command);
             }
+            else if (dontInsert)
+            {
+                return -1;
+            }
 
             command = new SQLiteCommand("INSERT INTO ips(IP) VALUES($ip)");
             command.Parameters.AddWithValue("$ip", ip);
@@ -129,7 +133,37 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return (long)executeScalar(command);
         }
 
-        private long getNameID(string name)
+        private async Task<long> getIPIDAsync(string ip, bool dontInsert = false)
+        {
+            SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM ips WHERE IP = $ip");
+            command.Parameters.AddWithValue("$ip", ip);
+
+            long count = (long)await executeScalarAsync(command);
+
+            if (count == 1)
+            {
+                command = new SQLiteCommand("SELECT ID FROM ips WHERE IP = $ip");
+                command.Parameters.AddWithValue("$ip", ip);
+
+                return (long)await executeScalarAsync(command);
+            }
+            else if (dontInsert)
+            {
+                return -1;
+            }
+
+            command = new SQLiteCommand("INSERT INTO ips(IP) VALUES($ip)");
+            command.Parameters.AddWithValue("$ip", ip);
+
+            executeCommandAsync(command);
+
+            command = new SQLiteCommand("SELECT ID FROM ips WHERE IP = $ip");
+            command.Parameters.AddWithValue("$ip", ip);
+
+            return (long)await executeScalarAsync(command);
+        }
+
+        private long getNameID(string name, bool dontInsert = false)
         {
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM names WHERE Name = $name");
             command.Parameters.AddWithValue("$name", name);
@@ -143,6 +177,10 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
 
                 return (long)executeScalar(command);
             }
+            else if (dontInsert)
+            {
+                return -1;
+            }
 
             command = new SQLiteCommand("INSERT INTO names(Name) VALUES($name)");
             command.Parameters.AddWithValue("$name", name);
@@ -155,9 +193,39 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return (long)executeScalar(command);
         }
 
+        private async Task<long> getNameIDAsync(string name, bool dontInsert = false)
+        {
+            SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM names WHERE Name = $name");
+            command.Parameters.AddWithValue("$name", name);
+
+            long count = (long)await executeScalarAsync(command);
+
+            if (count == 1)
+            {
+                command = new SQLiteCommand("SELECT ID FROM names WHERE Name = $name");
+                command.Parameters.AddWithValue("$name", name);
+
+                return (long)await executeScalarAsync(command);
+            }
+            else if (dontInsert)
+            {
+                return -1;
+            }
+
+            command = new SQLiteCommand("INSERT INTO names(Name) VALUES($name)");
+            command.Parameters.AddWithValue("$name", name);
+
+            executeCommandAsync(command);
+
+            command = new SQLiteCommand("SELECT ID FROM names WHERE Name = $name");
+            command.Parameters.AddWithValue("$name", name);
+
+            return (long)await executeScalarAsync(command);
+        }
+
         public string GetConnectedPlayerName(string ip)
         {
-            long ipId = getIPID(ip);
+            long ipId = getIPID(ip, true);
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM connectedPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
@@ -172,10 +240,33 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return executeScalar(command).ToString();
         }
 
+        public async Task<string> GetConnectedPlayerNameAsync(string ip)
+        {
+            await connection.OpenAsync();
+
+            long ipId = await getIPIDAsync(ip, true);
+            SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM connectedPlayers WHERE IP = $ip");
+            command.Parameters.AddWithValue("$ip", ipId);
+
+            long count = (long)await executeScalarAsync(command);
+
+            if (count == 0)
+            {
+                connection.Close();
+                return null;
+            }
+
+            command = new SQLiteCommand("SELECT names.Name FROM connectedPlayers LEFT JOIN names ON names.ID = connectedPlayers.Name WHERE IP = $ip");
+            command.Parameters.AddWithValue("$ip", ipId);
+
+            connection.Close();
+            return (await executeScalarAsync(command)).ToString();
+        }
+
         public List<string> GetKnownNames(string ip)
         {
             List<string> ret = new List<string>();
-            long ipId = getIPID(ip);
+            long ipId = getIPID(ip, true);
 
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM knownPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
@@ -205,6 +296,45 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
                 ret.Sort();
             }
 
+            return ret;
+        }
+
+        public async Task<List<string>> GetKnownNamesAsync(string ip)
+        {
+            await connection.OpenAsync();
+
+            List<string> ret = new List<string>();
+            long ipId = await getIPIDAsync(ip, true);
+
+            SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM knownPlayers WHERE IP = $ip");
+            command.Parameters.AddWithValue("$ip", ipId);
+
+            long count = (long)await executeScalarAsync(command);
+
+            if (count > 0)
+            {
+                //await connection.OpenAsync();
+
+                command = new SQLiteCommand("SELECT names.Name as Name FROM knownPlayers LEFT JOIN names ON names.ID = knownPlayers.Name WHERE IP = $ip");
+                command.Parameters.AddWithValue("$ip", ipId);
+                command.Connection = connection;
+
+                DbDataReader reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    string name = (string)reader["Name"];
+                    ret.Add(name);
+                }
+
+                reader.Close();
+
+                //connection.Close();
+
+                ret.Sort();
+            }
+
+            connection.Close();
             return ret;
         }
     }

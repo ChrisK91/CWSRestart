@@ -185,14 +185,14 @@ namespace CWSRestart.Infrastructure
 
                                                         case Commands.Command.CONNECTED:
 
-                                                            List<IPAddress> connected;
+                                                            List<PlayerInfo> connected;
 
-                                                            if (Statistics.Enabled && (connected = new List<IPAddress>(Statistics.ConnectedPlayers)).Count > 0)
+                                                            if (Statistics.Enabled && (connected = new List<PlayerInfo>(Statistics.ConnectedPlayers)).Count > 0)
                                                             {
                                                                 StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
 
-                                                                foreach (IPAddress ip in connected)
-                                                                    writer.WriteLine(ip.ToString());
+                                                                foreach (PlayerInfo ip in connected)
+                                                                    writer.WriteLine(ip.Address.ToString());
 
                                                                 writer.Close();
                                                             }

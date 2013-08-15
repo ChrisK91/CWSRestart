@@ -12,6 +12,14 @@ namespace ServerService.Helper
         public IPAddress StartAddress { get; private set; }
         public IPAddress EndAddress { get; private set; }
 
+        public override string FriendlyName
+        {
+            get
+            {
+                return String.Format("{0} - {1}", StartAddress, EndAddress);
+            }
+        }
+
         private AccessIPRange(IPAddress start, IPAddress end)
         {
             StartAddress = start;

@@ -1,43 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ServerService.Helper
 {
-    public class AccessIP : AccessListEntry
+    public class PlayerInfo : INotifyPropertyChanged
     {
         public IPAddress Address { get; private set; }
 
-        public AccessIP(IPAddress address)
-        {
-            Address = address;
-        }
-
-        private string friendlyName = null;
         private DateTime lastUpdate;
         private TimeSpan updateInterval = new TimeSpan(0, 0, 5);
 
-        public override string FriendlyName
+        private string friendlyName;
+        public string FriendlyName
         {
-            get {
-                if((friendlyName == null || lastUpdate.Add(updateInterval) <= DateTime.Now) && Helper.Settings.Instance.KnownPlayers != null)
+            get
+            {
+                if ((friendlyName == null || lastUpdate.Add(updateInterval) <= DateTime.Now) && Helper.Settings.Instance.KnownPlayers != null)
                     updateFriendlyNameAsync();
                 return friendlyName ?? Address.ToString();
             }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public override bool Equals(object obj)
+        public PlayerInfo(IPAddress address)
         {
-            if (obj is AccessIP)
-            {
-                return ((AccessIP)obj).Address.Equals(Address);
-            }
+            this.Address = address;
+            notifyPropertyChanged("Address");
+        }
 
-            return false;
+        protected void notifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private async void updateFriendlyNameAsync()
@@ -67,35 +68,6 @@ namespace ServerService.Helper
 
             lastUpdate = DateTime.Now;
             notifyPropertyChanged("FriendlyName");
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return Address.ToString();
-        }
-
-        public override bool Matches(System.Net.IPAddress target)
-        {
-            return Address.Equals(target);
-        }
-
-        new public static bool TryParse(string source, out AccessListEntry target)
-        {
-            IPAddress address;
-
-            if (IPAddress.TryParse(source, out address))
-            {
-                target = new AccessIP(address);
-                return true;
-            }
-
-            target = null;
-            return false;
         }
     }
 }

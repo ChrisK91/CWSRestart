@@ -42,12 +42,46 @@ namespace ServerService.Database
         /// <param name="command">The command to execute</param>
         protected void executeCommand(SQLiteCommand command)
         {
-            connection.Open();
+            bool doClose = InitializeConnection(ref command);
 
-            command.Connection = connection;
             command.ExecuteNonQuery();
 
-            connection.Close();
+            if (doClose)
+                connection.Close();
+        }
+
+        private bool InitializeConnection(ref SQLiteCommand command)
+        {
+            bool doClose = false;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+                doClose = true;
+            }
+
+            initializeCommand(ref command);
+
+            return doClose;
+        }
+
+        private async Task<bool> InitializeConnectionAsync()
+        {
+            bool doClose = false;
+
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                await connection.OpenAsync();
+                doClose = true;
+            }
+
+            return doClose;
+        }
+
+        private void initializeCommand(ref SQLiteCommand command)
+        {
+            if (command.Connection == null)
+                command.Connection = connection;
         }
 
         /// <summary>
@@ -57,12 +91,26 @@ namespace ServerService.Database
         /// <returns>The first column of the first row returned by the query</returns>
         protected object executeScalar(SQLiteCommand command)
         {
-            connection.Open();
+            bool doClose = InitializeConnection(ref command);
 
-            command.Connection = connection;
             object ret = command.ExecuteScalar();
 
-            connection.Close();
+            if (doClose)
+                connection.Close();
+
+            return ret;
+        }
+
+        protected async Task<object> executeScalarAsync(SQLiteCommand command)
+        {
+            bool doClose = await InitializeConnectionAsync();
+            initializeCommand(ref command);
+
+            object ret = await command.ExecuteScalarAsync();
+
+            if (doClose)
+                connection.Close();
+
             return ret;
         }
 
@@ -72,12 +120,13 @@ namespace ServerService.Database
         /// <param name="command">The command to execute</param>
         protected async void executeCommandAsync(SQLiteCommand command)
         {
-            connection.Open();
+            bool doClose = await InitializeConnectionAsync();
+            initializeCommand(ref command);
 
-            command.Connection = connection;
             await command.ExecuteNonQueryAsync();
 
-            connection.Close();
+            if (doClose)
+                connection.Close();
         }
 
         /// <summary>

@@ -155,7 +155,6 @@
   <ItemGroup>
     <Compile Include="Helper\AllBoolsTrueConverter.cs" />
     <Compile Include="Helper\BooleanToInverseBooleanConverter.cs" />
-    <Compile Include="Helper\IPAddressToNamedIPStringConverter.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\StringIsNotEmpty.cs" />
     <Compile Include="Helper\IPAddressToStringConverter.cs" />

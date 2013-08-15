@@ -29,11 +29,11 @@ namespace ServerService
         }
 
 
-        private ObservableCollection<IPAddress> players = new ObservableCollection<IPAddress>();
+        private ObservableCollection<Helper.PlayerInfo> players = new ObservableCollection<Helper.PlayerInfo>();
         /// <summary>
         /// A list that contains all players, that have visited the server
         /// </summary>
-        public ObservableCollection<IPAddress> Players
+        public ObservableCollection<Helper.PlayerInfo> Players
         {
             get
             {
@@ -126,11 +126,11 @@ namespace ServerService
             }
         }
 
-        private ObservableCollection<IPAddress> connectedplayers = new ObservableCollection<IPAddress>();
+        private ObservableCollection<Helper.PlayerInfo> connectedplayers = new ObservableCollection<Helper.PlayerInfo>();
         /// <summary>
         /// A list that contains all players, that have visited the server
         /// </summary>
-        public ObservableCollection<IPAddress> ConnectedPlayers
+        public ObservableCollection<Helper.PlayerInfo> ConnectedPlayers
         {
             get
             {
@@ -348,8 +348,8 @@ namespace ServerService
 
             int count = 0;
 
-            ObservableCollection<IPAddress> current = new ObservableCollection<IPAddress>();
-            ObservableCollection<IPAddress> all = new ObservableCollection<IPAddress>(Players);
+            ObservableCollection<Helper.PlayerInfo> current = new ObservableCollection<Helper.PlayerInfo>();
+            ObservableCollection<Helper.PlayerInfo> all = new ObservableCollection<Helper.PlayerInfo>(Players);
 
             while (enumerator.MoveNext())
             {
