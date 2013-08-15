@@ -80,14 +80,14 @@ namespace CubeWorldMITM.Networking
 
                 if (numBytes == 0)
                 {
-                    throw new Exception("No ID received.");
+                    throw new InvalidDataException("No ID received.");
                 }
                 else
                 {
                     Array.Copy(packageIntReceiveBuffer, 0, packageIntSendBuffer, 0, numBytes);
 
                     int id = BitConverter.ToInt32(packageIntReceiveBuffer, 0);
-                    Console.WriteLine("Recevied package {0}", id);
+                    Console.WriteLine("Received package {0}", id);
 
                     //server.BeginWrite(packageIntSendBuffer, 0, numBytes, ServerIDSentCallback, null);
 
@@ -162,7 +162,7 @@ namespace CubeWorldMITM.Networking
 
                 if (numBytes == 0)
                 {
-                    throw new Exception("No datalength received.");
+                    throw new InvalidDataException("No datalength received.");
                 }
                 else
                 {
@@ -236,7 +236,7 @@ namespace CubeWorldMITM.Networking
 
                     using (BinaryReader reader = new BinaryReader(new MemoryStream(uncompressedData)))
                     {
-                        ulong id = reader.ReadUInt64();
+                        reader.ReadUInt64();
 
 
                         byte[] LastBitmask = reader.ReadBytes(8);
@@ -640,7 +640,7 @@ namespace CubeWorldMITM.Networking
 
                 if (numBytes == 0)
                 {
-                    throw new Exception("No bytes have been received: disconnect.");
+                    throw new InvalidDataException("No bytes have been received: disconnect.");
                 }
                 else
                 {
@@ -691,7 +691,7 @@ namespace CubeWorldMITM.Networking
             }
         }
 
-        private void logError(Exception ex, [CallerMemberName] string memberName = "")
+        private static void logError(Exception ex, [CallerMemberName] string memberName = "")
         {
             if (!(ex is IOException) && !(ex is ObjectDisposedException))
             {

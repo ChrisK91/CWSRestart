@@ -39,7 +39,7 @@ namespace ServerService
             {
                 return players;
             }
-            set
+            private set
             {
                 if (players != value)
                 {
@@ -275,7 +275,7 @@ namespace ServerService
         {
             refresh.Start();
 
-            if (LogFolder == "")
+            if (String.IsNullOrEmpty(LogFolder))
                 Logging.OnLogMessage("To save your statistics, use the button on the left", Logging.MessageType.Info);
 
             Enabled = true;
@@ -301,7 +301,7 @@ namespace ServerService
 
             UpdateRuntime();
 
-            if (Validator.Instance.IsRunning())
+            if (Validator.IsRunning())
             {
                 UpdatePlayers();
 

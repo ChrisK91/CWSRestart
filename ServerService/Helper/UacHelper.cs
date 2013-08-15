@@ -19,57 +19,6 @@ namespace ServerService.Helper
         private static uint TOKEN_QUERY = 0x0008;
         private static uint TOKEN_READ = (STANDARD_RIGHTS_READ | TOKEN_QUERY);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool OpenProcessToken(IntPtr ProcessHandle, UInt32 DesiredAccess, out IntPtr TokenHandle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool CloseHandle(IntPtr hObject);
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        internal static extern bool GetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, IntPtr TokenInformation, uint TokenInformationLength, out uint ReturnLength);
-
-        public enum TOKEN_INFORMATION_CLASS
-        {
-            TokenUser = 1,
-            TokenGroups,
-            TokenPrivileges,
-            TokenOwner,
-            TokenPrimaryGroup,
-            TokenDefaultDacl,
-            TokenSource,
-            TokenType,
-            TokenImpersonationLevel,
-            TokenStatistics,
-            TokenRestrictedSids,
-            TokenSessionId,
-            TokenGroupsAndPrivileges,
-            TokenSessionReference,
-            TokenSandBoxInert,
-            TokenAuditPolicy,
-            TokenOrigin,
-            TokenElevationType,
-            TokenLinkedToken,
-            TokenElevation,
-            TokenHasRestrictions,
-            TokenAccessInformation,
-            TokenVirtualizationAllowed,
-            TokenVirtualizationEnabled,
-            TokenIntegrityLevel,
-            TokenUIAccess,
-            TokenMandatoryPolicy,
-            TokenLogonSid,
-            MaxTokenInfoClass
-        }
-
-        public enum TOKEN_ELEVATION_TYPE
-        {
-            TokenElevationTypeDefault = 1,
-            TokenElevationTypeFull,
-            TokenElevationTypeLimited
-        }
-
         public static bool IsUacEnabled
         {
             get
@@ -89,7 +38,7 @@ namespace ServerService.Helper
                 if (IsUacEnabled)
                 {
                     IntPtr tokenHandle = IntPtr.Zero;
-                    if (!OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_READ, out tokenHandle))
+                    if (!NativeMethods.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_READ, out tokenHandle))
                     {
                         return false;
                     }
@@ -97,7 +46,7 @@ namespace ServerService.Helper
 
                     try
                     {
-                        TOKEN_ELEVATION_TYPE elevationResult = TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
+                        NativeMethods.TOKEN_ELEVATION_TYPE elevationResult = NativeMethods.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
 
                         int elevationResultSize = Marshal.SizeOf((int)elevationResult);
                         uint returnedSize = 0;
@@ -105,13 +54,13 @@ namespace ServerService.Helper
                         IntPtr elevationTypePtr = Marshal.AllocHGlobal(elevationResultSize);
                         try
                         {
-                            bool success = GetTokenInformation(tokenHandle, TOKEN_INFORMATION_CLASS.TokenElevationType,
+                            bool success = NativeMethods.GetTokenInformation(tokenHandle, NativeMethods.TOKEN_INFORMATION_CLASS.TokenElevationType,
                                                                elevationTypePtr, (uint)elevationResultSize,
                                                                out returnedSize);
                             if (success)
                             {
-                                elevationResult = (TOKEN_ELEVATION_TYPE)Marshal.ReadInt32(elevationTypePtr);
-                                bool isProcessAdmin = elevationResult == TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
+                                elevationResult = (NativeMethods.TOKEN_ELEVATION_TYPE)Marshal.ReadInt32(elevationTypePtr);
+                                bool isProcessAdmin = elevationResult == NativeMethods.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
                                 return isProcessAdmin;
                             }
                             else
@@ -129,7 +78,7 @@ namespace ServerService.Helper
                     finally
                     {
                         if (tokenHandle != IntPtr.Zero)
-                            CloseHandle(tokenHandle);
+                            NativeMethods.CloseHandle(tokenHandle);
                     }
                 }
                 else

@@ -64,7 +64,7 @@ namespace ServerService
         /// Check if the process is running
         /// </summary>
         /// <returns>true if the process is running, otherwise false</returns>
-        public bool IsRunning()
+        public static bool IsRunning()
         {
             return Process.GetProcessesByName(Settings.Instance.ServerProcessName).Length != 0;
         }

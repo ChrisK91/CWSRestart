@@ -7,7 +7,7 @@ using System.Timers;
 
 namespace CWSWeb.Helper
 {
-    internal class CacheUpdater
+    internal class CacheUpdater : IDisposable
     {
         Timer updater;
 
@@ -37,6 +37,12 @@ namespace CWSWeb.Helper
         public void StartUpdater()
         {
             updater.Start();
+        }
+
+        public void Dispose()
+        {
+            if (updater != null)
+                updater.Dispose();
         }
     }
 }

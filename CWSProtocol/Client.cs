@@ -8,17 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
+
+
 namespace CWSProtocol
 {
-    public class Client
+    public sealed class Client : IDisposable
     {
         private NamedPipeClientStream client;
         private string name;
-        public bool CanConnect = false;
+        public bool CanConnect { get; private set; }
 
         public Client(string name)
         {
             this.name = name;
+            CanConnect = false;
         }
 
         private bool sendCommand(Commands.Command command)
@@ -28,10 +31,10 @@ namespace CWSProtocol
 
         private bool sendCommand(Commands.Command command, String content)
         {
-            return sendCommand(command, content, Commands.Actions.GET);
+            return sendCommand(command, content, Commands.Action.GET);
         }
 
-        private bool sendCommand(Commands.Command command, String content, Commands.Actions action)
+        private bool sendCommand(Commands.Command command, String content, Commands.Action action)
         {
             try
             {
@@ -68,14 +71,14 @@ namespace CWSProtocol
 
                 if (messages.Count() == 2 || messages.Count() == 3)
                 {
-                    Commands.Actions a = (Commands.Actions)Enum.Parse(typeof(Commands.Actions), messages[0]);
+                    Commands.Action a = (Commands.Action)Enum.Parse(typeof(Commands.Action), messages[0]);
                     Commands.Command c = (Commands.Command)Enum.Parse(typeof(Commands.Command), messages[1]);
 
                     string message = (messages.Count() == 3) ? messages[2] : "";
 
                     switch (a)
                     {
-                        case Commands.Actions.POST:
+                        case Commands.Action.POST:
                             reader.Close();
                             return new Tuple<Commands.Command, string>(c, message);
                         default:
@@ -97,7 +100,7 @@ namespace CWSProtocol
             try
             {
                 if (client == null)
-                    client = new NamedPipeClientStream(".", Configuration.SERVERNAME, PipeDirection.InOut, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation);
+                    client = new NamedPipeClientStream(".", Settings.SERVERNAME, PipeDirection.InOut, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation);
 
                 if (!client.IsConnected)
                 {
@@ -171,15 +174,15 @@ namespace CWSProtocol
                 disconnectClient();
         }
 
-        public void SetWatcherTimeout(UInt32 seconds)
+        public void SetWatcherTimeout(int seconds)
         {
-            if (sendCommand(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", seconds), Commands.Actions.POST))
+            if (sendCommand(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", seconds), Commands.Action.POST))
                 disconnectClient();
         }
 
         public void SetWatcherCheckAccess(bool CheckInternet, bool CheckLAN, bool CheckLoopback)
         {
-            if (sendCommand(Commands.Command.WATCHER, String.Format("ACCESS CHECKINTERNET {0} CHECKLAN {1} CHECKLOOPBACK {2}", CheckInternet, CheckLAN, CheckLoopback), Commands.Actions.POST))
+            if (sendCommand(Commands.Command.WATCHER, String.Format("ACCESS CHECKINTERNET {0} CHECKLAN {1} CHECKLOOPBACK {2}", CheckInternet, CheckLAN, CheckLoopback), Commands.Action.POST))
                 disconnectClient();
         }
 
@@ -266,19 +269,19 @@ namespace CWSProtocol
 
         public void StartWatcher()
         {
-            sendCommand(Commands.Command.WATCHER, "START", Commands.Actions.POST);
+            sendCommand(Commands.Command.WATCHER, "START", Commands.Action.POST);
             disconnectClient();
         }
 
         public void StopWatcher()
         {
-            sendCommand(Commands.Command.WATCHER, "STOP", Commands.Actions.POST);
+            sendCommand(Commands.Command.WATCHER, "STOP", Commands.Action.POST);
             disconnectClient();
         }
 
         public void ClearLogMessage()
         {
-            sendCommand(Commands.Command.LOG, "CLEAR", Commands.Actions.POST);
+            sendCommand(Commands.Command.LOG, "CLEAR", Commands.Action.POST);
             disconnectClient();
         }
 
@@ -291,7 +294,7 @@ namespace CWSProtocol
                 string line;
                 StreamReader reader = new StreamReader(client, System.Text.Encoding.UTF8, true, 2048, true);
 
-                while ((line = reader.ReadLine()) != null && line != "")
+                while (!String.IsNullOrEmpty(line = reader.ReadLine()))
                     ret.Add(line);
             }
 
@@ -301,7 +304,7 @@ namespace CWSProtocol
 
         public void KickPlayer(string ip)
         {
-            sendCommand(Commands.Command.KICK, ip, Commands.Actions.POST);
+            sendCommand(Commands.Command.KICK, ip, Commands.Action.POST);
             disconnectClient();
         }
 
@@ -314,7 +317,7 @@ namespace CWSProtocol
                 string line;
                 StreamReader reader = new StreamReader(client, System.Text.Encoding.UTF8, true, 2048, true);
 
-                while ((line = reader.ReadLine()) != null && line != "")
+                while (String.IsNullOrEmpty(line = reader.ReadLine()))
                     ret.Add(line);
             }
 
@@ -352,30 +355,30 @@ namespace CWSProtocol
             {
                 if (accessList.Count == 0)
                 {
-                    sendCommand(Commands.Command.ACCESSLIST, "", Commands.Actions.POST);
+                    sendCommand(Commands.Command.ACCESSLIST, "", Commands.Action.POST);
                 }
                 else if (tryConnect())
                 {
                     StreamWriter writer = new StreamWriter(client, System.Text.Encoding.UTF8, 2048, true);
                     foreach (string s in accessList)
                     {
-                        string message = String.Format("{0} {1} {2}", Commands.Actions.POST.ToString(), Commands.Command.ACCESSLIST.ToString(), s);
+                        string message = String.Format("{0} {1} {2}", Commands.Action.POST.ToString(), Commands.Command.ACCESSLIST.ToString(), s);
                         writer.WriteLine(message);
                     }
                     writer.Close();
                 }
 
                 disconnectClient();
-                sendCommand(Commands.Command.ACCESSMODE, mode.ToString(), Commands.Actions.POST);
+                sendCommand(Commands.Command.ACCESSMODE, mode.ToString(), Commands.Action.POST);
                 disconnectClient();
             }
         }
 
-        public bool SendPreset(string filename, bool deleteFile)
+        public bool SendPreset(string file, bool deleteFile)
         {
             if (tryConnect())
             {
-                sendCommand(Commands.Command.PRESET, String.Format("{0} {1}", deleteFile ? "DELETE" : "PERSISTENT", filename), Commands.Actions.POST);
+                sendCommand(Commands.Command.PRESET, String.Format("{0} {1}", deleteFile ? "DELETE" : "PERSISTENT", file), Commands.Action.POST);
                 disconnectClient();
                 return true;
             }
@@ -398,7 +401,7 @@ namespace CWSProtocol
 
         public bool SetPlayerIdentification(bool enabled)
         {
-            if (sendCommand(Commands.Command.PLAYERIDENTIFICATION, enabled ? "ENABLE" : "DISABLE", Commands.Actions.POST))
+            if (sendCommand(Commands.Command.PLAYERIDENTIFICATION, enabled ? "ENABLE" : "DISABLE", Commands.Action.POST))
             {
                 disconnectClient();
                 return true;
@@ -417,6 +420,12 @@ namespace CWSProtocol
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            if (client != null)
+                client.Dispose();
         }
     }
 }

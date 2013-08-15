@@ -188,7 +188,7 @@ namespace ServerService
                             AccessList.Add(e);
                 }
 
-                sr.Close();
+                //sr.Close();
             }
         }
 

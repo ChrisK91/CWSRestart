@@ -254,11 +254,11 @@ namespace CubeWorldMITM
                     case "x":
 
                         Dictionary<string, bool> checks = new Dictionary<string, bool>();
-                        checks.Add(Utilities.Settings.Preset.InternetAccess, false);
-                        checks.Add(Utilities.Settings.Preset.LANAccess, true);
-                        checks.Add(Utilities.Settings.Preset.LoopbackAccess, true);
+                        checks.Add(Utilities.Preset.InternetAccess, false);
+                        checks.Add(Utilities.Preset.NetworkAccess, true);
+                        checks.Add(Utilities.Preset.LoopbackAccess, true);
 
-                        Utilities.Settings.Preset p = new Utilities.Settings.Preset("CWSProtocol", Helper.Launcher.ServerLocation, Helper.Launcher.ServerName, (int?)serverPort, null, null, null, checks);
+                        Utilities.Preset p = new Utilities.Preset("CWSProtocol", Helper.Launcher.ServerLocation, Helper.Launcher.ServerName, (int?)serverPort, null, null, null, checks);
 
                         string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                         Guid name = Guid.NewGuid();

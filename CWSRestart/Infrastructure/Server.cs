@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CWSRestart.Infrastructure
 {
-    public class Server : INotifyPropertyChanged
+    public sealed class Server : INotifyPropertyChanged, IDisposable
     {
         private volatile bool _shouldStop = false;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -53,7 +53,7 @@ namespace CWSRestart.Infrastructure
             PipeSecurity ps = new PipeSecurity();
 
             ps.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance, System.Security.AccessControl.AccessControlType.Allow));
-            serverStream = new NamedPipeServerStream(CWSProtocol.Configuration.SERVERNAME, PipeDirection.InOut, 254, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps);
+            serverStream = new NamedPipeServerStream(CWSProtocol.Settings.SERVERNAME, PipeDirection.InOut, 254, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps);
 
 
             while (!_shouldStop)
@@ -80,68 +80,68 @@ namespace CWSRestart.Infrastructure
                                     {
                                         if (messages.Count() == 2 || messages.Count() == 3)
                                         {
-                                            Commands.Actions a = (Commands.Actions)Enum.Parse(typeof(Commands.Actions), messages[0]);
-                                            Commands.Command c = (Commands.Command)Enum.Parse(typeof(Commands.Command), messages[1]);
+                                            CWSProtocol.Commands.Action a = (CWSProtocol.Commands.Action)Enum.Parse(typeof(CWSProtocol.Commands.Action), messages[0]);
+                                            CWSProtocol.Commands.Command c = (CWSProtocol.Commands.Command)Enum.Parse(typeof(CWSProtocol.Commands.Command), messages[1]);
 
                                             message = (messages.Count() == 3) ? messages[2] : "";
 
                                             switch (a)
                                             {
-                                                case Commands.Actions.GET:
+                                                case CWSProtocol.Commands.Action.GET:
 
                                                     switch (c)
                                                     {
-                                                        case Commands.Command.IDENTIFY:
+                                                        case CWSProtocol.Commands.Command.IDENTIFY:
                                                             Helper.Logging.OnLogMessage(String.Format("{0} has said hello", message), ServerService.Logging.MessageType.Info);
-                                                            sendReply(Commands.Command.ACK, "", serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.ACK, "", serverStream);
                                                             break;
 
-                                                        case Commands.Command.STATISTICS:
+                                                        case CWSProtocol.Commands.Command.STATISTICS:
                                                             //Helper.Logging.OnLogMessage("Statistics were requested by an external module", ServerService.Logging.MessageType.Info);
 
-                                                            sendReply(Commands.Command.STATISTICS, String.Format("ALIVE {0}", ServerService.Validator.Instance.IsRunning()), serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("ALIVE {0}", ServerService.Validator.IsRunning()), serverStream);
 
                                                             if (Statistics != null && Statistics.Enabled)
                                                             {
-                                                                sendReply(Commands.Command.STATISTICS, String.Format("TOTAL {0}", Statistics.Players.Count), serverStream);
-                                                                sendReply(Commands.Command.STATISTICS, String.Format("CURRENT {0}", Statistics.ConnectedPlayers.Count), serverStream);
-                                                                sendReply(Commands.Command.STATISTICS, String.Format("RUNTIME {0:00}:{1:00}:{2:00}", Statistics.Runtime.TotalHours, Statistics.Runtime.Minutes, Statistics.Runtime.Seconds), serverStream);
-                                                                sendReply(Commands.Command.STATISTICS, String.Format("ENABLED {0}", Statistics.Enabled), serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("TOTAL {0}", Statistics.Players.Count), serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("CURRENT {0}", Statistics.ConnectedPlayers.Count), serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("RUNTIME {0:00}:{1:00}:{2:00}", Statistics.Runtime.TotalHours, Statistics.Runtime.Minutes, Statistics.Runtime.Seconds), serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("ENABLED {0}", Statistics.Enabled), serverStream);
 
                                                                 if(Statistics.StatisticsDB != null)
-                                                                    sendReply(Commands.Command.STATISTICS, String.Format("STATISTICSFILE {0}", Statistics.StatisticsDB.Filename), serverStream);
+                                                                    sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("STATISTICSFILE {0}", Statistics.StatisticsDB.DatabaseFile), serverStream);
                                                             }
 
-                                                            sendReply(Commands.Command.ENDSTATISTICS, "", serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.ENDSTATISTICS, "", serverStream);
 
                                                             break;
 
-                                                        case Commands.Command.START:
+                                                        case CWSProtocol.Commands.Command.START:
                                                             ServerService.Helper.General.StartServer();
                                                             break;
 
-                                                        case Commands.Command.STOP:
+                                                        case CWSProtocol.Commands.Command.STOP:
                                                             ServerService.Helper.General.SendQuit();
                                                             break;
 
-                                                        case Commands.Command.RESTART:
+                                                        case CWSProtocol.Commands.Command.RESTART:
                                                             ServerService.Helper.General.RestartServer();
                                                             break;
 
-                                                        case Commands.Command.KILL:
+                                                        case CWSProtocol.Commands.Command.KILL:
                                                             ServerService.Helper.General.KillServer();
                                                             break;
 
-                                                        case Commands.Command.WATCHER:
-                                                            sendReply(Commands.Command.WATCHER, String.Format("ENABLED {0}", Helper.Watcher.Instance.IsRunning), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("BLOCKED {0}", Helper.Watcher.Instance.IsBlocked), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", Helper.Watcher.Instance.IntervallSeconds.ToString()), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKINTERNET {0}", ServerService.Helper.Settings.Instance.CheckInternet), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLAN {0}", ServerService.Helper.Settings.Instance.CheckLAN), serverStream);
-                                                            sendReply(Commands.Command.WATCHER, String.Format("CHECKLOOPBACK {0}", ServerService.Helper.Settings.Instance.CheckLoopback), serverStream);
+                                                        case CWSProtocol.Commands.Command.WATCHER:
+                                                            sendReply(CWSProtocol.Commands.Command.WATCHER, String.Format("ENABLED {0}", Helper.Watcher.Instance.IsRunning), serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.WATCHER, String.Format("BLOCKED {0}", Helper.Watcher.Instance.IsBlocked), serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.WATCHER, String.Format("TIMEOUT {0}", Helper.Watcher.Instance.IntervallSeconds.ToString()), serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.WATCHER, String.Format("CHECKINTERNET {0}", ServerService.Helper.Settings.Instance.CheckInternet), serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.WATCHER, String.Format("CHECKLAN {0}", ServerService.Helper.Settings.Instance.CheckLAN), serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.WATCHER, String.Format("CHECKLOOPBACK {0}", ServerService.Helper.Settings.Instance.CheckLoopback), serverStream);
                                                             break;
 
-                                                        case Commands.Command.LOG:
+                                                        case CWSProtocol.Commands.Command.LOG:
                                                             if (GetLog != null)
                                                             {
                                                                 List<Controls.LogFilter.LogMessage> logEntries = GetLog();
@@ -179,11 +179,11 @@ namespace CWSRestart.Infrastructure
                                                             }
                                                             else
                                                             {
-                                                                sendReply(Commands.Command.LOG, "", serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.LOG, "", serverStream);
                                                             }
                                                             break;
 
-                                                        case Commands.Command.CONNECTED:
+                                                        case CWSProtocol.Commands.Command.CONNECTED:
 
                                                             List<PlayerInfo> connected;
 
@@ -205,7 +205,7 @@ namespace CWSRestart.Infrastructure
 
                                                             break;
 
-                                                        case Commands.Command.ACCESSLIST:
+                                                        case CWSProtocol.Commands.Command.ACCESSLIST:
 
                                                             List<AccessListEntry> entries = new List<AccessListEntry>(AccessControl.Instance.AccessList);
 
@@ -227,28 +227,28 @@ namespace CWSRestart.Infrastructure
 
                                                             break;
 
-                                                        case Commands.Command.ACCESSMODE:
-                                                            sendReply(Commands.Command.ACCESSMODE, AccessControl.Instance.Mode.ToString(), serverStream);
+                                                        case CWSProtocol.Commands.Command.ACCESSMODE:
+                                                            sendReply(CWSProtocol.Commands.Command.ACCESSMODE, AccessControl.Instance.Mode.ToString(), serverStream);
                                                             break;
 
-                                                        case Commands.Command.PLAYERSDATABASE:
+                                                        case CWSProtocol.Commands.Command.PLAYERSDATABASE:
                                                             Helper.Settings.Instance.SetUpPlayersdatabase();
-                                                            sendReply(Commands.Command.PLAYERSDATABASE, Helper.Settings.Instance.KnownPlayersLocation, serverStream);
+                                                            sendReply(CWSProtocol.Commands.Command.PLAYERSDATABASE, Helper.Settings.Instance.KnownPlayersLocation, serverStream);
                                                             break;
 
-                                                        case Commands.Command.PLAYERIDENTIFICATION:
+                                                        case CWSProtocol.Commands.Command.PLAYERIDENTIFICATION:
                                                             if (Helper.Settings.Instance.PlayeridentificationEnabled)
-                                                                sendReply(Commands.Command.PLAYERIDENTIFICATION, "ENABLED", serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.PLAYERIDENTIFICATION, "ENABLED", serverStream);
                                                             else
-                                                                sendReply(Commands.Command.PLAYERIDENTIFICATION, "DISABLED", serverStream);
+                                                                sendReply(CWSProtocol.Commands.Command.PLAYERIDENTIFICATION, "DISABLED", serverStream);
                                                             break;
                                                     }
 
                                                     break;
-                                                case Commands.Actions.POST:
+                                                case CWSProtocol.Commands.Action.POST:
                                                     switch (c)
                                                     {
-                                                        case Commands.Command.LOG:
+                                                        case CWSProtocol.Commands.Command.LOG:
                                                             if (String.Compare(message, "clear", true) == 0)
                                                             {
                                                                 if (ClearLog != null)
@@ -256,7 +256,7 @@ namespace CWSRestart.Infrastructure
                                                             }
                                                             break;
 
-                                                        case Commands.Command.WATCHER:
+                                                        case CWSProtocol.Commands.Command.WATCHER:
                                                             {
                                                                 if (String.Compare(message, "start", true) == 0 && !Helper.Watcher.Instance.IsRunning)
                                                                     Helper.Watcher.Instance.Start();
@@ -308,7 +308,7 @@ namespace CWSRestart.Infrastructure
                                                             }
                                                             break;
 
-                                                        case Commands.Command.KICK:
+                                                        case CWSProtocol.Commands.Command.KICK:
                                                             IPAddress ip;
                                                             if (IPAddress.TryParse(message, out ip))
                                                             {
@@ -316,7 +316,7 @@ namespace CWSRestart.Infrastructure
                                                             }
                                                             break;
 
-                                                        case Commands.Command.ACCESSLIST:
+                                                        case CWSProtocol.Commands.Command.ACCESSLIST:
                                                             string line;
                                                             List<AccessListEntry> entries = new List<AccessListEntry>();
                                                             AccessListEntry tmp;
@@ -328,7 +328,7 @@ namespace CWSRestart.Infrastructure
                                                             {
                                                                 string[] parts = line.Split(new string[] { " " }, 3, StringSplitOptions.RemoveEmptyEntries);
 
-                                                                if (parts.Length == 3 && parts[0] == Commands.Actions.POST.ToString() && parts[1] == Commands.Command.ACCESSLIST.ToString() && parts[2] != String.Empty)
+                                                                if (parts.Length == 3 && parts[0] == CWSProtocol.Commands.Action.POST.ToString() && parts[1] == CWSProtocol.Commands.Command.ACCESSLIST.ToString() && parts[2] != String.Empty)
                                                                 {
                                                                     if (AccessControl.GenerateEntryFromString(parts[2], out tmp))
                                                                         entries.Add(tmp);
@@ -338,7 +338,7 @@ namespace CWSRestart.Infrastructure
                                                             AccessControl.Instance.AccessList = new System.Collections.ObjectModel.ObservableCollection<AccessListEntry>(entries);
                                                             break;
 
-                                                        case Commands.Command.ACCESSMODE:
+                                                        case CWSProtocol.Commands.Command.ACCESSMODE:
                                                             ServerService.AccessControl.AccessMode mode;
 
                                                             if (System.Enum.TryParse<AccessControl.AccessMode>(message, out mode))
@@ -346,7 +346,7 @@ namespace CWSRestart.Infrastructure
 
                                                             break;
 
-                                                        case Commands.Command.PRESET:
+                                                        case CWSProtocol.Commands.Command.PRESET:
                                                             string[] content = message.Split(new string[]{" "}, 2, StringSplitOptions.RemoveEmptyEntries);
 
                                                             if (content.Length == 2 && (content[0] == "DELETE" || content[0] == "PERSISTENT") && File.Exists(content[1]))
@@ -359,7 +359,7 @@ namespace CWSRestart.Infrastructure
 
                                                             break;
 
-                                                        case Commands.Command.PLAYERIDENTIFICATION:
+                                                        case CWSProtocol.Commands.Command.PLAYERIDENTIFICATION:
                                                             if(message.ToLowerInvariant() == "enable")
                                                                 Helper.Settings.Instance.PlayeridentificationEnabled = true;
                                                             else
@@ -395,12 +395,12 @@ namespace CWSRestart.Infrastructure
             IsRunning = false;
         }
 
-        private void sendReply(Commands.Command command, String content, NamedPipeServerStream server)
+        private void sendReply(CWSProtocol.Commands.Command command, String content, NamedPipeServerStream server)
         {
             try
             {
                 StreamWriter writer = new StreamWriter(server, System.Text.Encoding.UTF8, 2048, true);
-                string message = String.Format("{0} {1} {2}", Commands.Actions.POST, command, content);
+                string message = String.Format("{0} {1} {2}", CWSProtocol.Commands.Action.POST, command, content);
                 writer.WriteLine(message);
                 writer.Close();
             }
@@ -473,6 +473,18 @@ namespace CWSRestart.Infrastructure
 
                 _shouldStop = true;
             }
+        }
+
+        public void Dispose()
+        {
+            if(Statistics != null)
+                Statistics.Dispose();
+
+            if (serverStream != null)
+                serverStream.Dispose();
+
+            if (wait != null)
+                wait.Dispose();
         }
     }
 }

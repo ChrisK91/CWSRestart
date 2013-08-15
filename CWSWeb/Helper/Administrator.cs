@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CWSWeb.Helper
 {
-    public class Administrator : IUserIdentity 
+    internal class Administrator : IUserIdentity 
     {
         public string UserName { get; set; }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CWSWeb.Helper
 {
 
-    public static class CachedVariables
+    internal static class CachedVariables
     {
         internal static void UpdateCachedVariables()
         {

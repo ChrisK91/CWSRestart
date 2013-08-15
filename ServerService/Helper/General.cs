@@ -12,6 +12,8 @@ namespace ServerService.Helper
 {
     public class General
     {
+        private General() { }
+
         private static System.Timers.Timer timeout;
         public static event EventHandler ServerRestarted;
 
@@ -110,16 +112,12 @@ namespace ServerService.Helper
             return localIP;
         }
 
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);   
-
-
         /// <summary>
         /// Attempts to send the "q" Key to the StandardInput of the server
         /// </summary>
         public static void SendQuit()
         {
-            if (Validator.Instance.IsRunning())
+            if (Validator.IsRunning())
             {
                 if(Server == null || Server.HasExited || (Server.ProcessName != Settings.Instance.ServerProcessName))
                     Server = Process.GetProcessesByName(Settings.Instance.ServerProcessName)[0];
@@ -134,7 +132,7 @@ namespace ServerService.Helper
                     else if (Settings.Instance.SessionActive)
                     {
                         Logging.OnLogMessage("Sending key", Logging.MessageType.Info);
-                        SetForegroundWindow(Server.MainWindowHandle);
+                        NativeMethods.SetForegroundWindow(Server.MainWindowHandle);
                         System.Windows.Forms.SendKeys.SendWait("q{ENTER}");
                     }
                     else
@@ -176,7 +174,7 @@ namespace ServerService.Helper
         /// </summary>
         public static void RestartServer()
         {
-            if (Validator.Instance.IsRunning())
+            if (Validator.IsRunning())
             {
                 if (Settings.Instance.SessionActive && !Settings.Instance.BypassSendQuit)
                 {
@@ -209,7 +207,7 @@ namespace ServerService.Helper
 
         static void timeout_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (Validator.Instance.IsRunning())
+            if (Validator.IsRunning())
             {
                 Logging.OnLogMessage("Killing the server process...", Logging.MessageType.Info);
                 KillServer();
@@ -230,7 +228,7 @@ namespace ServerService.Helper
         /// </summary>
         public static void StartServer()
         {
-            if (!Validator.Instance.IsRunning() && (timeout == null || !timeout.Enabled))
+            if (!Validator.IsRunning() && (timeout == null || !timeout.Enabled))
             {
                 Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
                 ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);

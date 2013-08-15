@@ -123,13 +123,13 @@ namespace CWSWeb.Modules
             Post["/watcher"] = parameters =>
             {
                 string timeout = (string)Request.Form.Timeout;
-                UInt32 seconds;
+                int seconds;
 
                 string checkInternet = (string)Request.Form.CheckInternet;
                 string checkLan = (string)Request.Form.CheckLAN;
                 string checkLoopback = (string)Request.Form.CheckLoopback;
 
-                if (UInt32.TryParse(timeout, out seconds))
+                if (Int32.TryParse(timeout, out seconds))
                     c.SetWatcherTimeout(seconds);
 
                 c.SetWatcherCheckAccess(

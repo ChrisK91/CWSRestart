@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using ServerService.Helper;
 
 namespace ServerService.Helper
 {
@@ -24,16 +25,16 @@ namespace ServerService.Helper
             All = 0,
             Closed = 1,
             Listen = 2,
-            Syn_Sent = 3,
-            Syn_Rcvd = 4,
+            SynSent = 3,
+            SynRcvd = 4,
             Established = 5,
-            Fin_Wait1 = 6,
-            Fin_Wait2 = 7,
-            Close_Wait = 8,
+            FinWait1 = 6,
+            FinWait2 = 7,
+            CloseWait = 8,
             Closing = 9,
-            Last_Ack = 10,
-            Time_Wait = 11,
-            Delete_TCB = 12
+            LastAck = 10,
+            TimeWait = 11,
+            DeleteTCB = 12
         }
 
         /// <summary>
@@ -49,40 +50,6 @@ namespace ServerService.Helper
         }
 
         /// <summary>
-        /// Win 32 API for get all connection
-        /// </summary>
-        /// <param name="pTcpTable">Pointer to TCP table</param>
-        /// <param name="pdwSize">Size</param>
-        /// <param name="bOrder">Order</param>
-        /// <returns>Number</returns>
-        [DllImport("iphlpapi.dll")]
-        private static extern int GetTcpTable(IntPtr pTcpTable, ref int pdwSize, bool bOrder);
-
-        /// <summary>
-        /// Set the connection state
-        /// </summary>
-        /// <param name="pTcprow">Pointer to TCP table row</param>
-        /// <returns>Status</returns>
-        [DllImport("iphlpapi.dll")]
-        private static extern int SetTcpEntry(IntPtr pTcprow);
-
-        /// <summary>
-        /// Convert 16-bit value from network to host byte order
-        /// </summary>
-        /// <param name="netshort">network host</param>
-        /// <returns>host byte order</returns>
-        [DllImport("wsock32.dll")]
-        private static extern int ntohs(int netshort);
-
-        /// <summary>
-        /// //Convert 16-bit value back again
-        /// </summary>
-        /// <param name="netshort"></param>
-        /// <returns></returns>
-        [DllImport("wsock32.dll")]
-        private static extern int htons(int netshort);
-
-        /// <summary>
         /// Close all connection to the remote IP
         /// </summary>
         /// <param name="IP">IP to close</param>
@@ -95,12 +62,12 @@ namespace ServerService.Helper
             for (int i = 0; i < rows.Length; i++)
             {
                 if (rows[i].dwRemoteAddr == IPStringToInt(IP)
-                    && (remotePort == 0 || (ntohs(rows[i].dwRemotePort) == remotePort))
+                    && (remotePort == 0 || (NativeMethods.ntohs(rows[i].dwRemotePort) == remotePort))
                     )
                 {
-                    rows[i].dwState = (int)ConnectionState.Delete_TCB;
+                    rows[i].dwState = (int)ConnectionState.DeleteTCB;
                     IntPtr ptr = GetPtrToNewObject(rows[i]);
-                    ret = SetTcpEntry(ptr);
+                    ret = NativeMethods.SetTcpEntry(ptr);
 
                     return ret;
                 }
@@ -119,11 +86,11 @@ namespace ServerService.Helper
             try
             {
                 int iBytes = 0;
-                GetTcpTable(IntPtr.Zero, ref iBytes, false);
+                NativeMethods.GetTcpTable(IntPtr.Zero, ref iBytes, false);
                 buffer = Marshal.AllocCoTaskMem(iBytes);
 
                 allocated = true;
-                GetTcpTable(buffer, ref iBytes, false);
+                NativeMethods.GetTcpTable(buffer, ref iBytes, false);
                 int structCount = Marshal.ReadInt32(buffer);
                 IntPtr buffSubPointer = buffer;
 
@@ -188,9 +155,9 @@ namespace ServerService.Helper
         /// <returns>Integer</returns>
         private static int IPStringToInt(string IP)
         {
-            if (IP.IndexOf(".") < 0) throw new Exception("Invalid IP address");
+            if (IP.IndexOf(".") < 0) throw new ArgumentException("Invalid IP address", "IP");
             string[] addr = IP.Split('.');
-            if (addr.Length != 4) throw new Exception("Invalid IP address");
+            if (addr.Length != 4) throw new ArgumentException("Invalid IP address", "IP");
             byte[] bytes = new byte[] { byte.Parse(addr[0]), byte.Parse(addr[1]), byte.Parse(addr[2]), byte.Parse(addr[3]) };
             return BitConverter.ToInt32(bytes, 0);
         }

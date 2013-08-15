@@ -21,6 +21,6 @@ namespace CubeWorldMITM.ServerConfigurators
         /// </summary>
         /// <param name="FilePath">The location of the server exectuable</param>
         /// <returns>The path of the server that should be launched</returns>
-        string PrepareFile(string FilePath);
+        string PrepareFile(string file);
     }
 }

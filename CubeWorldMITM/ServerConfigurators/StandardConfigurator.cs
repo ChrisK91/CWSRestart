@@ -7,7 +7,7 @@ using System.IO;
 
 namespace CubeWorldMITM.ServerConfigurators
 {
-    class StandardConfigurator : IConfigurator
+    internal class StandardConfigurator : IConfigurator
     {
         public String MD5
         {

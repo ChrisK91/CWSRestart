@@ -20,13 +20,13 @@ namespace CWSRestart.Helper
         }
 
         private static Settings instance = new Settings();
-        Utilities.Settings.Settings settings;
+        Utilities.Settings settings;
         public string KnownPlayersLocation { get; private set; }
 
         private Settings()
         {
             string file = Path.Combine(Directory.GetCurrentDirectory(), "CWSRestart.exe.config");
-            settings = new Utilities.Settings.Settings(file);
+            settings = new Utilities.Settings(file);
 
             string presetsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "presets");
             string importedDirectory = Path.Combine(Directory.GetCurrentDirectory(), "presets", "imported");
@@ -109,7 +109,7 @@ namespace CWSRestart.Helper
             {
                 try
                 {
-                    Utilities.Settings.Preset p = Utilities.Settings.Preset.Load(filename);
+                    Utilities.Preset p = Utilities.Preset.Load(filename);
 
                     if (p.ProcessName != null)
                         ServerService.Helper.Settings.Instance.ServerProcessName = p.ProcessName;
@@ -126,14 +126,14 @@ namespace CWSRestart.Helper
                     if (p.BypassSendQuit != null)
                         ServerService.Helper.Settings.Instance.BypassSendQuit = (bool)p.BypassSendQuit;
 
-                    if (p.Checks.ContainsKey(Utilities.Settings.Preset.InternetAccess))
-                        ServerService.Helper.Settings.Instance.CheckInternet = p.Checks[Utilities.Settings.Preset.InternetAccess];
+                    if (p.Checks.ContainsKey(Utilities.Preset.InternetAccess))
+                        ServerService.Helper.Settings.Instance.CheckInternet = p.Checks[Utilities.Preset.InternetAccess];
 
-                    if (p.Checks.ContainsKey(Utilities.Settings.Preset.LANAccess))
-                        ServerService.Helper.Settings.Instance.CheckInternet = p.Checks[Utilities.Settings.Preset.LANAccess];
+                    if (p.Checks.ContainsKey(Utilities.Preset.NetworkAccess))
+                        ServerService.Helper.Settings.Instance.CheckInternet = p.Checks[Utilities.Preset.NetworkAccess];
 
-                    if (p.Checks.ContainsKey(Utilities.Settings.Preset.LoopbackAccess))
-                        ServerService.Helper.Settings.Instance.CheckInternet = p.Checks[Utilities.Settings.Preset.LoopbackAccess];
+                    if (p.Checks.ContainsKey(Utilities.Preset.LoopbackAccess))
+                        ServerService.Helper.Settings.Instance.CheckInternet = p.Checks[Utilities.Preset.LoopbackAccess];
 
                     foreach (string s in p.AdditionalProcesses)
                     {

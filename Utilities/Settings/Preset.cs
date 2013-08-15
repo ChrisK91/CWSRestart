@@ -10,7 +10,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
-namespace Utilities.Settings
+namespace Utilities
 {
     public class Preset
     {
@@ -26,7 +26,7 @@ namespace Utilities.Settings
         public ReadOnlyCollection<string> AdditionalProcesses { get; private set; }
         public ReadOnlyDictionary<string, bool> Checks { get; private set; }
 
-        public const string LANAccess = "LAN";
+        public const string NetworkAccess = "LAN";
         public const string LoopbackAccess = "Loopback";
         public const string InternetAccess = "Internet";
 
@@ -42,7 +42,7 @@ namespace Utilities.Settings
             this.Checks = checks != null ? new ReadOnlyDictionary<string,bool>(checks) : null;
         }
 
-        public static Preset Load(string filename)
+        public static Preset Load(string file)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Utilities.Settings
                     presetSchema = XmlSchema.Read(resource, null);
                 }
 
-                XDocument preset = XDocument.Load(filename);
+                XDocument preset = XDocument.Load(file);
 
                 set.Add(presetSchema);
                 preset.Validate(set, null);
@@ -120,11 +120,11 @@ namespace Utilities.Settings
             }
             catch (Exception ex)
             {
-                throw new Exception("Error while loading file", ex);
+                throw new IOException("Error while loading file", ex);
             }
         }
 
-        public void Save(string filename)
+        public void Save(string file)
         {
             XDocument doc = new XDocument();
             XElement root = new XElement("Preset", new XAttribute("Name", Name ?? "undefined"));
@@ -177,7 +177,7 @@ namespace Utilities.Settings
             }
 
             doc.Add(root);
-            doc.Save(filename);
+            doc.Save(file);
         }
     }
 }

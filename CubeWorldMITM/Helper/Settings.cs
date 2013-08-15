@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace CubeWorldMITM.Helper
 {
-    public sealed class Settings
+    internal sealed class Settings
     {
         private static readonly Settings instance = new Settings();
         public static Settings Instance
@@ -20,11 +20,11 @@ namespace CubeWorldMITM.Helper
             }
         }
 
-        private Utilities.Settings.Settings settings;
+        private Utilities.Settings settings;
 
         private Settings() {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "CubeWorldMITM.exe.config");
-            settings = new Utilities.Settings.Settings(path);
+            settings = new Utilities.Settings(path);
 
             MinLevel = settings.GetAppSettingWithStandardValue("MinLevel", -1);
             MaxLevel = settings.GetAppSettingWithStandardValue("MaxLevel", -1);

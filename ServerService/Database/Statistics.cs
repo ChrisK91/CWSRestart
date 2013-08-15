@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace ServerService.Database
 {
-    public sealed class Statistics : Database
+    public sealed class Statistics : DatabaseBase
     {
         public Statistics(string Filename)
             : base(Filename)
-        { }
+        {
+            CheckAndCreateDatabaseFile(Filename);
+        }
 
-        protected override void setUpDatabase()
+        protected override void SetupDatabase()
         {
             SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE IF NOT EXISTS statistics (
     ID integer not null primary key autoincrement,
@@ -27,7 +29,7 @@ namespace ServerService.Database
     MaximumMemory LONG,
     Restarts INTEGER
 )");
-            executeCommand(command);
+            ExecuteCommand(command);
         }
 
         /// <summary>
@@ -50,15 +52,15 @@ namespace ServerService.Database
             command.Parameters.AddWithValue("$maxmem", MaxMemory);
             command.Parameters.AddWithValue("$restart", Restarts);
 
-            executeCommand(command);
+            ExecuteCommand(command);
         }
 
         public async Task<List<StatisticsEntry>> GetStatisticEntriesAsync(int limit)
         {
-            connection.Open();
+            Connection.Open();
 
             List<StatisticsEntry> ret = new List<StatisticsEntry>();
-            SQLiteCommand command = new SQLiteCommand("SELECT ID, Timestamp, Runtime, CurrentPlayers, TotalPlayers, CurrentMemory, MaximumMemory, Restarts FROM statistics ORDER BY Timestamp DESC Limit $limit", connection);
+            SQLiteCommand command = new SQLiteCommand("SELECT ID, Timestamp, Runtime, CurrentPlayers, TotalPlayers, CurrentMemory, MaximumMemory, Restarts FROM statistics ORDER BY Timestamp DESC Limit $limit", Connection);
             command.Parameters.AddWithValue("$limit", limit);
             DbDataReader reader = await command.ExecuteReaderAsync();
 
@@ -79,7 +81,7 @@ namespace ServerService.Database
 
             reader.Close();
 
-            connection.Close();
+            Connection.Close();
             return ret;
         }
 

@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace CWSWeb.Helper
 {
-    internal class Users : IUserMapper 
+    internal class Users : IUserMapper
     {
         /// <summary>
         /// Contains the users in the following formate
@@ -70,7 +70,8 @@ namespace CWSWeb.Helper
 
             if (userRow == null)
                 return null;
-            return new Administrator(){
+            return new Administrator()
+            {
                 UserName = userRow.Item1
             };
         }
@@ -81,7 +82,7 @@ namespace CWSWeb.Helper
 
             if (userRow != null)
             {
-                if(userRow.Item2 == HashProvider.GetHash(password, userRow.Item3))
+                if (userRow.Item2 == HashProvider.GetHash(password, userRow.Item3))
                     return userRow.Item4;
             }
 
@@ -92,21 +93,24 @@ namespace CWSWeb.Helper
         {
             if (File.Exists(filename))
             {
-                using (FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read))
+                FileStream fs = null;
+                try
                 {
-                    try
-                    {
-                        BinaryFormatter bf = new BinaryFormatter();
-                        users = (List<Tuple<string, string, string, Guid>>)bf.Deserialize(fs);
-                    }
-                    catch (Exception)
-                    {
-                        if (Debugger.IsAttached)
-                            Debugger.Break();
+                    fs = File.Open(filename, FileMode.Open, FileAccess.Read);
+                    BinaryFormatter bf = new BinaryFormatter();
+                    users = (List<Tuple<string, string, string, Guid>>)bf.Deserialize(fs);
+                }
+                catch (Exception)
+                {
+                    if (Debugger.IsAttached)
+                        Debugger.Break();
 
+                    return false;
+                }
+                finally
+                {
+                    if (fs != null)
                         fs.Close();
-                        return false;
-                    }
                 }
             }
             return false;
@@ -117,24 +121,27 @@ namespace CWSWeb.Helper
             if (File.Exists(filename))
                 File.Delete(filename);
 
-            using (FileStream fs = File.Open(filename, FileMode.Create, FileAccess.ReadWrite))
-            {
-                try
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(fs, users);
-                    fs.Close();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    if (Debugger.IsAttached)
-                        Debugger.Break();
+            FileStream fs = null;
 
-                    fs.Close();
-                    return false;
-                }
+            try
+            {
+                fs = File.Open(filename, FileMode.Create, FileAccess.ReadWrite);
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, users);
+                return true;
             }
+            catch (Exception)
+            {
+                if (Debugger.IsAttached)
+                    Debugger.Break();
+
+                return false;
+            }
+            finally
+            {
+                fs.Close();
+            }
+
         }
     }
 }

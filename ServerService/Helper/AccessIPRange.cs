@@ -48,6 +48,9 @@ namespace ServerService.Helper
 
         public override bool Matches(System.Net.IPAddress target)
         {
+            if (target == null)
+                throw new ArgumentNullException("target");
+
             byte[] addressBytes = target.GetAddressBytes();
 
             bool lowerBoundary = true, upperBoundary = true;
@@ -70,6 +73,9 @@ namespace ServerService.Helper
 
         new public static bool TryParse(string source, out AccessListEntry target)
         {
+            if (String.IsNullOrEmpty(source))
+                throw new ArgumentException("source can neither be null nor empty", "source");
+
             string[] parts = source.Split('-');
             if (parts.Length == 2)
             {

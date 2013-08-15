@@ -16,11 +16,11 @@ namespace ServerService.Helper
     public sealed class Settings : INotifyPropertyChanged
     {
         private static readonly Settings instance = new Settings();
-        private Utilities.Settings.Settings settings;
+        private Utilities.Settings settings;
 
         private Settings() {
             string file = Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config");
-            settings = new Utilities.Settings.Settings(file);
+            settings = new Utilities.Settings(file);
 
             IPService = new Uri(settings.GetAppSettingWithStandardValue("IPService", "http://bot.whatismyipaddress.com/"));
             Loopback = settings.GetAppSettingWithStandardValue("Loopback", IPAddress.Loopback);
@@ -94,7 +94,7 @@ namespace ServerService.Helper
         {
             get
             {
-                return KnownPlayers.Filename;
+                return KnownPlayers.DatabaseFile;
             }
             set
             {
@@ -492,8 +492,6 @@ namespace ServerService.Helper
                     if (!AdditionalProcesses.Contains(line.Trim()))
                         AdditionalProcesses.Add(line.Trim());
                 }
-
-                sr.Close();
             }
         }
 

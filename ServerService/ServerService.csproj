@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -86,6 +87,7 @@
     <Compile Include="Helper\General.cs" />
     <Compile Include="Helper\Disconnect.cs" />
     <Compile Include="Helper\AccessListEntry.cs" />
+    <Compile Include="Helper\NativeMethods.cs" />
     <Compile Include="Helper\PlayerInfo.cs" />
     <Compile Include="Helper\UacHelper.cs" />
     <Compile Include="Logging.cs" />

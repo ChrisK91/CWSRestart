@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
@@ -9,13 +10,15 @@ using System.Threading.Tasks;
 
 namespace ServerService.Database
 {
-    public class KnownPlayers : Database
+    public sealed class KnownPlayers : DatabaseBase
     {
         public KnownPlayers(string filename)
             : base(filename)
-        { }
+        {
+            CheckAndCreateDatabaseFile(filename);
+        }
 
-        protected override void setUpDatabase()
+        protected override void SetupDatabase()
         {
             List<SQLiteCommand> l = new List<SQLiteCommand>();
 
@@ -52,13 +55,13 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             l.Add(new SQLiteCommand(@"CREATE INDEX knownIP_Index on knownPlayers(IP)"));
             l.Add(new SQLiteCommand(@"CREATE INDEX knownName_Index on knownPlayers(Name)"));
 
-            executeCommand(l);
+            ExecuteCommand(l);
         }
 
         public void ClearConnectedPlayers()
         {
             SQLiteCommand command = new SQLiteCommand("DELETE FROM connectedPlayers");
-            executeCommand(command);
+            ExecuteCommand(command);
         }
 
         public void RemoveConnectedPlayer(string ip)
@@ -66,7 +69,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             long ipId = getIPID(ip);
             SQLiteCommand command = new SQLiteCommand("DELETE FROM connectedPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
-            executeCommand(command);
+            ExecuteCommand(command);
         }
 
         public void AddKnownPlayer(string ip, string name)
@@ -78,7 +81,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command.Parameters.AddWithValue("$ipId", ipId);
             command.Parameters.AddWithValue("$nameId", nameId);
 
-            long count = (long)executeScalar(command);
+            long count = (long)ExecuteScalar(command);
 
             if (count == 0)
             {
@@ -86,7 +89,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
                 command.Parameters.AddWithValue("$ipId", ipId);
                 command.Parameters.AddWithValue("$nameId", nameId);
 
-                executeCommand(command);
+                ExecuteCommand(command);
             }
         }
 
@@ -100,7 +103,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command.Parameters.AddWithValue("$ipId", ipId);
             command.Parameters.AddWithValue("$nameId", nameId);
 
-            executeCommand(command);
+            ExecuteCommand(command);
         }
 
         private long getIPID(string ip, bool dontInsert = false)
@@ -108,14 +111,14 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM ips WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ip);
 
-            long count = (long)executeScalar(command);
+            long count = (long)ExecuteScalar(command);
 
             if (count == 1)
             {
                 command = new SQLiteCommand("SELECT ID FROM ips WHERE IP = $ip");
                 command.Parameters.AddWithValue("$ip", ip);
 
-                return (long)executeScalar(command);
+                return (long)ExecuteScalar(command);
             }
             else if (dontInsert)
             {
@@ -125,12 +128,12 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command = new SQLiteCommand("INSERT INTO ips(IP) VALUES($ip)");
             command.Parameters.AddWithValue("$ip", ip);
 
-            executeCommand(command);
+            ExecuteCommand(command);
 
             command = new SQLiteCommand("SELECT ID FROM ips WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ip);
 
-            return (long)executeScalar(command);
+            return (long)ExecuteScalar(command);
         }
 
         private async Task<long> getIPIDAsync(string ip, bool dontInsert = false)
@@ -138,14 +141,14 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM ips WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ip);
 
-            long count = (long)await executeScalarAsync(command);
+            long count = (long)await ExecuteScalarAsync(command);
 
             if (count == 1)
             {
                 command = new SQLiteCommand("SELECT ID FROM ips WHERE IP = $ip");
                 command.Parameters.AddWithValue("$ip", ip);
 
-                return (long)await executeScalarAsync(command);
+                return (long)await ExecuteScalarAsync(command);
             }
             else if (dontInsert)
             {
@@ -155,12 +158,12 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command = new SQLiteCommand("INSERT INTO ips(IP) VALUES($ip)");
             command.Parameters.AddWithValue("$ip", ip);
 
-            executeCommandAsync(command);
+            ExecuteCommandAsync(command);
 
             command = new SQLiteCommand("SELECT ID FROM ips WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ip);
 
-            return (long)await executeScalarAsync(command);
+            return (long)await ExecuteScalarAsync(command);
         }
 
         private long getNameID(string name, bool dontInsert = false)
@@ -168,14 +171,14 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM names WHERE Name = $name");
             command.Parameters.AddWithValue("$name", name);
 
-            long count = (long)executeScalar(command);
+            long count = (long)ExecuteScalar(command);
 
             if (count == 1)
             {
                 command = new SQLiteCommand("SELECT ID FROM names WHERE Name = $name");
                 command.Parameters.AddWithValue("$name", name);
 
-                return (long)executeScalar(command);
+                return (long)ExecuteScalar(command);
             }
             else if (dontInsert)
             {
@@ -185,12 +188,12 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command = new SQLiteCommand("INSERT INTO names(Name) VALUES($name)");
             command.Parameters.AddWithValue("$name", name);
 
-            executeCommand(command);
+            ExecuteCommand(command);
 
             command = new SQLiteCommand("SELECT ID FROM names WHERE Name = $name");
             command.Parameters.AddWithValue("$name", name);
 
-            return (long)executeScalar(command);
+            return (long)ExecuteScalar(command);
         }
 
         private async Task<long> getNameIDAsync(string name, bool dontInsert = false)
@@ -198,14 +201,14 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM names WHERE Name = $name");
             command.Parameters.AddWithValue("$name", name);
 
-            long count = (long)await executeScalarAsync(command);
+            long count = (long)await ExecuteScalarAsync(command);
 
             if (count == 1)
             {
                 command = new SQLiteCommand("SELECT ID FROM names WHERE Name = $name");
                 command.Parameters.AddWithValue("$name", name);
 
-                return (long)await executeScalarAsync(command);
+                return (long)await ExecuteScalarAsync(command);
             }
             else if (dontInsert)
             {
@@ -215,12 +218,12 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command = new SQLiteCommand("INSERT INTO names(Name) VALUES($name)");
             command.Parameters.AddWithValue("$name", name);
 
-            executeCommandAsync(command);
+            ExecuteCommandAsync(command);
 
             command = new SQLiteCommand("SELECT ID FROM names WHERE Name = $name");
             command.Parameters.AddWithValue("$name", name);
 
-            return (long)await executeScalarAsync(command);
+            return (long)await ExecuteScalarAsync(command);
         }
 
         public string GetConnectedPlayerName(string ip)
@@ -229,7 +232,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM connectedPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
-            long count = (long)executeScalar(command);
+            long count = (long)ExecuteScalar(command);
 
             if (count == 0)
                 return null;
@@ -237,30 +240,30 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command = new SQLiteCommand("SELECT names.Name FROM connectedPlayers LEFT JOIN names ON names.ID = connectedPlayers.Name WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
-            return executeScalar(command).ToString();
+            return ExecuteScalar(command).ToString();
         }
 
         public async Task<string> GetConnectedPlayerNameAsync(string ip)
         {
-            await connection.OpenAsync();
+            await Connection.OpenAsync();
 
             long ipId = await getIPIDAsync(ip, true);
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM connectedPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
-            long count = (long)await executeScalarAsync(command);
+            long count = (long)await ExecuteScalarAsync(command);
 
             if (count == 0)
             {
-                connection.Close();
+                Connection.Close();
                 return null;
             }
 
             command = new SQLiteCommand("SELECT names.Name FROM connectedPlayers LEFT JOIN names ON names.ID = connectedPlayers.Name WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
-            connection.Close();
-            return (await executeScalarAsync(command)).ToString();
+            Connection.Close();
+            return (await ExecuteScalarAsync(command)).ToString();
         }
 
         public List<string> GetKnownNames(string ip)
@@ -271,15 +274,15 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM knownPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
-            long count = (long)executeScalar(command);
+            long count = (long)ExecuteScalar(command);
 
             if (count > 0)
             {
-                connection.Open();
+                Connection.Open();
 
                 command = new SQLiteCommand("SELECT names.Name as Name FROM knownPlayers LEFT JOIN names ON names.ID = knownPlayers.Name WHERE IP = $ip");
                 command.Parameters.AddWithValue("$ip", ipId);
-                command.Connection = connection;
+                command.Connection = Connection;
 
                 DbDataReader reader = command.ExecuteReader();
 
@@ -291,7 +294,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
 
                 reader.Close();
 
-                connection.Close();
+                Connection.Close();
 
                 ret.Sort();
             }
@@ -299,17 +302,17 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return ret;
         }
 
-        public async Task<List<string>> GetKnownNamesAsync(string ip)
+        public async Task<List<string>> GetKnownNamesAsync(string IP)
         {
-            await connection.OpenAsync();
+            await Connection.OpenAsync();
 
             List<string> ret = new List<string>();
-            long ipId = await getIPIDAsync(ip, true);
+            long ipId = await getIPIDAsync(IP, true);
 
             SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM knownPlayers WHERE IP = $ip");
             command.Parameters.AddWithValue("$ip", ipId);
 
-            long count = (long)await executeScalarAsync(command);
+            long count = (long)await ExecuteScalarAsync(command);
 
             if (count > 0)
             {
@@ -317,7 +320,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
 
                 command = new SQLiteCommand("SELECT names.Name as Name FROM knownPlayers LEFT JOIN names ON names.ID = knownPlayers.Name WHERE IP = $ip");
                 command.Parameters.AddWithValue("$ip", ipId);
-                command.Connection = connection;
+                command.Connection = Connection;
 
                 DbDataReader reader = await command.ExecuteReaderAsync();
 
@@ -334,7 +337,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
                 ret.Sort();
             }
 
-            connection.Close();
+            Connection.Close();
             return ret;
         }
     }

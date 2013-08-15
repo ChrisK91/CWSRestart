@@ -7,7 +7,7 @@ using System.IO;
 using System.Configuration;
 using System.Net;
 
-namespace Utilities.Settings
+namespace Utilities
 {
     /// <summary>
     /// A settings class, that reads and writes from/to *.config files
@@ -43,6 +43,12 @@ namespace Utilities.Settings
         /// <param name="Value">The value</param>
         public void SetAppSetting(string Key, object Value)
         {
+            if (Key == null)
+                throw new ArgumentNullException("Key");
+
+            if (Value == null)
+                throw new ArgumentNullException("Value");
+
             Configuration config = openConfiguration();
 
             if (config.AppSettings.Settings[Key] != null)
@@ -114,6 +120,7 @@ namespace Utilities.Settings
             return GetAppSettingValue(key);
         }
 
+        [CLSCompliant(false)]
         public uint GetAppSettingWithStandardValue(string key, uint fallback)
         {
             return readOrCreateValue<uint>(key, fallback, uint.TryParse);

@@ -66,7 +66,7 @@ namespace ServerService.Helper
             }
 
             lastUpdate = DateTime.Now;
-            notifyPropertyChanged("FriendlyName");
+            NotifyPropertyChanged("FriendlyName");
         }
 
         public override int GetHashCode()

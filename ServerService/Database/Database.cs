@@ -8,55 +8,54 @@ using System.Threading.Tasks;
 
 namespace ServerService.Database
 {
-    public abstract class Database
+    public abstract class DatabaseBase : IDisposable
     {
-        public string Filename { get; private set; }
-        protected SQLiteConnection connection;
+        public string DatabaseFile { get; private set; }
+        protected SQLiteConnection Connection { get; private set; }
 
         /// <summary>
-        /// Initializes the Database. Calls setUpDatabase() if the file is created
+        /// Initializes the Database.
         /// </summary>
-        /// <param name="Filename">The database file. Will be created if it doesnt exist</param>
-        public Database(string Filename)
+        /// <param name="filename">The database file. Will be created if it doesnt exist</param>
+        protected DatabaseBase(string file)
         {
-            this.Filename = Filename;
-            bool setUp = false;
+            this.DatabaseFile = file;
 
-            if (!File.Exists(Filename))
-            {
-                SQLiteConnection.CreateFile(Filename);
-                setUp = true;
-            }
-
-            connection = new SQLiteConnection(String.Format("Data Source=\"{0}\"", Filename));
-
-            if (setUp)
-                setUpDatabase();
+            Connection = new SQLiteConnection(String.Format("Data Source=\"{0}\"", file));
         }
 
-        protected abstract void setUpDatabase();
+        protected abstract void SetupDatabase();
+
+        protected virtual void CheckAndCreateDatabaseFile(string file)
+        {
+            if (!File.Exists(file))
+            {
+                SQLiteConnection.CreateFile(file);
+                SetupDatabase();
+            }
+        }
 
         /// <summary>
         /// Will execute the given command on the database
         /// </summary>
         /// <param name="command">The command to execute</param>
-        protected void executeCommand(SQLiteCommand command)
+        protected void ExecuteCommand(SQLiteCommand command)
         {
             bool doClose = InitializeConnection(ref command);
 
             command.ExecuteNonQuery();
 
             if (doClose)
-                connection.Close();
+                Connection.Close();
         }
 
         private bool InitializeConnection(ref SQLiteCommand command)
         {
             bool doClose = false;
 
-            if (connection.State != System.Data.ConnectionState.Open)
+            if (Connection.State != System.Data.ConnectionState.Open)
             {
-                connection.Open();
+                Connection.Open();
                 doClose = true;
             }
 
@@ -69,9 +68,9 @@ namespace ServerService.Database
         {
             bool doClose = false;
 
-            if (connection.State != System.Data.ConnectionState.Open)
+            if (Connection.State != System.Data.ConnectionState.Open)
             {
-                await connection.OpenAsync();
+                await Connection.OpenAsync();
                 doClose = true;
             }
 
@@ -81,7 +80,7 @@ namespace ServerService.Database
         private void initializeCommand(ref SQLiteCommand command)
         {
             if (command.Connection == null)
-                command.Connection = connection;
+                command.Connection = Connection;
         }
 
         /// <summary>
@@ -89,19 +88,19 @@ namespace ServerService.Database
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <returns>The first column of the first row returned by the query</returns>
-        protected object executeScalar(SQLiteCommand command)
+        protected object ExecuteScalar(SQLiteCommand command)
         {
             bool doClose = InitializeConnection(ref command);
 
             object ret = command.ExecuteScalar();
 
             if (doClose)
-                connection.Close();
+                Connection.Close();
 
             return ret;
         }
 
-        protected async Task<object> executeScalarAsync(SQLiteCommand command)
+        protected async Task<object> ExecuteScalarAsync(SQLiteCommand command)
         {
             bool doClose = await InitializeConnectionAsync();
             initializeCommand(ref command);
@@ -109,7 +108,7 @@ namespace ServerService.Database
             object ret = await command.ExecuteScalarAsync();
 
             if (doClose)
-                connection.Close();
+                Connection.Close();
 
             return ret;
         }
@@ -118,7 +117,7 @@ namespace ServerService.Database
         /// Will execute the given command on the database asynchronously
         /// </summary>
         /// <param name="command">The command to execute</param>
-        protected async void executeCommandAsync(SQLiteCommand command)
+        protected async void ExecuteCommandAsync(SQLiteCommand command)
         {
             bool doClose = await InitializeConnectionAsync();
             initializeCommand(ref command);
@@ -126,30 +125,45 @@ namespace ServerService.Database
             await command.ExecuteNonQueryAsync();
 
             if (doClose)
-                connection.Close();
+                Connection.Close();
         }
 
         /// <summary>
         /// Will execute all given commands in a single transaction
         /// </summary>
         /// <param name="commands">The commands to execute</param>
-        protected void executeCommand(IEnumerable<SQLiteCommand> commands)
+        protected void ExecuteCommand(IEnumerable<SQLiteCommand> commands)
         {
-            connection.Open();
+            if (commands == null)
+                throw new ArgumentNullException("commands");
 
-            SQLiteCommand begin = new SQLiteCommand("BEGIN TRANSACTION", connection);
+            Connection.Open();
+
+            SQLiteCommand begin = new SQLiteCommand("BEGIN TRANSACTION", Connection);
             begin.ExecuteNonQuery();
 
             foreach (SQLiteCommand c in commands)
             {
-                c.Connection = connection;
+                c.Connection = Connection;
                 c.ExecuteNonQuery();
             }
 
-            SQLiteCommand end = new SQLiteCommand("END TRANSACTION", connection);
+            SQLiteCommand end = new SQLiteCommand("END TRANSACTION", Connection);
             end.ExecuteNonQuery();
 
-            connection.Close();
+            Connection.Close();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Connection != null)
+                Connection.Dispose();
         }
     }
 }
