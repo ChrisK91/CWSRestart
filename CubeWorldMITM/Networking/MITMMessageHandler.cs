@@ -11,46 +11,151 @@ using System.Threading.Tasks;
 
 namespace CubeWorldMITM.Networking
 {
+    /// <summary>
+    /// Handles the communication between client and real server
+    /// </summary>
     internal class MITMMessageHandler
     {
+        /// <summary>
+        /// A stream to the client
+        /// </summary>
         private NetworkStream client;
+
+        /// <summary>
+        /// A stream to the real server
+        /// </summary>
         private NetworkStream server;
 
+        /// <summary>
+        /// The size of the buffer that is used to pass data from the client to the server and vice versa after identification
+        /// </summary>
         private const int BUFFERSIZE = 8092;
         
+        /// <summary>
+        /// The size of an int
+        /// </summary>
         public const int IntSize = sizeof(int);
+
+        /// <summary>
+        /// The size of an uint32
+        /// </summary>
         public const int UIntSize = sizeof(UInt32);
+
+        /// <summary>
+        /// The size of a long
+        /// </summary>
         public const int Int64Size = sizeof(Int64);
+
+        /// <summary>
+        /// The size of a float
+        /// </summary>
         public const int FloatSize = sizeof(float);
+
+        /// <summary>
+        /// The size of an UInt16
+        /// </summary>
         public const int UInt16Size = sizeof(UInt16);
-        public const int UInt32Size = sizeof(UInt32);
+
+        /// <summary>
+        /// The size of an UInt32
+        /// </summary>
+        public const int UInt32Size = UIntSize;
+
+        /// <summary>
+        /// The size of an UInt64
+        /// </summary>
         public const int UInt64Size = sizeof(UInt64);
 
+        /// <summary>
+        /// temporary storage of the amount of data to send
+        /// </summary>
         private int sendDataLength = 0;
 
+        /// <summary>
+        /// The buffer for data received by the client
+        /// </summary>
         private byte[] clientReceiveBuffer;
+
+        /// <summary>
+        /// The buffer for data received by the server
+        /// </summary>
         private byte[] serverReceiveBuffer = new byte[BUFFERSIZE];
 
+        /// <summary>
+        /// The buffer for data that should be sent to the client
+        /// </summary>
         private byte[] clientSendBuffer = new byte[BUFFERSIZE];
+
+        /// <summary>
+        /// The buffer for data that should be sent to the server
+        /// </summary>
         private byte[] serverSendBuffer;
 
+        /// <summary>
+        /// Buffer to receive a single integer
+        /// </summary>
         private byte[] packageIntReceiveBuffer = new byte[IntSize];
+        /// <summary>
+        /// Buffer to send a single integer
+        /// </summary>
         private byte[] packageIntSendBuffer = new byte[IntSize];
 
+        /// <summary>
+        /// Indicates if the client has been identified
+        /// </summary>
         public bool ClientIdentified { get; private set; }
+
+        /// <summary>
+        /// The name of the player (at the time he joined)
+        /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// The IP of the player (at the time he joined)
+        /// </summary>
         public string IP { get; private set; }
+
+        /// <summary>
+        /// The level of the player (at the time he joined)
+        /// </summary>
         public uint Level { get; private set; }
+
+        /// <summary>
+        /// The amount of HP of the player  (at the time he joined)
+        /// </summary>
         public float HP { get; private set; }
 
+        /// <summary>
+        /// Indicates if the player is connected
+        /// </summary>
         public bool Connected { get; private set; }
 
+        /// <summary>
+        /// The ID of the current package
+        /// </summary>
         private int CurrentPackageId = -1;
+
+        /// <summary>
+        /// Indicates if the MITM expects a package containing the length of the next package
+        /// </summary>
         private bool dataLengthExpected = false;
 
+        /// <summary>
+        /// Callback for when the client is identified
+        /// </summary>
         public Action<MITMMessageHandler> OnClientIdentified;
+
+        /// <summary>
+        /// Callback for when the client disconnected
+        /// </summary>
         public Action<MITMMessageHandler> OnClientDisconnected;
 
+        /// <summary>
+        /// Initializes the connection through the man-in-the-middle server
+        /// </summary>
+        /// <param name="Client">A stream to the client</param>
+        /// <param name="Server">A stream to the server</param>
+        /// <param name="Ip">The ip of the connected player</param>
         public MITMMessageHandler(NetworkStream Client, NetworkStream Server, string Ip)
         {
             try
@@ -72,6 +177,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// Occurs when a package ID has been received from the client
+        /// </summary>
+        /// <param name="ar"></param>
         private void ClientIDReceivedCallback(IAsyncResult ar)
         {
             try
@@ -136,6 +245,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback when the ID has been sent to the server
+        /// </summary>
+        /// <param name="ar"></param>
         private void ServerIDSentCallback(IAsyncResult ar)
         {
             try
@@ -154,6 +267,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback for when the client has sent a package length
+        /// </summary>
+        /// <param name="ar"></param>
         private void ClientLengthReceived(IAsyncResult ar)
         {
             try
@@ -189,6 +306,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback for when the length has been sent to the server
+        /// </summary>
+        /// <param name="ar"></param>
         private void ServerLengthSentCallback(IAsyncResult ar)
         {
             try
@@ -204,6 +325,9 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// Configures the client to listen for data
+        /// </summary>
         private void ClientBeginListenForData()
         {
             try
@@ -220,6 +344,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback for when the client has received data
+        /// </summary>
+        /// <param name="ar"></param>
         private void ClientDataReceivedCallback(IAsyncResult ar)
         {
             try
@@ -586,6 +714,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback for when the data has been sent to the server
+        /// </summary>
+        /// <param name="ar"></param>
         private void ServerDataSentCallback(IAsyncResult ar)
         {
             try
@@ -609,6 +741,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback when the client has sent data, that should not be parsed by MITM
+        /// </summary>
+        /// <param name="ar"></param>
         private void ClientReceivedNonparseCallback(IAsyncResult ar)
         {
             try
@@ -632,6 +768,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback for data that has been received by the server
+        /// </summary>
+        /// <param name="ar"></param>
         private void ServerReceivedCallback(IAsyncResult ar)
         {
             try
@@ -655,6 +795,10 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// A callback for when the data has been sent to the client
+        /// </summary>
+        /// <param name="ar"></param>
         private void ClientWriteCallback(IAsyncResult ar)
         {
             try
@@ -669,6 +813,9 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// Disconnects and closes the streams
+        /// </summary>
         public void Disconnect()
         {
             try
@@ -691,6 +838,11 @@ namespace CubeWorldMITM.Networking
             }
         }
 
+        /// <summary>
+        /// Logs errors that have occured in the proxy connection
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="memberName"></param>
         private static void logError(Exception ex, [CallerMemberName] string memberName = "")
         {
             if (!(ex is IOException) && !(ex is ObjectDisposedException))

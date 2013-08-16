@@ -9,13 +9,26 @@ using System.Threading.Tasks;
 
 namespace CubeWorldMITM.Helper
 {
+    /// <summary>
+    /// Prepares and launches the server
+    /// </summary>
     internal static class Launcher
     {
+        /// <summary>
+        /// Containes the location from which the server was launched
+        /// </summary>
         public static string ServerLocation { get; private set; }
+
+        /// <summary>
+        /// Contains the name of the started server process
+        /// </summary>
         public static string ServerName { get; private set; }
 
         private static Dictionary<string, List<IConfigurator>> _configurators;
 
+        /// <summary>
+        /// Associates server.exe MD5 with the related configurators.
+        /// </summary>
         public static Dictionary<string, List<IConfigurator>> Configurators
         {
             get
@@ -43,6 +56,7 @@ namespace CubeWorldMITM.Helper
 
                         Console.WriteLine("Loaded \"{0}\" for MD5 \"{1}\"", configurator.Name, configurator.MD5);
                     }
+
                     //TODO: Add plugin loading for external configurators
                 }
 
@@ -50,6 +64,10 @@ namespace CubeWorldMITM.Helper
             }
         }
 
+        /// <summary>
+        /// Configures and launches the server. See also: ServerLocation and ServerName which are set by this method
+        /// </summary>
+        /// <param name="path">The original path of the server</param>
         public static void LaunchServerConfigured(string path)
         {
             string originalPath = path;

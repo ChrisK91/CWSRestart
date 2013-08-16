@@ -15,24 +15,69 @@ namespace CubeWorldMITM
 {
     class Program
     {
+        /// <summary>
+        /// The listener that accepts incoming connections
+        /// </summary>
         private static TcpListener mitm;
+
+        /// <summary>
+        /// Indicates if the program should terminate
+        /// </summary>
         private static volatile bool shouldExit = false;
+
+        /// <summary>
+        /// Indicates if a list of players should be saved automatically
+        /// </summary>
         private static bool autosaveEnabled = false;
+
+        /// <summary>
+        /// A EventWaitHandle to coordinate the TcpListener
+        /// </summary>
         private static EventWaitHandle wait;
 
+        /// <summary>
+        /// Contains all active connections
+        /// </summary>
         private static List<MITMMessageHandler> establishedConnections = new List<MITMMessageHandler>();
 
+        /// <summary>
+        /// Contains all known names
+        /// </summary>
         private static Dictionary<string, List<string>> KnownNames = new Dictionary<string, List<string>>();
+
+        /// <summary>
+        /// Contains the connected players
+        /// </summary>
         private static Dictionary<string, MITMMessageHandler> ConnectedPlayers = new Dictionary<string, MITMMessageHandler>();
 
+        /// <summary>
+        /// The port of the MITM
+        /// </summary>
         private static uint port = 12345;
+
+        /// <summary>
+        /// The port of the CubeWorld server
+        /// </summary>
         private static uint serverPort = 12346;
 
+        /// <summary>
+        /// The IPAdress of the MITM
+        /// </summary>
         private static IPAddress mitmIP = IPAddress.Any;
+
+        /// <summary>
+        /// The IPAdress of the CubeWorld server
+        /// </summary>
         private static IPAddress cubeWorldIP = IPAddress.Loopback;
 
+        /// <summary>
+        /// The Timer that autosaves the players
+        /// </summary>
         private static System.Timers.Timer autosave = new System.Timers.Timer();
 
+        /// <summary>
+        /// The database where player identification is stored
+        /// </summary>
         private static KnownPlayers knownPlayers;
 
         static void Main(string[] args)
@@ -91,6 +136,10 @@ namespace CubeWorldMITM
             listenerThread.Abort();
         }
 
+        /// <summary>
+        /// Parses the command line arguments
+        /// </summary>
+        /// <param name="args">The arguments</param>
         private static void parseSettings(string[] args)
         {
             if (args.Count() >= 1)
@@ -130,6 +179,9 @@ namespace CubeWorldMITM
             }
         }
 
+        /// <summary>
+        /// Handles the console loop
+        /// </summary>
         private static void messageLoop()
         {
             CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
@@ -295,6 +347,10 @@ namespace CubeWorldMITM
             }
         }
 
+        /// <summary>
+        /// Intializes the player identification with CWSRestart
+        /// </summary>
+        /// <param name="c"></param>
         private static void EnablePlayerIdentification(CWSProtocol.Client c)
         {
             string database;
@@ -320,6 +376,9 @@ namespace CubeWorldMITM
             }
         }
 
+        /// <summary>
+        /// Saves the known player information to disc
+        /// </summary>
         private static void savePlayers()
         {
             string filename = String.Format("{0}.{1}", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), "txt");
@@ -372,6 +431,9 @@ namespace CubeWorldMITM
                 autosave.Enabled = true;
         }
 
+        /// <summary>
+        /// The main loop for incoming connections
+        /// </summary>
         private static void ConnectionLoop()
         {
             try
@@ -395,6 +457,10 @@ namespace CubeWorldMITM
             }
         }
 
+        /// <summary>
+        /// A callback for when a client attempts a connection
+        /// </summary>
+        /// <param name="ar"></param>
         private static void OnConnect(IAsyncResult ar)
         {
             TcpClient client = null;
@@ -479,6 +545,12 @@ namespace CubeWorldMITM
             }
         }
 
+        /// <summary>
+        /// Checks if the player is allowed on the server
+        /// </summary>
+        /// <param name="level">The level of the player</param>
+        /// <param name="hp">The hp of the player</param>
+        /// <returns>True if the player is allowed, otherwise false</returns>
         private static bool playerAllowed(uint level, float hp)
         {
             bool ret = true;
@@ -496,6 +568,10 @@ namespace CubeWorldMITM
             return ret;
         }
 
+        /// <summary>
+        /// Centers text in the console window
+        /// </summary>
+        /// <param name="text"></param>
         private static void centerText(String text)
         {
             Console.Write(new string(' ', (Console.WindowWidth - text.Length) / 2));

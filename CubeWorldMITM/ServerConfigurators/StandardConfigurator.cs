@@ -7,8 +7,14 @@ using System.IO;
 
 namespace CubeWorldMITM.ServerConfigurators
 {
+    /// <summary>
+    /// A configurator that patches the port of the server.exe to 12346
+    /// </summary>
     internal class StandardConfigurator : IConfigurator
     {
+        /// <summary>
+        /// The MD5 of the server.exe that comes with CubeWorld
+        /// </summary>
         public String MD5
         {
             get
@@ -17,6 +23,9 @@ namespace CubeWorldMITM.ServerConfigurators
             }
         }
 
+        /// <summary>
+        /// The name of the configurator
+        /// </summary>
         public String Name
         {
             get
@@ -25,18 +34,30 @@ namespace CubeWorldMITM.ServerConfigurators
             }
         }
 
+        /// <summary>
+        /// The offset where the port number is located
+        /// </summary>
         private const int offset = 0x27C10;
+
+        /// <summary>
+        /// The port to wich the server should be patched
+        /// </summary>
         private const int desiredPort = 12346;
 
-        public string PrepareFile(string FilePath)
+        /// <summary>
+        /// Patches the server.exe and saves the patched server to ServerModified.exe
+        /// </summary>
+        /// <param name="file">The location of the server.exe</param>
+        /// <returns>The path of the patched server</returns>
+        public string PrepareFile(string file)
         {
-            string tmpDir = Path.Combine(Directory.GetParent(FilePath).ToString());
+            string tmpDir = Path.Combine(Directory.GetParent(file).ToString());
             String targetFile = Path.Combine(tmpDir, "ServerModified.exe");
 
             if (!Directory.Exists(tmpDir))
                 Directory.CreateDirectory(tmpDir);
 
-            File.Copy(FilePath, targetFile, true);
+            File.Copy(file, targetFile, true);
 
             using (BinaryWriter bw = new BinaryWriter(File.Open(targetFile, FileMode.Open)))
             {
