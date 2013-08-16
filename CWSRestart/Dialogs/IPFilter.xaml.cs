@@ -1,4 +1,5 @@
-﻿using ServerService.Helper;
+﻿using ServerService.Access;
+using ServerService.Helper;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -69,10 +70,10 @@ namespace CWSRestart.Dialogs
 
             if (address != null)
             {
-                if (ServerService.AccessControl.Instance.AccessList.Contains(address))
-                    ServerService.AccessControl.Instance.AccessList.Remove(address);
+                if (AccessControl.Instance.AccessList.Contains(address))
+                    AccessControl.Instance.AccessList.Remove(address);
                 else
-                    ServerService.AccessControl.Instance.AccessList.Add(address);
+                    AccessControl.Instance.AccessList.Add(address);
             }
         }
 
@@ -81,8 +82,8 @@ namespace CWSRestart.Dialogs
             AccessListEntry ip;
             if (e.Key == Key.Enter && (ip = ParseText(AddIPTextBox.Text)) != null)
             {
-                if (!ServerService.AccessControl.Instance.AccessList.Contains(ip))
-                    ServerService.AccessControl.Instance.AccessList.Add(ip);
+                if (!AccessControl.Instance.AccessList.Contains(ip))
+                    AccessControl.Instance.AccessList.Add(ip);
 
                 AddIPTextBox.Text = String.Empty;
                 e.Handled = true;
@@ -95,7 +96,7 @@ namespace CWSRestart.Dialogs
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private AccessListEntry ParseText(string text)
+        private static AccessListEntry ParseText(string text)
         {
             AccessListEntry e = null;
             if (!AccessIP.TryParse(text, out e))
@@ -110,13 +111,13 @@ namespace CWSRestart.Dialogs
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            ServerService.AccessControl.Instance.SaveList(listLocation);
+            AccessControl.Instance.SaveList(listLocation);
         }
 
         private void RestoreButton_Click(object sender, RoutedEventArgs e)
         {
             if(File.Exists(listLocation))
-                ServerService.AccessControl.Instance.RestoreList(listLocation);
+                AccessControl.Instance.RestoreList(listLocation);
         }
 
         private void ListBox_KeyDown(object sender, KeyEventArgs e)

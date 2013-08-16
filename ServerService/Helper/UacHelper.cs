@@ -65,7 +65,7 @@ namespace ServerService.Helper
                             }
                             else
                             {
-                                Logging.OnLogMessage("Unable to determine the current elevation.", ServerService.Logging.MessageType.Warning);
+                                Logging.OnLogMessage("Unable to determine the current elevation.", ServerService.MessageType.Warning);
                                 return false;
                             }
                         }

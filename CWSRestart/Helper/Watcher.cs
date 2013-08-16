@@ -46,15 +46,15 @@ namespace CWSRestart.Helper
                     watcher.Stop();
                     IsBlocked = true;
 
-                    Helper.Logging.OnLogMessage("Time to check if the server is still running", ServerService.Logging.MessageType.Info);
+                    Helper.Logging.OnLogMessage("Time to check if the server is still running", ServerService.MessageType.Info);
 
-                    ServerService.Validator.ServerErrors errors = await ServerService.Validator.Instance.Validates(ServerService.Helper.Settings.Instance.IgnoreAccess);
+                    ServerService.ServerErrors errors = await ServerService.Validator.Instance.Validates(ServerService.Helper.Settings.Instance.IgnoreAccess);
 
                     if (errors != 0)
                     {
-                        Helper.Logging.OnLogMessage("A restart is required", ServerService.Logging.MessageType.Info);
+                        Helper.Logging.OnLogMessage("A restart is required", ServerService.MessageType.Info);
 
-                        if (!errors.HasFlag(ServerService.Validator.ServerErrors.ProcessDead))
+                        if (!errors.HasFlag(ServerService.ServerErrors.ProcessDead))
                         {
                             ServerService.Helper.General.RestartServer();
                         }
@@ -191,12 +191,12 @@ namespace CWSRestart.Helper
         {
             if (!watcher.Enabled)
             {
-                Logging.OnLogMessage("Watcher started", ServerService.Logging.MessageType.Info);
+                Logging.OnLogMessage("Watcher started", ServerService.MessageType.Info);
                 watcher.Start();
             }
             else
             {
-                Logging.OnLogMessage("Watcher stopped", ServerService.Logging.MessageType.Info);
+                Logging.OnLogMessage("Watcher stopped", ServerService.MessageType.Info);
                 watcher.Stop();
             }
 
@@ -207,7 +207,7 @@ namespace CWSRestart.Helper
         {
             if (!watcher.Enabled)
             {
-                Logging.OnLogMessage("Watcher started", ServerService.Logging.MessageType.Info);
+                Logging.OnLogMessage("Watcher started", ServerService.MessageType.Info);
                 watcher.Start();
                 IsRunning = true;
             }
@@ -217,7 +217,7 @@ namespace CWSRestart.Helper
         {
             if (watcher.Enabled && !IsBlocked)
             {
-                Logging.OnLogMessage("Watcher stopped", ServerService.Logging.MessageType.Info);
+                Logging.OnLogMessage("Watcher stopped", ServerService.MessageType.Info);
                 watcher.Stop();
                 IsRunning = false;
             }

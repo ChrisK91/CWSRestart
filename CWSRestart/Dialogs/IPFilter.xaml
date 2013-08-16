@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ss="clr-namespace:ServerService;assembly=ServerService"
+        xmlns:ac="clr-namespace:ServerService.Access;assembly=ServerService"
         xmlns:Helper="clr-namespace:CWSRestart.Helper"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
 
@@ -23,7 +24,7 @@
 
             <ObjectDataProvider x:Key="AccessModeProvider" MethodName="GetValues" ObjectType="System:Enum">
                 <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="ss:AccessControl+AccessMode"/>
+                    <x:Type TypeName="ac:AccessMode"/>
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
         </Grid.Resources>
@@ -54,14 +55,14 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ss:AccessControl.Instance}}" DisplayMemberPath="FriendlyName" >
+                <ListBox ItemContainerStyle="{StaticResource DoubleClickStyle}" Grid.Row="0" ItemsSource="{Binding AccessList, Source={x:Static ac:AccessControl.Instance}}" DisplayMemberPath="FriendlyName" >
                 </ListBox>
                 <TextBox Grid.Row="1" x:Name="AddIPTextBox" KeyDown="AddIPTextBox_KeyDown" />
             </Grid>
         </GroupBox>
         
         <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
-            <ComboBox DockPanel.Dock="Right" Width="80" ItemsSource="{Binding Source={StaticResource AccessModeProvider}}" SelectedItem="{Binding Mode, Source={x:Static ss:AccessControl.Instance}}" VerticalAlignment="Center" />
+            <ComboBox DockPanel.Dock="Right" Width="80" ItemsSource="{Binding Source={StaticResource AccessModeProvider}}" SelectedItem="{Binding Mode, Source={x:Static ac:AccessControl.Instance}}" VerticalAlignment="Center" />
             <Label DockPanel.Dock="Right">Use list as: </Label>
             <Button x:Name="SaveButton" Content="Save list" DockPanel.Dock="Left" Width="80" Margin="2" Click="SaveButton_Click" />
             <Button x:Name="RestoreButton" Content="Restore list" DockPanel.Dock="Left" Width="80" Margin="2" Click="RestoreButton_Click" />

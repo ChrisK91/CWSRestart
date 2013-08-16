@@ -141,11 +141,11 @@ namespace CWSRestart.Helper
                             ServerService.Helper.Settings.Instance.AdditionalProcesses.Add(s);
                     }
 
-                    Logging.OnLogMessage(String.Format("Loaded preset {0}", p.Name), ServerService.Logging.MessageType.Info);
+                    Logging.OnLogMessage(String.Format("Loaded preset {0}", p.Name), ServerService.MessageType.Info);
                 }
                 catch (Exception)
                 {
-                    Logging.OnLogMessage(String.Format("Could not load preset {0}", filename), ServerService.Logging.MessageType.Error);
+                    Logging.OnLogMessage(String.Format("Could not load preset {0}", filename), ServerService.MessageType.Error);
                 }
             }
         }

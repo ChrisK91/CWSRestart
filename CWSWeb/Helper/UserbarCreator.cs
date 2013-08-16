@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CWSWeb.Helper
 {
-    class UserbarCreator
+    static class UserbarCreator
     {
         static string baseFile = Path.Combine(Directory.GetCurrentDirectory(), "Content", "base.png");
         static string fontFile = Path.Combine(Directory.GetCurrentDirectory(), "Content", "font.ttf");

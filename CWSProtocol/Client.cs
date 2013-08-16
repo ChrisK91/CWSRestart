@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServerService.Access;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -250,7 +251,7 @@ namespace CWSProtocol
             return ret;
         }
 
-        public List<string> GetLogMessages()
+        public IList<string> GetLogMessages()
         {
             List<string> ret = new List<string>();
 
@@ -285,7 +286,7 @@ namespace CWSProtocol
             disconnectClient();
         }
 
-        public List<string> GetConnectedPlayers()
+        public IList<string> GetConnectedPlayers()
         {
             List<string> ret = new List<string>();
 
@@ -308,7 +309,7 @@ namespace CWSProtocol
             disconnectClient();
         }
 
-        public List<string> GetAccessListEntries()
+        public IList<string> GetAccessListEntries()
         {
             List<string> ret = new List<string>();
 
@@ -334,22 +335,22 @@ namespace CWSProtocol
             client = null;
         }
 
-        public ServerService.AccessControl.AccessMode GetAccessMode()
+        public AccessMode GetAccessMode()
         {
-            ServerService.AccessControl.AccessMode ret = ServerService.AccessControl.AccessMode.Blacklist;
+            AccessMode ret = AccessMode.Blacklist;
             if (sendCommand(Commands.Command.ACCESSMODE))
             {
                 Tuple<Commands.Command, string> answer = readResponse();
 
                 if (answer.Item1 == Commands.Command.ACCESSMODE)
-                    ret = (ServerService.AccessControl.AccessMode)Enum.Parse(typeof(ServerService.AccessControl.AccessMode), answer.Item2);
+                    ret = (AccessMode)Enum.Parse(typeof(AccessMode), answer.Item2);
             }
 
             disconnectClient();
             return ret;
         }
 
-        public void SetAccess(List<string> accessList, ServerService.AccessControl.AccessMode mode)
+        public void SetAccess(IList<string> accessList, AccessMode mode)
         {
             if (accessList != null)
             {

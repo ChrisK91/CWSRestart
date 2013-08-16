@@ -9,6 +9,30 @@ using System.Threading.Tasks;
 
 namespace ServerService.Database
 {
+    public sealed class StatisticsEntry
+    {
+        public int ID { get; private set; }
+        public DateTime TimeStamp { get; private set; }
+        public TimeSpan Runtime { get; private set; }
+        public int CurrentPlayers { get; private set; }
+        public int TotalPlayers { get; private set; }
+        public long CurrentMemory { get; private set; }
+        public long PeakMemory { get; private set; }
+        public int Restarts { get; private set; }
+
+        internal StatisticsEntry(int id, DateTime timestamp, TimeSpan runtime, int currentplayers, int maxplayers, long currentmem, long maxmem, int restarts)
+        {
+            this.ID = id;
+            this.TimeStamp = timestamp;
+            this.Runtime = runtime;
+            this.CurrentPlayers = currentplayers;
+            this.TotalPlayers = maxplayers;
+            this.CurrentMemory = currentmem;
+            this.PeakMemory = maxmem;
+            this.Restarts = restarts;
+        }
+    }
+
     public sealed class Statistics : DatabaseBase
     {
         public Statistics(string Filename)
@@ -83,30 +107,6 @@ namespace ServerService.Database
 
             Connection.Close();
             return ret;
-        }
-
-        public sealed class StatisticsEntry
-        {
-            public int ID { get; private set; }
-            public DateTime TimeStamp { get; private set; }
-            public TimeSpan Runtime { get; private set; }
-            public int CurrentPlayers { get; private set; }
-            public int TotalPlayers { get; private set; }
-            public long CurrentMemory { get; private set; }
-            public long PeakMemory { get; private set; }
-            public int Restarts { get; private set; }
-
-            internal StatisticsEntry(int id, DateTime timestamp, TimeSpan runtime, int currentplayers, int maxplayers, long currentmem, long maxmem, int restarts)
-            {
-                this.ID = id;
-                this.TimeStamp = timestamp;
-                this.Runtime = runtime;
-                this.CurrentPlayers = currentplayers;
-                this.TotalPlayers = maxplayers;
-                this.CurrentMemory = currentmem;
-                this.PeakMemory = maxmem;
-                this.Restarts = restarts;
-            }
         }
     }
 }

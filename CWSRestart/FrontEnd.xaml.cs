@@ -1,4 +1,5 @@
 ﻿using ServerService;
+using ServerService.Access;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -50,7 +51,7 @@ namespace CWSRestart
             ServerService.Logging.LogMessage += Logging_LogMessage;
             Helper.Logging.LogMessage += Logging_LogMessage;
 
-            Stats = new Statistics(1000, false);
+            Stats = new Statistics( false);
             Infrastructure.Server.Instance.Statistics = Stats;
 
             Infrastructure.Server.Instance.GetLog = () =>
@@ -74,11 +75,11 @@ namespace CWSRestart
 
             if (!ServerService.Helper.UacHelper.IsProcessElevated && ServerService.Helper.UacHelper.IsUacEnabled)
             {
-                Helper.Logging.OnLogMessage("The application is not running as administrator. Features like banning might not work.", Logging.MessageType.Warning);
+                Helper.Logging.OnLogMessage("The application is not running as administrator. Features like banning might not work.", MessageType.Warning);
             }
             else
             {
-                Helper.Logging.OnLogMessage("The application is running as administrator. Keep in mind, that everything that is launched from here, will run as administrator as well.", Logging.MessageType.Info);
+                Helper.Logging.OnLogMessage("The application is running as administrator. Keep in mind, that everything that is launched from here, will run as administrator as well.", MessageType.Info);
             }
 #if DEBUG
             ToggleInterProcessCommunication_Click(null, null);
@@ -99,37 +100,37 @@ namespace CWSRestart
                 if (ServerService.Helper.Settings.Instance.Validates)
                     ToggleWatcher_Click(null, null);
                 else
-                    Helper.Logging.OnLogMessage("Not all settings are set. Watcher not started.", Logging.MessageType.Warning);
+                    Helper.Logging.OnLogMessage("Not all settings are set. Watcher not started.", MessageType.Warning);
             }
         }
 
-        void Logging_LogMessage(object sender, Logging.LogMessageEventArgs e)
+        void Logging_LogMessage(object sender, LogMessageEventArgs e)
         {
-            CWSRestart.Controls.LogFilter.MessageType t = Controls.LogFilter.MessageType.General;
+            Helper.MessageType t = Helper.MessageType.General;
 
             switch (e.type)
             {
-                case Logging.MessageType.Error:
-                    t = Controls.LogFilter.MessageType.Error;
+                case MessageType.Error:
+                    t = Helper.MessageType.Error;
                     break;
 
-                case Logging.MessageType.Info:
-                    t = Controls.LogFilter.MessageType.Info;
+                case MessageType.Info:
+                    t = Helper.MessageType.Info;
                     break;
 
-                case Logging.MessageType.Server:
-                    t = Controls.LogFilter.MessageType.Server;
+                case MessageType.Server:
+                    t = Helper.MessageType.Server;
                     break;
 
-                case Logging.MessageType.Warning:
-                    t = Controls.LogFilter.MessageType.Warning;
+                case MessageType.Warning:
+                    t = Helper.MessageType.Warning;
                     break;
             }
 
             try
             {
                 if(Application.Current != null)
-                    Application.Current.Dispatcher.BeginInvoke(new Action<Controls.LogFilter.LogMessage>((m) => LogControl.Messages.Add(m)), new Controls.LogFilter.LogMessage(e.message, t));
+                    Application.Current.Dispatcher.BeginInvoke(new Action<CWSRestart.Helper.LogMessage>((m) => LogControl.Messages.Add(m)), new CWSRestart.Helper.LogMessage(e.message, t));
             }
             catch (NullReferenceException)
             {
@@ -140,7 +141,7 @@ namespace CWSRestart
 
         private void log(string message)
         {
-            LogControl.Messages.Add(new Controls.LogFilter.LogMessage(message, Controls.LogFilter.MessageType.Info));
+            LogControl.Messages.Add(new CWSRestart.Helper.LogMessage(message, CWSRestart.Helper.MessageType.Info));
         }
 
         private async void RefreshExternalButton_Click(object sender, RoutedEventArgs e)

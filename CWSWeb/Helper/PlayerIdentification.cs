@@ -16,7 +16,7 @@ namespace CWSWeb.Helper
 
                 if (name == null)
                 {
-                    List<string> names = Helper.CachedVariables.KnownPlayers.GetKnownNames(ip);
+                    IList<string> names = Helper.CachedVariables.KnownPlayers.GetKnownNames(ip);
 
                     if (names.Count > 0)
                     {

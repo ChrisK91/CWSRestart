@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace CWSWeb.Models.Admin
 {
     public class ControlPanel
     {
-        public List<string> LogMessages { get; private set; }
+        public Collection<string> LogMessages { get; private set; }
         
         public bool ServerAlive {
             get {
@@ -24,7 +25,7 @@ namespace CWSWeb.Models.Admin
         public bool CheckLAN { get; private set; }
         public bool CheckLoopback { get; private set; }
 
-        public ControlPanel(List<string> LogMessages, bool WatcherEnabled, bool WatcherBusy, uint WatcherTimeout, bool CheckInternet, bool CheckLAN, bool CheckLoopback)
+        public ControlPanel(Collection<string> LogMessages, bool WatcherEnabled, bool WatcherBusy, uint WatcherTimeout, bool CheckInternet, bool CheckLAN, bool CheckLoopback)
         {
             this.LogMessages = LogMessages;
             this.WatcherBusy = WatcherBusy;

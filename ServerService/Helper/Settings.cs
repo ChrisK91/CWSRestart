@@ -11,6 +11,26 @@ using System.Text;
 namespace ServerService.Helper
 {
     /// <summary>
+    /// Describes some access locations
+    /// </summary>
+    [Flags]
+    public enum AccessType
+    {
+        /// <summary>
+        /// Access on the loopback network (120.0.0.1/localhost)
+        /// </summary>
+        Loopback = 0x1,
+        /// <summary>
+        /// Access in the LAN (eg. 192.168.*.*)
+        /// </summary>
+        LAN = 0x2,
+        /// <summary>
+        /// Access from the world wide web
+        /// </summary>
+        Internet = 0x4
+    }
+
+    /// <summary>
     /// This class contains all settings for the Server Service
     /// </summary>
     public sealed class Settings : INotifyPropertyChanged
@@ -56,22 +76,22 @@ namespace ServerService.Helper
             if (e.Reason == Microsoft.Win32.SessionSwitchReason.SessionUnlock)
             {
                 SessionActive = true;
-                Logging.OnLogMessage("The PC has been unlocked", Logging.MessageType.Info);
+                Logging.OnLogMessage("The PC has been unlocked", MessageType.Info);
             }
             else if (e.Reason == Microsoft.Win32.SessionSwitchReason.SessionLock)
             {
                 SessionActive = false;
-                Logging.OnLogMessage("The PC has been locked", Logging.MessageType.Info);
+                Logging.OnLogMessage("The PC has been locked", MessageType.Info);
             }
             else if (e.Reason == Microsoft.Win32.SessionSwitchReason.RemoteDisconnect)
             {
                 SessionActive = false;
-                Logging.OnLogMessage("A remote connection has been terminated", Logging.MessageType.Info);
+                Logging.OnLogMessage("A remote connection has been terminated", MessageType.Info);
             }
             else if (e.Reason == Microsoft.Win32.SessionSwitchReason.RemoteConnect)
             {
                 SessionActive = true;
-                Logging.OnLogMessage("A remote connection has been initiated", Logging.MessageType.Info);
+                Logging.OnLogMessage("A remote connection has been initiated", MessageType.Info);
             }
         }
 
@@ -459,7 +479,7 @@ namespace ServerService.Helper
             {
                 return additionalProcesses;
             }
-            set
+            private set
             {
                 if (additionalProcesses != value)
                 {
@@ -469,6 +489,11 @@ namespace ServerService.Helper
             }
         }
         #endregion
+
+        public void SetAdditionalProcesses(ObservableCollection<string> collection)
+        {
+            this.AdditionalProcesses = collection;
+        }
 
         private string additionalProcessesLocation = Path.Combine(Directory.GetCurrentDirectory(), "additionalprocesses.txt");
         public string AdditionalProcessesLocation
@@ -503,26 +528,6 @@ namespace ServerService.Helper
                 sb.AppendLine(s);
 
             File.WriteAllText(filepath, sb.ToString());
-        }
-
-        /// <summary>
-        /// Describes some access locations
-        /// </summary>
-        [Flags]
-        public enum AccessType
-        {
-            /// <summary>
-            /// Access on the loopback network (120.0.0.1/localhost)
-            /// </summary>
-            Loopback = 0x1,
-            /// <summary>
-            /// Access in the LAN (eg. 192.168.*.*)
-            /// </summary>
-            LAN = 0x2,
-            /// <summary>
-            /// Access from the world wide web
-            /// </summary>
-            Internet = 0x4
         }
 
         private bool validates = false;

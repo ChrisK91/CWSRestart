@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace ServerService.Database
         /// Will execute the given command on the database
         /// </summary>
         /// <param name="command">The command to execute</param>
-        protected void ExecuteCommand(SQLiteCommand command)
+        protected void ExecuteCommand(DbCommand command)
         {
             bool doClose = InitializeConnection(ref command);
 
@@ -49,7 +50,7 @@ namespace ServerService.Database
                 Connection.Close();
         }
 
-        private bool InitializeConnection(ref SQLiteCommand command)
+        private bool InitializeConnection(ref DbCommand command)
         {
             bool doClose = false;
 
@@ -77,7 +78,7 @@ namespace ServerService.Database
             return doClose;
         }
 
-        private void initializeCommand(ref SQLiteCommand command)
+        private void initializeCommand(ref DbCommand command)
         {
             if (command.Connection == null)
                 command.Connection = Connection;
@@ -88,7 +89,7 @@ namespace ServerService.Database
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <returns>The first column of the first row returned by the query</returns>
-        protected object ExecuteScalar(SQLiteCommand command)
+        protected object ExecuteScalar(DbCommand command)
         {
             bool doClose = InitializeConnection(ref command);
 
@@ -100,7 +101,7 @@ namespace ServerService.Database
             return ret;
         }
 
-        protected async Task<object> ExecuteScalarAsync(SQLiteCommand command)
+        protected async Task<object> ExecuteScalarAsync(DbCommand command)
         {
             bool doClose = await InitializeConnectionAsync();
             initializeCommand(ref command);
@@ -117,7 +118,7 @@ namespace ServerService.Database
         /// Will execute the given command on the database asynchronously
         /// </summary>
         /// <param name="command">The command to execute</param>
-        protected async void ExecuteCommandAsync(SQLiteCommand command)
+        protected async void ExecuteCommandAsync(DbCommand command)
         {
             bool doClose = await InitializeConnectionAsync();
             initializeCommand(ref command);
@@ -132,7 +133,7 @@ namespace ServerService.Database
         /// Will execute all given commands in a single transaction
         /// </summary>
         /// <param name="commands">The commands to execute</param>
-        protected void ExecuteCommand(IEnumerable<SQLiteCommand> commands)
+        protected void ExecuteCommand(IEnumerable<DbCommand> commands)
         {
             if (commands == null)
                 throw new ArgumentNullException("commands");
@@ -142,7 +143,7 @@ namespace ServerService.Database
             SQLiteCommand begin = new SQLiteCommand("BEGIN TRANSACTION", Connection);
             begin.ExecuteNonQuery();
 
-            foreach (SQLiteCommand c in commands)
+            foreach (DbCommand c in commands)
             {
                 c.Connection = Connection;
                 c.ExecuteNonQuery();

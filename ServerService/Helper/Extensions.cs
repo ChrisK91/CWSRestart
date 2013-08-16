@@ -16,7 +16,7 @@ namespace ServerService.Helper
                 throw new ArgumentNullException("list");
 
             if (IP == null)
-                throw new ArgumentNullException("ip");
+                throw new ArgumentNullException("IP");
 
             for (int i = 0; i < list.Count; i++)
             {

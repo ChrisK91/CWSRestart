@@ -36,16 +36,16 @@ namespace CWSWeb.Various
             switch (statusCode)
             {
                 case HttpStatusCode.NotFound:
-                    response = renderer.RenderView(context, "Error/error.cshtml", new Error { ErrorCode = "404", ErrorMessage = "The requested page was not found." });
+                    response = renderer.RenderView(context, "Error/error.cshtml", new Error("404", "The requested page was not found."));
                     break;
                 case HttpStatusCode.Forbidden:
-                    response = renderer.RenderView(context, "Error/error.cshtml", new Error { ErrorCode = "403", ErrorMessage = "You don't have access to this page." });
+                    response = renderer.RenderView(context, "Error/error.cshtml", new Error("403","You don't have access to this page."));
                     break;
                 case HttpStatusCode.Unauthorized:
-                    response = renderer.RenderView(context, "Error/error.cshtml", new Error { ErrorCode = "401", ErrorMessage = "You are not allowed to view this page." });
+                    response = renderer.RenderView(context, "Error/error.cshtml", new Error("401","You are not allowed to view this page."));
                     break;
                 case HttpStatusCode.InternalServerError:
-                    response = renderer.RenderView(context, "Error/error.cshtml", new Error { ErrorCode = "500", ErrorMessage = "An internal error occured." });
+                    response = renderer.RenderView(context, "Error/error.cshtml", new Error("500","An internal error occured."));
 
                     object exceptionKey;
                     object exceptionObject;
@@ -60,7 +60,7 @@ namespace CWSWeb.Various
 
                     break;
                 default:
-                    response = renderer.RenderView(context, "Error/error.cshtml", new Error { ErrorCode = ":(", ErrorMessage = "How did I end up here?" });
+                    response = renderer.RenderView(context, "Error/error.cshtml", new Error(":(","How did I end up here?" ));
                     break;
             }
 

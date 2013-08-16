@@ -1,4 +1,5 @@
-﻿using ServerService.Helper;
+﻿using ServerService.Access;
+using ServerService.Helper;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -136,7 +137,7 @@ namespace ServerService
             {
                 return connectedplayers;
             }
-            set
+            private set
             {
                 if (connectedplayers != value)
                 {
@@ -217,25 +218,16 @@ namespace ServerService
         }
 
         /// <summary>
-        /// Initializes the statistics and starts the autorefresh
-        /// </summary>
-        /// <param name="timeout">Update interval of the statistics (in ms)</param>
-        public Statistics(int timeout)
-        {
-            initialize(timeout, true);
-        }
-
-        /// <summary>
         /// Initializes the statistics
         /// </summary>
         /// <param name="timeout">Update interval of the statistics (in ms)</param>
         /// <param name="autostart">If the timer should be started</param>
-        public Statistics(int timeout, bool autostart)
+        public Statistics(bool autostart)
         {
-            initialize(timeout, autostart);
+            initialize(autostart);
         }
 
-        private void initialize(int timeout, bool autostart)
+        private void initialize(bool autostart)
         {
             StartTime = DateTime.Now;
 
@@ -276,7 +268,7 @@ namespace ServerService
             refresh.Start();
 
             if (String.IsNullOrEmpty(LogFolder))
-                Logging.OnLogMessage("To save your statistics, use the button on the left", Logging.MessageType.Info);
+                Logging.OnLogMessage("To save your statistics, use the button on the left", MessageType.Info);
 
             Enabled = true;
         }

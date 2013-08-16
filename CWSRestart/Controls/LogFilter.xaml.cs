@@ -260,49 +260,6 @@ namespace CWSRestart.Controls
             log.SortDescriptions.Add(new SortDescription("Timestamp", ListSortDirection.Descending));
         }
 
-        public class LogMessage
-        {
-            public DateTime Timestamp { get; private set; }
-            public LogFilter.MessageType MessageType { get; private set; }
-            public string Message { get; private set; }
-
-            public LogMessage(string Message)
-            {
-                initalize(DateTime.Now, LogFilter.MessageType.General, Message);
-            }
-
-            public LogMessage(string Message, DateTime Timestamp)
-            {
-                initalize(Timestamp, LogFilter.MessageType.General, Message);
-            }
-
-            public LogMessage(string Message, LogFilter.MessageType MessageType)
-            {
-                initalize(DateTime.Now, MessageType, Message);
-            }
-
-            public LogMessage(string Message, DateTime Timestamp, LogFilter.MessageType MessageType)
-            {
-                initalize(Timestamp, MessageType, Message);
-            }
-
-            private void initalize(DateTime timestamp, LogFilter.MessageType messageType, string message)
-            {
-                Timestamp = timestamp;
-                MessageType = messageType;
-                Message = message;
-            }
-        }
-
-        public enum MessageType
-        {
-            Server,
-            Info,
-            Warning,
-            Error,
-            General
-        }
-
         private void LogView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.C && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))

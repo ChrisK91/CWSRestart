@@ -93,6 +93,31 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             }
         }
 
+        public async void AddKnownPlayerAsync(string ip, string name)
+        {
+            await Connection.OpenAsync();
+
+            long ipId = await getIPIDAsync(ip);
+            long nameId = await getNameIDAsync(name);
+
+            SQLiteCommand command = new SQLiteCommand("SELECT COUNT(*) FROM knownPlayers WHERE IP = $ipId AND Name = $nameId");
+            command.Parameters.AddWithValue("$ipId", ipId);
+            command.Parameters.AddWithValue("$nameId", nameId);
+
+            long count = (long)await ExecuteScalarAsync(command);
+
+            if (count == 0)
+            {
+                command = new SQLiteCommand("INSERT INTO knownPlayers(IP, Name) VALUES($ipId, $nameId)");
+                command.Parameters.AddWithValue("$ipId", ipId);
+                command.Parameters.AddWithValue("$nameId", nameId);
+
+                ExecuteCommandAsync(command);
+            }
+
+            Connection.Close();
+        }
+
         public void AddConnectedPlayer(string ip, string name)
         {
             long ipId = getIPID(ip);
@@ -104,6 +129,21 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             command.Parameters.AddWithValue("$nameId", nameId);
 
             ExecuteCommand(command);
+        }
+
+        public async void AddConnectedPlayerAsync(string ip, string name)
+        {
+            await Connection.OpenAsync();
+            long ipId = await getIPIDAsync(ip);
+            long nameId = await getNameIDAsync(name);
+
+            SQLiteCommand command = new SQLiteCommand("INSERT INTO connectedPlayers(IP,Name) VALUES($ipId, $nameId)");
+
+            command.Parameters.AddWithValue("$ipId", ipId);
+            command.Parameters.AddWithValue("$nameId", nameId);
+
+            ExecuteCommandAsync(command);
+            Connection.Close();
         }
 
         private long getIPID(string ip, bool dontInsert = false)
@@ -266,7 +306,7 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return (await ExecuteScalarAsync(command)).ToString();
         }
 
-        public List<string> GetKnownNames(string ip)
+        public IList<string> GetKnownNames(string ip)
         {
             List<string> ret = new List<string>();
             long ipId = getIPID(ip, true);

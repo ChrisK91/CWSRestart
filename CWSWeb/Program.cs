@@ -98,7 +98,7 @@ namespace CWSWeb
 
                         Console.Clear();
 
-                        if (name != "" && password != "")
+                        if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(password))
                         {
                             if (Helper.Users.AddUser(name, password))
                             {
@@ -120,7 +120,7 @@ namespace CWSWeb
                         centerText("---------------------");
                         Console.WriteLine("Please enter the username you want to delete");
                         name = Console.ReadLine();
-                        if (name != "" && Helper.Users.RemoveUser(name))
+                        if (!String.IsNullOrEmpty(name) && Helper.Users.RemoveUser(name))
                         {
                             Console.WriteLine("User was removed");
                         }

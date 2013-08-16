@@ -10,7 +10,7 @@ using System.Timers;
 
 namespace ServerService.Helper
 {
-    public class General
+    public sealed class General
     {
         private General() { }
 
@@ -80,12 +80,12 @@ namespace ServerService.Helper
             }
             catch (WebException)
             {
-                Logging.OnLogMessage("Could not reach external service to retreive your IP", Logging.MessageType.Error);
+                Logging.OnLogMessage("Could not reach external service to retreive your IP", MessageType.Error);
                 return null;
             }
             catch (Exception ex)
             {
-                Logging.OnLogMessage(ex.Message, Logging.MessageType.Error);
+                Logging.OnLogMessage(ex.Message, MessageType.Error);
                 return null;
             }
         }
@@ -126,29 +126,29 @@ namespace ServerService.Helper
                 {
                     if (!Server.StartInfo.UseShellExecute)
                     {
-                        Logging.OnLogMessage("Writing to process stream", Logging.MessageType.Info);
+                        Logging.OnLogMessage("Writing to process stream", MessageType.Info);
                         Server.StandardInput.WriteLine("q");
                     }
                     else if (Settings.Instance.SessionActive)
                     {
-                        Logging.OnLogMessage("Sending key", Logging.MessageType.Info);
+                        Logging.OnLogMessage("Sending key", MessageType.Info);
                         NativeMethods.SetForegroundWindow(Server.MainWindowHandle);
                         System.Windows.Forms.SendKeys.SendWait("q{ENTER}");
                     }
                     else
                     {
-                        Logging.OnLogMessage("The PC is either locked or the Server was not started through CWSRestart. Cannot send keypress...", Logging.MessageType.Warning);
+                        Logging.OnLogMessage("The PC is either locked or the Server was not started through CWSRestart. Cannot send keypress...", MessageType.Warning);
                     }
                 }
                 catch(Exception ex)
                 {
-                    Logging.OnLogMessage("Unable to send keypress...", Logging.MessageType.Warning);
-                    Logging.OnLogMessage(ex.Message, Logging.MessageType.Error);
+                    Logging.OnLogMessage("Unable to send keypress...", MessageType.Warning);
+                    Logging.OnLogMessage(ex.Message, MessageType.Error);
                 }
             }
             else
             {
-                Logging.OnLogMessage("Process not found", Logging.MessageType.Error);
+                Logging.OnLogMessage("Process not found", MessageType.Error);
             }
         }
 
@@ -178,9 +178,9 @@ namespace ServerService.Helper
             {
                 if (Settings.Instance.SessionActive && !Settings.Instance.BypassSendQuit)
                 {
-                    Logging.OnLogMessage("Sending the q-Key", Logging.MessageType.Info);
+                    Logging.OnLogMessage("Sending the q-Key", MessageType.Info);
                     SendQuit();
-                    Logging.OnLogMessage(String.Format("Waiting {0} seconds to see if the server is able to quit", Settings.Instance.Timeout / 1000), Logging.MessageType.Info);
+                    Logging.OnLogMessage(String.Format("Waiting {0} seconds to see if the server is able to quit", Settings.Instance.Timeout / 1000), MessageType.Info);
                     timeout = new System.Timers.Timer(Settings.Instance.Timeout);
                     timeout.AutoReset = false;
                     timeout.Elapsed += timeout_Elapsed;
@@ -188,7 +188,7 @@ namespace ServerService.Helper
                 }
                 else
                 {
-                    Logging.OnLogMessage("The machine is locked or CWSRestart is configured not to send the keypress...", Logging.MessageType.Info);
+                    Logging.OnLogMessage("The machine is locked or CWSRestart is configured not to send the keypress...", MessageType.Info);
                     timeout = new System.Timers.Timer(Settings.Instance.Timeout);
                     timeout.AutoReset = false;
                     timeout.Elapsed += timeout_Elapsed;
@@ -200,7 +200,7 @@ namespace ServerService.Helper
             }
             else
             {
-                Logging.OnLogMessage("Process not found. Starting server", Logging.MessageType.Error);
+                Logging.OnLogMessage("Process not found. Starting server", MessageType.Error);
                 StartServer();
             }
         }
@@ -209,15 +209,15 @@ namespace ServerService.Helper
         {
             if (Validator.IsRunning())
             {
-                Logging.OnLogMessage("Killing the server process...", Logging.MessageType.Info);
+                Logging.OnLogMessage("Killing the server process...", MessageType.Info);
                 KillServer();
-                Logging.OnLogMessage("Waiting for a few seconds to give our processes enough time to exit...", Logging.MessageType.Info);
+                Logging.OnLogMessage("Waiting for a few seconds to give our processes enough time to exit...", MessageType.Info);
                 timeout.Start();  
                 //Warning: possible infinite loop
             }
             else
             {
-                Logging.OnLogMessage("The server has quit.", Logging.MessageType.Info);
+                Logging.OnLogMessage("The server has quit.", MessageType.Info);
                 KillAdditionalProcesses();
                 StartServer();
             }
@@ -230,7 +230,7 @@ namespace ServerService.Helper
         {
             if (!Validator.IsRunning() && (timeout == null || !timeout.Enabled))
             {
-                Logging.OnLogMessage("Starting the server", Logging.MessageType.Info);
+                Logging.OnLogMessage("Starting the server", MessageType.Info);
                 ProcessStartInfo pStart = new ProcessStartInfo(Settings.Instance.ServerPath);
 
                 pStart.UseShellExecute = Settings.Instance.DoNotRedirectOutput;
@@ -263,13 +263,13 @@ namespace ServerService.Helper
 
                     foreach (Process i in p)
                     {
-                        Logging.OnLogMessage(String.Format("Terminating {0}", i.ProcessName), Logging.MessageType.Info);
+                        Logging.OnLogMessage(String.Format("Terminating {0}", i.ProcessName), MessageType.Info);
                         i.Kill();
                     }
                 }
                 catch (Exception e)
                 {
-                    Logging.OnLogMessage(e.Message, Logging.MessageType.Error);
+                    Logging.OnLogMessage(e.Message, MessageType.Error);
                 }
             }
         }
@@ -282,8 +282,8 @@ namespace ServerService.Helper
 
                 string line;
                 while((line = tmp.ReadLine()) != null)
-                    if(line.Trim() != "")
-                        Logging.OnLogMessage(line, Logging.MessageType.Server);
+                    if(!String.IsNullOrEmpty(line.Trim()))
+                        Logging.OnLogMessage(line, MessageType.Server);
             }
         }
     }

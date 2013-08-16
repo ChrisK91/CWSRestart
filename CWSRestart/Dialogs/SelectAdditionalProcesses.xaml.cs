@@ -31,7 +31,7 @@ namespace CWSRestart.Dialogs
             {
                 return currentProcesses;
             }
-            set
+            private set
             {
                 if (currentProcesses != value)
                 {
@@ -73,7 +73,7 @@ namespace CWSRestart.Dialogs
 
         private void ProcessNameTextbox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (ProcessNameTextbox.Text != String.Empty && e.Key == Key.Enter)
+            if (!String.IsNullOrEmpty(ProcessNameTextbox.Text) && e.Key == Key.Enter)
             {
                 if (!ServerService.Helper.Settings.Instance.AdditionalProcesses.Contains(ProcessNameTextbox.Text))
                     ServerService.Helper.Settings.Instance.AdditionalProcesses.Add(ProcessNameTextbox.Text);

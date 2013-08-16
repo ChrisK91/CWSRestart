@@ -1,5 +1,6 @@
 ﻿using CWSProtocol;
 using ServerService;
+using ServerService.Access;
 using ServerService.Helper;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,19 @@ namespace CWSRestart.Infrastructure
         private volatile bool _shouldStop = false;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ServerService.Statistics Statistics;
+        private ServerService.Statistics statistics;
+        public ServerService.Statistics Statistics
+        {
+            get
+            {
+                return statistics;
+            }
+            set
+            {
+                if (statistics != value)
+                    statistics = value;
+            }
+        }
 
         public static Server Instance
         {
@@ -38,8 +51,33 @@ namespace CWSRestart.Infrastructure
         {
         }
 
-        public Action ClearLog;
-        public Func<List<Controls.LogFilter.LogMessage>> GetLog;
+        private Action clearLog;
+        public Action ClearLog
+        {
+            get
+            {
+                return clearLog;
+            }
+            set
+            {
+                if (clearLog != value)
+                    clearLog = value;
+            }
+        }
+
+        private Func<List<Helper.LogMessage>> getLog;
+        public Func<List<Helper.LogMessage>> GetLog
+        {
+            get
+            {
+                return getLog;
+            }
+            set
+            {
+                if (getLog != value)
+                    getLog = value;
+            }
+        }
 
         NamedPipeServerStream serverStream;
         volatile EventWaitHandle wait;
@@ -48,7 +86,7 @@ namespace CWSRestart.Infrastructure
         {
             IsRunning = true;
 
-            Helper.Logging.OnLogMessage("Starting CWSRestartServer for process communication", ServerService.Logging.MessageType.Info);
+            Helper.Logging.OnLogMessage("Starting CWSRestartServer for process communication", ServerService.MessageType.Info);
 
             PipeSecurity ps = new PipeSecurity();
 
@@ -67,11 +105,11 @@ namespace CWSRestart.Infrastructure
                             serverStream.EndWaitForConnection(ar);
                             if (serverStream.IsConnected)
                             {
-                                //Helper.Logging.OnLogMessage("Module connected", ServerService.Logging.MessageType.Info);
+                                //Helper.Logging.OnLogMessage("Module connected", ServerService.MessageType.Info);
 
                                 StreamReader sr = new StreamReader(serverStream, System.Text.Encoding.UTF8, true, 2048, true);
                                 string message = sr.ReadLine();
-                                
+
                                 if (message != null)
                                 {
                                     string[] messages = message.Split(new string[] { " " }, 3, StringSplitOptions.None);
@@ -92,12 +130,12 @@ namespace CWSRestart.Infrastructure
                                                     switch (c)
                                                     {
                                                         case CWSProtocol.Commands.Command.IDENTIFY:
-                                                            Helper.Logging.OnLogMessage(String.Format("{0} has said hello", message), ServerService.Logging.MessageType.Info);
+                                                            Helper.Logging.OnLogMessage(String.Format("{0} has said hello", message), ServerService.MessageType.Info);
                                                             sendReply(CWSProtocol.Commands.Command.ACK, "", serverStream);
                                                             break;
 
                                                         case CWSProtocol.Commands.Command.STATISTICS:
-                                                            //Helper.Logging.OnLogMessage("Statistics were requested by an external module", ServerService.Logging.MessageType.Info);
+                                                            //Helper.Logging.OnLogMessage("Statistics were requested by an external module", ServerService.MessageType.Info);
 
                                                             sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("ALIVE {0}", ServerService.Validator.IsRunning()), serverStream);
 
@@ -108,7 +146,7 @@ namespace CWSRestart.Infrastructure
                                                                 sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("RUNTIME {0:00}:{1:00}:{2:00}", Statistics.Runtime.TotalHours, Statistics.Runtime.Minutes, Statistics.Runtime.Seconds), serverStream);
                                                                 sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("ENABLED {0}", Statistics.Enabled), serverStream);
 
-                                                                if(Statistics.StatisticsDB != null)
+                                                                if (Statistics.StatisticsDB != null)
                                                                     sendReply(CWSProtocol.Commands.Command.STATISTICS, String.Format("STATISTICSFILE {0}", Statistics.StatisticsDB.DatabaseFile), serverStream);
                                                             }
 
@@ -144,13 +182,13 @@ namespace CWSRestart.Infrastructure
                                                         case CWSProtocol.Commands.Command.LOG:
                                                             if (GetLog != null)
                                                             {
-                                                                List<Controls.LogFilter.LogMessage> logEntries = GetLog();
+                                                                List<Helper.LogMessage> logEntries = GetLog();
 
                                                                 try
                                                                 {
                                                                     StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
 
-                                                                    foreach (Controls.LogFilter.LogMessage m in logEntries)
+                                                                    foreach (Helper.LogMessage m in logEntries)
                                                                     {
                                                                         if (m != null)
                                                                         {
@@ -328,26 +366,26 @@ namespace CWSRestart.Infrastructure
                                                             {
                                                                 string[] parts = line.Split(new string[] { " " }, 3, StringSplitOptions.RemoveEmptyEntries);
 
-                                                                if (parts.Length == 3 && parts[0] == CWSProtocol.Commands.Action.POST.ToString() && parts[1] == CWSProtocol.Commands.Command.ACCESSLIST.ToString() && parts[2] != String.Empty)
+                                                                if (parts.Length == 3 && parts[0] == CWSProtocol.Commands.Action.POST.ToString() && parts[1] == CWSProtocol.Commands.Command.ACCESSLIST.ToString() && !String.IsNullOrEmpty(parts[2]))
                                                                 {
                                                                     if (AccessControl.GenerateEntryFromString(parts[2], out tmp))
                                                                         entries.Add(tmp);
                                                                 }
                                                             }
 
-                                                            AccessControl.Instance.AccessList = new System.Collections.ObjectModel.ObservableCollection<AccessListEntry>(entries);
+                                                            AccessControl.Instance.SetAccessList(new System.Collections.ObjectModel.ObservableCollection<AccessListEntry>(entries));
                                                             break;
 
                                                         case CWSProtocol.Commands.Command.ACCESSMODE:
-                                                            ServerService.AccessControl.AccessMode mode;
+                                                            AccessMode mode;
 
-                                                            if (System.Enum.TryParse<AccessControl.AccessMode>(message, out mode))
+                                                            if (System.Enum.TryParse<AccessMode>(message, out mode))
                                                                 AccessControl.Instance.Mode = mode;
 
                                                             break;
 
                                                         case CWSProtocol.Commands.Command.PRESET:
-                                                            string[] content = message.Split(new string[]{" "}, 2, StringSplitOptions.RemoveEmptyEntries);
+                                                            string[] content = message.Split(new string[] { " " }, 2, StringSplitOptions.RemoveEmptyEntries);
 
                                                             if (content.Length == 2 && (content[0] == "DELETE" || content[0] == "PERSISTENT") && File.Exists(content[1]))
                                                             {
@@ -360,12 +398,12 @@ namespace CWSRestart.Infrastructure
                                                             break;
 
                                                         case CWSProtocol.Commands.Command.PLAYERIDENTIFICATION:
-                                                            if(message.ToLowerInvariant() == "enable")
+                                                            if (message.ToLowerInvariant() == "enable")
                                                                 Helper.Settings.Instance.PlayeridentificationEnabled = true;
                                                             else
                                                                 Helper.Settings.Instance.PlayeridentificationEnabled = false;
 
-                                                            Helper.Logging.OnLogMessage("Now ready to identify players...", ServerService.Logging.MessageType.Info);
+                                                            Helper.Logging.OnLogMessage("Now ready to identify players...", ServerService.MessageType.Info);
 
                                                             break;
 
@@ -383,7 +421,7 @@ namespace CWSRestart.Infrastructure
                         }
                         catch (ObjectDisposedException)
                         {
-                            Helper.Logging.OnLogMessage("CWSRestartServer has been stopped", ServerService.Logging.MessageType.Info);
+                            Helper.Logging.OnLogMessage("CWSRestartServer has been stopped", ServerService.MessageType.Info);
                             wait.Set();
                         }
                     }, null);
@@ -477,7 +515,7 @@ namespace CWSRestart.Infrastructure
 
         public void Dispose()
         {
-            if(Statistics != null)
+            if (Statistics != null)
                 Statistics.Dispose();
 
             if (serverStream != null)

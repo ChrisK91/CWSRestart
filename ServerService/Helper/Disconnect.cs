@@ -20,7 +20,7 @@ namespace ServerService.Helper
         /// <summary>
         /// Enumeration of connection states
         /// </summary>
-        public enum ConnectionState
+        private enum ConnectionState
         {
             All = 0,
             Closed = 1,
@@ -126,7 +126,7 @@ namespace ServerService.Helper
             }
             catch (Exception ex)
             {
-                Logging.OnLogMessage("Could not get connected players! [" + ex.GetType().ToString() + "," + ex.Message + "]", Logging.MessageType.Error);
+                Logging.OnLogMessage("Could not get connected players! [" + ex.GetType().ToString() + "," + ex.Message + "]", MessageType.Error);
             }
             finally
             {

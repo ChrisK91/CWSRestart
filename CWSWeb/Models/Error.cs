@@ -8,7 +8,13 @@ namespace CWSWeb.Models
 {
     public class Error
     {
-        public string ErrorCode;
-        public string ErrorMessage;
+        public string ErrorCode { get; private set; }
+        public string ErrorMessage { get; private set; }
+
+        public Error(string errorCode, string errorMessage)
+        {
+            this.ErrorCode = errorCode;
+            this.ErrorMessage = errorMessage;
+        }
     }
 }

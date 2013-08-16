@@ -8,6 +8,8 @@ using Nancy.Security;
 using Nancy.Authentication.Forms;
 using System.Net;
 using System.IO;
+using ServerService.Access;
+using System.Collections.ObjectModel;
 
 namespace CWSWeb.Modules
 {
@@ -40,7 +42,7 @@ namespace CWSWeb.Modules
                 }
                 else
                 {
-                    List<string> logEntries = c.GetLogMessages();
+                    Collection<string> logEntries = new Collection<string>(c.GetLogMessages());
                     logEntries.Reverse();
 
                     Dictionary<string, object> watcherSettings = c.GetWatcherStatus();
@@ -153,13 +155,13 @@ namespace CWSWeb.Modules
                     Session.Delete("kickMessage");
                 }
 
-                List<string> connected = c.GetConnectedPlayers();
-                List<string> accessList = c.GetAccessListEntries();
+                Collection<string> connected = new Collection<string>(c.GetConnectedPlayers());
+                Collection<string> accessList = new Collection<string>(c.GetAccessListEntries());
 
                 /*if (Helper.CachedVariables.PlayeridentificationEnabled)
                     Helper.PlayerIdentification.IdentifyPlayers(ref accessList);*/
 
-                ServerService.AccessControl.AccessMode mode = c.GetAccessMode();
+                AccessMode mode = c.GetAccessMode();
 
                 Models.Admin.Access m = new Models.Admin.Access(connected, accessList, mode);
                 return View["access", m];
@@ -167,11 +169,11 @@ namespace CWSWeb.Modules
 
             Post["/access"] = parameters =>
                 {
-                    ServerService.AccessControl.AccessMode mode = ServerService.AccessControl.AccessMode.Blacklist;
+                    AccessMode mode = AccessMode.Blacklist;
                     string modeRaw = (string)Request.Form.Mode;
 
                     if (modeRaw != null)
-                        mode = (ServerService.AccessControl.AccessMode)Enum.Parse(typeof(ServerService.AccessControl.AccessMode), modeRaw);
+                        mode = (AccessMode)Enum.Parse(typeof(AccessMode), modeRaw);
 
                     List<string> accessList = null;
 

@@ -128,7 +128,7 @@ namespace CWSWeb.Helper
                 if (File.Exists(path))
                 {
                     ServerService.Database.Statistics stats = new ServerService.Database.Statistics(path);
-                    List<ServerService.Database.Statistics.StatisticsEntry> entries = await stats.GetStatisticEntriesAsync(Settings.Instance.LinesToRead);
+                    List<ServerService.Database.StatisticsEntry> entries = await stats.GetStatisticEntriesAsync(Settings.Instance.LinesToRead);
 
                     bool dropRestart = entries.Count > Settings.Instance.LinesToRead;
 

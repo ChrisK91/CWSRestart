@@ -16,7 +16,7 @@ namespace CWSRestart.Helper
         /// </summary>
         /// <param name="message">The content of the log message</param>
         /// <param name="type">The type of the message</param>
-        public delegate void LogMessageEventHandler(object sender, ServerService.Logging.LogMessageEventArgs e);
+        public delegate void LogMessageEventHandler(object sender, ServerService.LogMessageEventArgs e);
 
         /// <summary>
         /// Is used to relay logging messages to the hosting application
@@ -28,16 +28,10 @@ namespace CWSRestart.Helper
         /// </summary>
         /// <param name="message">the message</param>
         /// <param name="type">the type</param>
-        internal static void OnLogMessage(string message, ServerService.Logging.MessageType type)
+        internal static void OnLogMessage(string message, ServerService.MessageType type)
         {
             if (LogMessage != null)
-                LogMessage(
-                    null,
-                    new ServerService.Logging.LogMessageEventArgs
-                    {
-                        message = message,
-                        type = type
-                    });
+                LogMessage(null, new ServerService.LogMessageEventArgs(message, type));
         }
     }
 }

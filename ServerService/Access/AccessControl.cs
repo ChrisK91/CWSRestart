@@ -12,16 +12,16 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerService
+namespace ServerService.Access
 {
+    public enum AccessMode
+    {
+        Whitelist,
+        Blacklist
+    }
+
     public sealed class AccessControl : INotifyPropertyChanged
     {
-        public enum AccessMode
-        {
-            Whitelist,
-            Blacklist
-        }
-
         private static readonly AccessControl instance = new AccessControl();
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -40,7 +40,7 @@ namespace ServerService
             {
                 return accessList;
             }
-            set
+            private set
             {
                 if (accessList != value)
                 {
@@ -59,7 +59,7 @@ namespace ServerService
 
                 IEnumerator enumerator = connectionInformation.GetEnumerator();
 
-                Logging.OnLogMessage(String.Format("Enforcing {0}", Mode), Logging.MessageType.Info);
+                Logging.OnLogMessage(String.Format("Enforcing {0}", Mode), MessageType.Info);
 
                 while (enumerator.MoveNext())
                 {
@@ -99,22 +99,22 @@ namespace ServerService
                             switch(ret)
                             {
                                 case 0:
-                                    Logging.OnLogMessage(String.Format("The user {0} has been kicked", info.RemoteEndPoint.Address.ToString()), Logging.MessageType.Info);
+                                    Logging.OnLogMessage(String.Format("The user {0} has been kicked", info.RemoteEndPoint.Address.ToString()), MessageType.Info);
                                     break;
                                 case 317:
-                                    Logging.OnLogMessage(String.Format("Could not kick user {0}: Access denied", info.RemoteEndPoint.Address.ToString()), Logging.MessageType.Warning);
+                                    Logging.OnLogMessage(String.Format("Could not kick user {0}: Access denied", info.RemoteEndPoint.Address.ToString()), MessageType.Warning);
                                     break;
                                 case 0x5:
-                                    Logging.OnLogMessage(String.Format("Could not kick user {0}. You might lack the the required privileges.", info.RemoteEndPoint.Address.ToString()), Logging.MessageType.Warning);
+                                    Logging.OnLogMessage(String.Format("Could not kick user {0}. You might lack the the required privileges.", info.RemoteEndPoint.Address.ToString()), MessageType.Warning);
                                     break;
                                 case 0x57:
-                                    Logging.OnLogMessage("Internal error: wrong parameter", Logging.MessageType.Error);
+                                    Logging.OnLogMessage("Internal error: wrong parameter", MessageType.Error);
                                     break;
                                 case 0x32:
-                                    Logging.OnLogMessage("IPv4 Transport is not configured properly", Logging.MessageType.Error);
+                                    Logging.OnLogMessage("IPv4 Transport is not configured properly", MessageType.Error);
                                     break;
                                 default:
-                                    Logging.OnLogMessage(String.Format("Disconnecting returned with {0}", ret), Logging.MessageType.Info);
+                                    Logging.OnLogMessage(String.Format("Disconnecting returned with {0}", ret), MessageType.Info);
                                     break;
                             }
                         }
@@ -199,6 +199,11 @@ namespace ServerService
                     return false;
 
             return true;
+        }
+
+        public void SetAccessList(ObservableCollection<AccessListEntry> observableCollection)
+        {
+            AccessList = observableCollection;
         }
     }
 }

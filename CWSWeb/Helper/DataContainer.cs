@@ -8,8 +8,8 @@ namespace CWSWeb.Helper
 {
     public class DataContainer
     {
-        public string Key;
-        public string Value;
+        public string Key { get; private set; }
+        public string Value { get; private set; }
 
         public DataContainer(string key, string value)
         {

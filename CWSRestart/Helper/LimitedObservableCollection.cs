@@ -9,16 +9,41 @@ namespace CWSRestart.Helper
 {
     public class LimitedObservableCollection<T> : ObservableCollection<T>
     {
-        public UInt32 MaxCapacity = 200;
+        private uint maxCapacity = 200;
+        public uint MaxCapacity
+        {
+            get
+            {
+                return maxCapacity;
+            }
+            set
+            {
+                if (maxCapacity != value && MaxCapacity > 0)
+                {
+                    maxCapacity = value;
+                    trimCollection();
+                }
+            }
+        }
 
         protected override void InsertItem(int index, T item)
         {
-            while(this.Count >= MaxCapacity){
-                this.RemoveAt(0);
-                index--;
-            }
+            index = index - trimCollection();
 
             base.InsertItem(index, item);
+        }
+
+        private int trimCollection()
+        {
+            int removed = 0;
+
+            while (this.Count >= MaxCapacity)
+            {
+                this.RemoveAt(0);
+                removed++;
+            }
+
+            return removed;
         }
     }
 }

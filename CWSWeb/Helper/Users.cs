@@ -21,10 +21,6 @@ namespace CWSWeb.Helper
         /// </summary>
         private static List<Tuple<string, string, string, Guid>> users = new List<Tuple<string, string, string, Guid>>();
 
-        static Users()
-        {
-        }
-
         public static bool AddUser(string name, string password)
         {
             if (users.Count(u => u.Item1 == name) == 0)

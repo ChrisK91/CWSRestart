@@ -9,15 +9,10 @@
     using Helpers;
     using Responses;
 
-    public class EmbeddedStaticContentConventionBuilder
+    public static class EmbeddedStaticContentConventionBuilder
     {
-        private static readonly ConcurrentDictionary<string, Func<Response>> ResponseFactoryCache;
+        private static readonly ConcurrentDictionary<string, Func<Response>> ResponseFactoryCache = new ConcurrentDictionary<string, Func<Response>>();
         private static readonly Regex PathReplaceRegex = new Regex(@"[/\\]", RegexOptions.Compiled);
-
-        static EmbeddedStaticContentConventionBuilder()
-        {
-            ResponseFactoryCache = new ConcurrentDictionary<string, Func<Response>>();
-        }
 
         /// <summary>
         /// Adds a directory-based convention for embedded static convention.

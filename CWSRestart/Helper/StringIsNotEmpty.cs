@@ -12,7 +12,7 @@ namespace CWSRestart.Helper
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if(value != null)
-                return value.ToString() != String.Empty;
+                return !String.IsNullOrEmpty(value.ToString());
             return false;
         }
 

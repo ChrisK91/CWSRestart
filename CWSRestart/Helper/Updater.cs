@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CWSRestart.Helper
 {
-    class Updater
+    static class Updater
     {
         /// <summary>
         /// Build date in Year, Month, Day

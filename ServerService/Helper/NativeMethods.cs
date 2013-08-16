@@ -40,8 +40,8 @@ namespace ServerService.Helper
         /// </summary>
         /// <param name="netshort"></param>
         /// <returns></returns>
-        [DllImport("wsock32.dll")]
-        internal static extern int htons(int netshort);
+        //[DllImport("wsock32.dll")]
+        //internal static extern int htons(int netshort);
 
         /// <summary>
         /// Sets the foreground window
