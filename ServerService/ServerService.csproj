@@ -81,12 +81,12 @@
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\KnownPlayers.cs" />
     <Compile Include="Database\Statistics.cs" />
-    <Compile Include="Helper\AccessIP.cs" />
-    <Compile Include="Helper\AccessIPRange.cs" />
+    <Compile Include="Access\Entries\AccessIP.cs" />
+    <Compile Include="Access\Entries\AccessIPRange.cs" />
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Helper\General.cs" />
     <Compile Include="Helper\Disconnect.cs" />
-    <Compile Include="Helper\AccessListEntry.cs" />
+    <Compile Include="Access\Entries\AccessListEntry.cs" />
     <Compile Include="Helper\NativeMethods.cs" />
     <Compile Include="Helper\PlayerInfo.cs" />
     <Compile Include="Helper\UacHelper.cs" />
@@ -116,6 +116,7 @@
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

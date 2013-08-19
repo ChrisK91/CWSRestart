@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace ServerService.Helper
 {
-    public static class Extensions
+    /// <summary>
+    /// Contains extension methods
+    /// </summary>
+    public static sealed class Extensions
     {
         public static bool Contains(this Collection<PlayerInfo> list, IPAddress IP)
         {

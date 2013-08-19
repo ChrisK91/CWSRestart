@@ -92,6 +92,7 @@ namespace CubeWorldMITM.Helper
             }
 
             ProcessStartInfo pi = new ProcessStartInfo(path);
+            //Sets the working directory to the original path
             pi.WorkingDirectory = Path.GetDirectoryName(originalPath);
             Process p = Process.Start(pi);
 

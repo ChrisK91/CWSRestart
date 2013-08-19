@@ -6,16 +6,28 @@ using System.Threading.Tasks;
 
 namespace CWSProtocol
 {
+    /// <summary>
+    /// Configuration parameters for CWSProtocol
+    /// </summary>
     public static class Settings
     {
         public const string SERVERNAME = "CWSRestart";
     }
-
+    
     namespace Commands
     {
+        /// <summary>
+        /// Command actions
+        /// </summary>
         public enum Action
         {
+            /// <summary>
+            /// Retreives an information from CWSRestart
+            /// </summary>
             GET,
+            /// <summary>
+            /// Sends content to CWSRestart
+            /// </summary>
             POST
         }
 

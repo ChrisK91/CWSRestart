@@ -5,12 +5,22 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerService.Helper
+namespace ServerService.Access.Entries
 {
+    /// <summary>
+    /// Provides access list support for single IP
+    /// </summary>
     public class AccessIP : AccessListEntry
     {
+        /// <summary>
+        /// The underlying IP
+        /// </summary>
         public IPAddress Address { get; private set; }
 
+        /// <summary>
+        /// Instanciates an access list entry for the given IP
+        /// </summary>
+        /// <param name="address">The IP for the entry</param>
         public AccessIP(IPAddress address)
         {
             Address = address;
@@ -20,6 +30,9 @@ namespace ServerService.Helper
         private DateTime lastUpdate;
         private TimeSpan updateInterval = new TimeSpan(0, 0, 5);
 
+        /// <summary>
+        /// Contains the IP and the Playername, if identification is enabled
+        /// </summary>
         public override string FriendlyName
         {
             get {
@@ -84,7 +97,13 @@ namespace ServerService.Helper
             return Address.Equals(target);
         }
 
-        new public static bool TryParse(string source, out AccessListEntry target)
+        /// <summary>
+        /// Parses the given string to a new AccessIP
+        /// </summary>
+        /// <param name="source">A string representation of the entry</param>
+        /// <param name="target"></param>
+        /// <returns>True if parsing was succesful, otherwise false</returns>
+        public static bool TryParse(string source, out AccessIP target)
         {
             IPAddress address;
 

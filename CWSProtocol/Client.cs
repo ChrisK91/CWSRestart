@@ -9,32 +9,66 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-
-
 namespace CWSProtocol
 {
+    /// <summary>
+    /// A CWSProtocol client that is able to communicate with CWSRestart
+    /// </summary>
     public sealed class Client : IDisposable
     {
+        /// <summary>
+        /// The stream to CWSRestart
+        /// </summary>
         private NamedPipeClientStream client;
+
+        /// <summary>
+        /// Internal name of the client
+        /// </summary>
         private string name;
+
+        /// <summary>
+        /// True if a succesful connection has ben established in the past, otherwise false
+        /// </summary>
         public bool CanConnect { get; private set; }
 
+        /// <summary>
+        /// Initializes the connection to CWSRestart
+        /// </summary>
+        /// <param name="name"></param>
         public Client(string name)
         {
             this.name = name;
             CanConnect = false;
         }
 
+        /// <summary>
+        /// Sends the given command to CWSRestart (as GET request)
+        /// </summary>
+        /// <param name="command">The command to send</param>
+        /// <returns>True if the command was sent succesful, otherwise false</returns>
         private bool sendCommand(Commands.Command command)
         {
             return sendCommand(command, "");
         }
 
+        /// <summary>
+        /// Sends the given command with the given content to CWSRestart (as GET request)
+        /// </summary>
+        /// <param name="command">The command to send</param>
+        /// <param name="content">The content of the command</param>
+        /// <returns>True if the command was sent succesful, otherwise false</returns>
         private bool sendCommand(Commands.Command command, String content)
         {
             return sendCommand(command, content, Commands.Action.GET);
         }
 
+        /// <summary>
+        /// Send the given command with the given content and method to CWSRestart
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="content"></param>
+        /// <param name="action"></param>
+        /// <returns>True if the command was sent succesful, otherwise false</returns>
         private bool sendCommand(Commands.Command command, String content, Commands.Action action)
         {
             try
@@ -57,6 +91,10 @@ namespace CWSProtocol
             }
         }
 
+        /// <summary>
+        /// Reads a response from the stream to CWSRestart
+        /// </summary>
+        /// <returns>A tuple containting the Command and the content of the response. Can be null if no response was read</returns>
         private Tuple<Commands.Command, string> readResponse()
         {
             if (tryConnect())
@@ -96,6 +134,10 @@ namespace CWSProtocol
             return null;
         }
 
+        /// <summary>
+        /// Attempts to connect to CWSRestart
+        /// </summary>
+        /// <returns>True if a connection was made, otherwise false</returns>
         private bool tryConnect()
         {
             try
@@ -128,6 +170,10 @@ namespace CWSProtocol
             return false;
         }
 
+        /// <summary>
+        /// Tests the connection to CWSRestart
+        /// </summary>
+        /// <returns>True if succesful, otherwise false</returns>
         public bool Test()
         {
             if (sendCommand(Commands.Command.IDENTIFY, name))
@@ -151,42 +197,68 @@ namespace CWSProtocol
             return false;
         }
 
+        /// <summary>
+        /// Sends a message to start the server
+        /// </summary>
         public void SendStart()
         {
             if (sendCommand(Commands.Command.START))
                 disconnectClient();
         }
 
+        /// <summary>
+        /// Sends a message to stop the server
+        /// </summary>
         public void SendStop()
         {
             if (sendCommand(Commands.Command.STOP))
                 disconnectClient();
         }
 
+        /// <summary>
+        /// Sends a message to restart the server
+        /// </summary>
         public void SendRestart()
         {
             if (sendCommand(Commands.Command.RESTART))
                 disconnectClient();
         }
 
+        /// <summary>
+        /// Sends a message to terminate the server
+        /// </summary>
         public void SendKill()
         {
             if (sendCommand(Commands.Command.KILL))
                 disconnectClient();
         }
 
+        /// <summary>
+        /// Sends a message to set the watcher interval to the given time
+        /// </summary>
+        /// <param name="seconds">The seconds between two checks</param>
         public void SetWatcherTimeout(int seconds)
         {
             if (sendCommand(Commands.Command.WATCHER, String.Format("TIMEOUT {0}", seconds), Commands.Action.POST))
                 disconnectClient();
         }
 
+        /// <summary>
+        /// Sends the access scheme to CWSRestart
+        /// </summary>
+        /// <param name="CheckInternet">Indicates if access from the internet should be checked</param>
+        /// <param name="CheckLAN">Indicates if access from the local network should be checked</param>
+        /// <param name="CheckLoopback">Indicates if access from loopback should be checked</param>
         public void SetWatcherCheckAccess(bool CheckInternet, bool CheckLAN, bool CheckLoopback)
         {
             if (sendCommand(Commands.Command.WATCHER, String.Format("ACCESS CHECKINTERNET {0} CHECKLAN {1} CHECKLOOPBACK {2}", CheckInternet, CheckLAN, CheckLoopback), Commands.Action.POST))
                 disconnectClient();
         }
 
+        /// <summary>
+        /// Retrieves the statistics from CWSRestart
+        /// </summary>
+        /// <returns>A dictionary containing a unique name and the related value.</returns>
         public Dictionary<string, object> GetStatistics()
         {
             Dictionary<string, object> ret = new Dictionary<string, object>();
@@ -220,6 +292,10 @@ namespace CWSProtocol
             return ret;
         }
 
+        /// <summary>
+        /// Retrieves the watcher configuration from CWSRestart
+        /// </summary>
+        /// <returns>A dictionary with configuration parameters as keys and the related values</returns>
         public Dictionary<string, object> GetWatcherStatus()
         {
             Dictionary<string, object> ret = new Dictionary<string, object>();
@@ -251,6 +327,10 @@ namespace CWSProtocol
             return ret;
         }
 
+        /// <summary>
+        /// Retrieves a list of the current log messages from CWSRestart
+        /// </summary>
+        /// <returns>A List with formated log messages</returns>
         public IList<string> GetLogMessages()
         {
             List<string> ret = new List<string>();
@@ -268,24 +348,37 @@ namespace CWSProtocol
             return ret;
         }
 
+        /// <summary>
+        /// Starts the watcher
+        /// </summary>
         public void StartWatcher()
         {
             sendCommand(Commands.Command.WATCHER, "START", Commands.Action.POST);
             disconnectClient();
         }
 
+        /// <summary>
+        /// Stops the watcher
+        /// </summary>
         public void StopWatcher()
         {
             sendCommand(Commands.Command.WATCHER, "STOP", Commands.Action.POST);
             disconnectClient();
         }
 
+        /// <summary>
+        /// Clears the log in CWSRestart
+        /// </summary>
         public void ClearLogMessage()
         {
             sendCommand(Commands.Command.LOG, "CLEAR", Commands.Action.POST);
             disconnectClient();
         }
 
+        /// <summary>
+        /// Retreives a list of connected player IPs
+        /// </summary>
+        /// <returns>A list with connected player ips</returns>
         public IList<string> GetConnectedPlayers()
         {
             List<string> ret = new List<string>();
@@ -303,12 +396,20 @@ namespace CWSProtocol
             return ret;
         }
 
+        /// <summary>
+        /// Attempts to kick the specified player
+        /// </summary>
+        /// <param name="ip">The player to kick</param>
         public void KickPlayer(string ip)
         {
             sendCommand(Commands.Command.KICK, ip, Commands.Action.POST);
             disconnectClient();
         }
 
+        /// <summary>
+        /// Retreives the access lsit configuration
+        /// </summary>
+        /// <returns>A list containing the lines of the access list</returns>
         public IList<string> GetAccessListEntries()
         {
             List<string> ret = new List<string>();
@@ -326,6 +427,9 @@ namespace CWSProtocol
             return ret;
         }
 
+        /// <summary>
+        /// Disconnects the connection to CWSRestart
+        /// </summary>
         private void disconnectClient()
         {
             if (client != null)
@@ -335,6 +439,10 @@ namespace CWSProtocol
             client = null;
         }
 
+        /// <summary>
+        /// Retreives the AccessMode of the access list
+        /// </summary>
+        /// <returns></returns>
         public AccessMode GetAccessMode()
         {
             AccessMode ret = AccessMode.Blacklist;
@@ -350,6 +458,11 @@ namespace CWSProtocol
             return ret;
         }
 
+        /// <summary>
+        /// Configures the Access Filter in CWSRestart
+        /// </summary>
+        /// <param name="accessList">The accesslist entries</param>
+        /// <param name="mode">The accessmode (whitelist/blacklist)</param>
         public void SetAccess(IList<string> accessList, AccessMode mode)
         {
             if (accessList != null)
@@ -375,6 +488,12 @@ namespace CWSProtocol
             }
         }
 
+        /// <summary>
+        /// Sends a preset file to CWSRestart
+        /// </summary>
+        /// <param name="file">The filepath to the preset file</param>
+        /// <param name="deleteFile">True if the file should be deleted by CWSRestart after loading</param>
+        /// <returns></returns>
         public bool SendPreset(string file, bool deleteFile)
         {
             if (tryConnect())
@@ -389,6 +508,10 @@ namespace CWSProtocol
             }
         }
 
+        /// <summary>
+        /// Retreives the location of the player database
+        /// </summary>
+        /// <returns></returns>
         public string GetPlayersDatabase()
         {
             if (sendCommand(Commands.Command.PLAYERSDATABASE))
@@ -400,6 +523,11 @@ namespace CWSProtocol
             return null;
         }
 
+        /// <summary>
+        /// Enables/disables the player identification in CWSRestart
+        /// </summary>
+        /// <param name="enabled">True if identification should be enabled, otherwise false</param>
+        /// <returns></returns>
         public bool SetPlayerIdentification(bool enabled)
         {
             if (sendCommand(Commands.Command.PLAYERIDENTIFICATION, enabled ? "ENABLE" : "DISABLE", Commands.Action.POST))
@@ -410,6 +538,10 @@ namespace CWSProtocol
             return false;
         }
 
+        /// <summary>
+        /// Retreives the status of the player identification
+        /// </summary>
+        /// <returns>True if identification is enabled, otherwise false</returns>
         public bool GetPlayerIdentification()
         {
             if (sendCommand(Commands.Command.PLAYERIDENTIFICATION))

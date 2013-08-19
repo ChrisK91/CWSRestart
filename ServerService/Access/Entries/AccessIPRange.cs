@@ -5,11 +5,20 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerService.Helper
+namespace ServerService.Access.Entries
 {
+    /// <summary>
+    /// Represents an range of IPAddresses
+    /// </summary>
     public class AccessIPRange : AccessListEntry
     {
+        /// <summary>
+        /// The first address of the range
+        /// </summary>
         public IPAddress StartAddress { get; private set; }
+        /// <summary>
+        /// The last address of the range
+        /// </summary>
         public IPAddress EndAddress { get; private set; }
 
         public override string FriendlyName
@@ -20,6 +29,11 @@ namespace ServerService.Helper
             }
         }
 
+        /// <summary>
+        /// Instanciates a new entry with the given range
+        /// </summary>
+        /// <param name="start">The start of the IP range</param>
+        /// <param name="end">The end of the IP range</param>
         private AccessIPRange(IPAddress start, IPAddress end)
         {
             StartAddress = start;
@@ -46,6 +60,11 @@ namespace ServerService.Helper
             return base.GetHashCode();
         }
 
+        /// <summary>
+        /// Checks if the given IP falls into the specified range
+        /// </summary>
+        /// <param name="target">The IP to check</param>
+        /// <returns>True if it is inside the range, otherwise false</returns>
         public override bool Matches(System.Net.IPAddress target)
         {
             if (target == null)
@@ -71,7 +90,7 @@ namespace ServerService.Helper
             return true;
         }
 
-        new public static bool TryParse(string source, out AccessListEntry target)
+        public static bool TryParse(string source, out AccessListEntry target)
         {
             if (String.IsNullOrEmpty(source))
                 throw new ArgumentException("source can neither be null nor empty", "source");

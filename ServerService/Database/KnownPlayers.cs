@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace ServerService.Database
 {
+    /// <summary>
+    /// A Database containing the names of players
+    /// </summary>
     public sealed class KnownPlayers : DatabaseBase
     {
         public KnownPlayers(string filename)
@@ -58,12 +61,19 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             ExecuteCommand(l);
         }
 
+        /// <summary>
+        /// Clears the currently connected players
+        /// </summary>
         public void ClearConnectedPlayers()
         {
             SQLiteCommand command = new SQLiteCommand("DELETE FROM connectedPlayers");
             ExecuteCommand(command);
         }
 
+        /// <summary>
+        /// Removes the specified player from the connected players
+        /// </summary>
+        /// <param name="ip">The ip of the player to remove</param>
         public void RemoveConnectedPlayer(string ip)
         {
             long ipId = getIPID(ip);
@@ -72,6 +82,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             ExecuteCommand(command);
         }
 
+        /// <summary>
+        /// Adds a known name for an ip
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="name"></param>
         public void AddKnownPlayer(string ip, string name)
         {
             long ipId = getIPID(ip);
@@ -93,6 +108,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             }
         }
 
+        /// <summary>
+        /// Adds a known name for an ip (async)
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="name"></param>
         public async void AddKnownPlayerAsync(string ip, string name)
         {
             await Connection.OpenAsync();
@@ -118,6 +138,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             Connection.Close();
         }
 
+        /// <summary>
+        /// Adds a currently connected player
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="name"></param>
         public void AddConnectedPlayer(string ip, string name)
         {
             long ipId = getIPID(ip);
@@ -131,6 +156,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             ExecuteCommand(command);
         }
 
+        /// <summary>
+        /// Adds a currently connected player (async)
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="name"></param>
         public async void AddConnectedPlayerAsync(string ip, string name)
         {
             await Connection.OpenAsync();
@@ -266,6 +296,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return (long)await ExecuteScalarAsync(command);
         }
 
+        /// <summary>
+        /// Retreives the name of a connected player
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
         public string GetConnectedPlayerName(string ip)
         {
             long ipId = getIPID(ip, true);
@@ -283,6 +318,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return ExecuteScalar(command).ToString();
         }
 
+        /// <summary>
+        /// Retreives the name of a connected player (async)
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
         public async Task<string> GetConnectedPlayerNameAsync(string ip)
         {
             await Connection.OpenAsync();
@@ -306,6 +346,11 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return (await ExecuteScalarAsync(command)).ToString();
         }
 
+        /// <summary>
+        /// Retreives a list of known names for an IP
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
         public IList<string> GetKnownNames(string ip)
         {
             List<string> ret = new List<string>();
@@ -342,6 +387,12 @@ FOREIGN KEY (IP) REFERENCES ips(ID)
             return ret;
         }
 
+
+        /// <summary>
+        /// Retreives a list of known names for an IP (async)
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
         public async Task<List<string>> GetKnownNamesAsync(string IP)
         {
             await Connection.OpenAsync();

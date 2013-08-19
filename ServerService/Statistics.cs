@@ -12,9 +12,19 @@ using System.Timers;
 
 namespace ServerService
 {
+    /// <summary>
+    /// Provides statistics for a CubeWorld server
+    /// </summary>
     public sealed class Statistics : INotifyPropertyChanged, IDisposable
     {
+        /// <summary>
+        /// Handles the updates of the statistics
+        /// </summary>
         private Timer refresh;
+
+        /// <summary>
+        /// The inital creation time of the statistics
+        /// </summary>
         public DateTime StartTime { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -234,7 +244,7 @@ namespace ServerService
             Helper.General.ServerRestarted += Helper_ServerRestarted;
 
 #if DEBUG
-
+            //Debug data
             StartTime = StartTime.Subtract(new TimeSpan(5, 0, 0, 0));
 
             Players.Add(IPAddress.Parse("192.168.178.2"));
@@ -254,6 +264,7 @@ namespace ServerService
                 Enabled = true;
             }
         }
+
 
         void Helper_ServerRestarted(object sender, EventArgs e)
         {

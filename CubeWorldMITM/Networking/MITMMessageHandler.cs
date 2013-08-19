@@ -362,6 +362,7 @@ namespace CubeWorldMITM.Networking
                 {
                     byte[] uncompressedData = Helper.ZLibHelper.UncompressBytes(clientReceiveBuffer);
 
+                    //Most stuff based on Coob
                     using (BinaryReader reader = new BinaryReader(new MemoryStream(uncompressedData)))
                     {
                         reader.ReadUInt64();
