@@ -103,7 +103,7 @@ namespace ServerService.Access.Entries
         /// <param name="source">A string representation of the entry</param>
         /// <param name="target"></param>
         /// <returns>True if parsing was succesful, otherwise false</returns>
-        public static bool TryParse(string source, out AccessIP target)
+        public static bool TryParse(string source, out AccessListEntry target)
         {
             IPAddress address;
 

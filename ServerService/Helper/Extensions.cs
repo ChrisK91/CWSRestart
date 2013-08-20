@@ -11,7 +11,7 @@ namespace ServerService.Helper
     /// <summary>
     /// Contains extension methods
     /// </summary>
-    public static sealed class Extensions
+    public static class Extensions
     {
         public static bool Contains(this Collection<PlayerInfo> list, IPAddress IP)
         {

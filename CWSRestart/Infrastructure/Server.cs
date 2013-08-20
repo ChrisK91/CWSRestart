@@ -1,6 +1,7 @@
 ﻿using CWSProtocol;
 using ServerService;
 using ServerService.Access;
+using ServerService.Access.Entries;
 using ServerService.Helper;
 using System;
 using System.Collections.Generic;
