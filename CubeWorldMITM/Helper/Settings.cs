@@ -32,6 +32,15 @@ namespace CubeWorldMITM.Helper
         /// </summary>
         private Utilities.Settings settings;
 
+        /// <summary>
+        /// Handles errorlogging to disc and console
+        /// </summary>
+        public Utilities.Logging.MultiLogger Logger
+        {
+            get;
+            private set;
+        }
+
         private Settings() {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "CubeWorldMITM.exe.config");
             settings = new Utilities.Settings(path);
@@ -45,6 +54,13 @@ namespace CubeWorldMITM.Helper
             ServerLocation = settings.GetAppSettingWithStandardValue("ServerLocation", "");
             AutoIdentifyPlayers = settings.GetAppSettingWithStandardValue("AutoIdentifyPlayers", false);
             PrivateSlots = settings.GetAppSettingWithStandardValue("PrivateSlots", 0);
+
+            Logger = new Utilities.Logging.MultiLogger();
+            Utilities.Logging.ConsoleLogger clog = new Utilities.Logging.ConsoleLogger();
+            Utilities.Logging.FileLogger flog = new Utilities.Logging.FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "mitm.log"));
+
+            Logger.Add(clog);
+            Logger.Add(flog);
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace Utilities.Logging
     /// <summary>
     /// An interface for loggers
     /// </summary>
-    interface ILogger
+    public interface ILogger
     {
         /// <summary>
         /// Defines the level that should be logged

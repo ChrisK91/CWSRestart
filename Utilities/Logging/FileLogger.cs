@@ -121,6 +121,8 @@ namespace Utilities.Logging
 
                 while (tmp.InnerException != null)
                 {
+                    line = String.Format("\tInner exception: {0} in {1} ({2})", tmp.ToString(), tmp.TargetSite.Name, tmp.Message);
+                    sb.AppendLine(line);
                     tmp = tmp.InnerException;
                 }
 

@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Utilities.Logging;
 
 namespace CubeWorldMITM
 {
@@ -242,6 +243,10 @@ namespace CubeWorldMITM
 
                         break;
 
+                    case "b":
+                        Utilities.Logging.ConsoleLogger.Beep();
+                        break;
+
                     case "a":
                         centerText("--------------------------");
                         centerText("About");
@@ -412,12 +417,12 @@ namespace CubeWorldMITM
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("An error occured: {0}", ex.Message);
+                    Helper.Settings.Instance.Logger.AddMessage(ex);
                 }
             }
             else
             {
-                Console.WriteLine("The file {0} already exists.", output);
+                Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.ERROR, String.Format("The file {0} already exists.", output))
             }
         }
 
@@ -449,8 +454,8 @@ namespace CubeWorldMITM
             }
             catch (SocketException)
             {
-                Console.WriteLine("Could not create MITM server on port 12345.");
-                Console.WriteLine("You can run \"netstat -a -b -n -o\" to check if something is already running on port 12345");
+                Helper.Settings.Instance.Logger.AddMessage(MessageType.ERROR, "Could not create MITM server on port 12345.");
+                Helper.Settings.Instance.Logger.AddMessage(MessageType.INFO, "You can run \"netstat -a -b -n -o\" to check if something is already running on port 12345");
                 shouldExit = true;
                 Console.ReadLine();
                 Environment.Exit(-1);

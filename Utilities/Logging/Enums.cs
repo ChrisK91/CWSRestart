@@ -33,31 +33,31 @@ namespace Utilities.Logging
     /// <summary>
     /// Provides presets for logging levels
     /// </summary>
-    public struct Verbosity
+    public static class Verbosity
     {
         /// <summary>
         /// Every message will be logged
         /// </summary>
-        public static MessageType Verbose = MessageType.DEBUG | MessageType.ERROR | MessageType.INFO | MessageType.WARNING;
+        public const MessageType Verbose = MessageType.DEBUG | MessageType.ERROR | MessageType.INFO | MessageType.WARNING;
 
         /// <summary>
         /// Everything, except debug information will be logged
         /// </summary>
-        public static MessageType Detailed = MessageType.INFO | MessageType.ERROR | MessageType.WARNING;
+        public const MessageType Detailed = MessageType.INFO | MessageType.ERROR | MessageType.WARNING;
 
         /// <summary>
         /// Only warnings and errors are logged
         /// </summary>
-        public static MessageType Minimal = MessageType.ERROR | MessageType.WARNING;
+        public const MessageType Minimal = MessageType.ERROR | MessageType.WARNING;
 
         /// <summary>
         /// Only errors are logged
         /// </summary>
-        public static MessageType Quiet = MessageType.ERROR;
+        public const MessageType Quiet = MessageType.ERROR;
 
         /// <summary>
         /// Nothing should be logged
         /// </summary>
-        public static MessageType None = 0x0;
+        public const MessageType None = 0x0;
     }
 }
