@@ -120,6 +120,11 @@ namespace Utilities
             return GetAppSettingValue(key);
         }
 
+        public Utilities.Logging.MessageType GetAppSettingWithStandardValue(string key, Utilities.Logging.MessageType fallback)
+        {
+            return readOrCreateValue<Utilities.Logging.MessageType>(key, fallback, Enum.TryParse<Utilities.Logging.MessageType>);
+        }
+
         [CLSCompliant(false)]
         public uint GetAppSettingWithStandardValue(string key, uint fallback)
         {

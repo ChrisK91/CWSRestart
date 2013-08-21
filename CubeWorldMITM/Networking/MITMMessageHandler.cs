@@ -196,7 +196,7 @@ namespace CubeWorldMITM.Networking
                     Array.Copy(packageIntReceiveBuffer, 0, packageIntSendBuffer, 0, numBytes);
 
                     int id = BitConverter.ToInt32(packageIntReceiveBuffer, 0);
-                    Console.WriteLine("Received package {0}", id);
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Received package {0}", id));
 
                     //server.BeginWrite(packageIntSendBuffer, 0, numBytes, ServerIDSentCallback, null);
 
@@ -230,7 +230,7 @@ namespace CubeWorldMITM.Networking
                             break;
 
                         default:
-                            Console.WriteLine("Unknown packet {0}", id);
+                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.WARNING, String.Format("Unknown packet {0}", id));
                             break;
                     }
 
@@ -288,7 +288,7 @@ namespace CubeWorldMITM.Networking
 
                     if (length > 0)
                     {
-                        Console.WriteLine("Length: {0}", length);
+                        Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Length: {0}", length));
 
                         server.BeginWrite(packageIntSendBuffer, 0, numBytes, ServerLengthSentCallback, null);
 
@@ -302,6 +302,7 @@ namespace CubeWorldMITM.Networking
             }
             catch (Exception ex)
             {
+                Disconnect();
                 logError(ex);
             }
         }
@@ -353,7 +354,7 @@ namespace CubeWorldMITM.Networking
             try
             {
                 int numBytes = client.EndRead(ar);
-                Console.WriteLine("Received {0} bytes", numBytes);
+               Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Received {0} bytes", numBytes));
 
                 Array.Copy(clientReceiveBuffer, 0, serverSendBuffer, 0, numBytes);
 
@@ -552,7 +553,7 @@ namespace CubeWorldMITM.Networking
                         if (bitArray.Get(27))
                         {
                             HP = reader.ReadSingle();
-                            Console.WriteLine("HP {0}", HP);
+                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("HP {0}", HP));
                         }
                         if (bitArray.Get(28))
                         {
@@ -582,7 +583,7 @@ namespace CubeWorldMITM.Networking
                         if (bitArray.Get(33))
                         {
                             Level = reader.ReadUInt32();
-                            Console.WriteLine("Level {0}", Level);
+                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Level {0}", Level));
                         }
                         if (bitArray.Get(34))
                         {
@@ -684,7 +685,7 @@ namespace CubeWorldMITM.Networking
                             Name = Encoding.ASCII.GetString(reader.ReadBytes(16));
                             Name = Name.TrimEnd(' ', '\0');
 
-                            Console.WriteLine("{0} identified as {1}", IP, Name);
+                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{0} identified as {1}", IP, Name));
 
                             ClientIdentified = true;
 
@@ -754,7 +755,7 @@ namespace CubeWorldMITM.Networking
 
                 if (numBytes == 0)
                 {
-                    throw new Exception("No bytes have been received: disconnect.");
+                    throw new InvalidDataException("No bytes have been received: disconnect.");
                 }
                 else
                 {
@@ -830,7 +831,7 @@ namespace CubeWorldMITM.Networking
                         OnClientDisconnected(this);
 
                     Connected = false;
-                    Console.WriteLine("{0} has disconnected.", IP);
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{0} has disconnected.", IP));
                 }
             }
             catch (Exception ex)
@@ -844,12 +845,11 @@ namespace CubeWorldMITM.Networking
         /// </summary>
         /// <param name="ex"></param>
         /// <param name="memberName"></param>
-        private static void logError(Exception ex, [CallerMemberName] string memberName = "")
+        private static void logError(Exception ex)
         {
             if (!(ex is IOException) && !(ex is ObjectDisposedException))
             {
-                Console.WriteLine("An error occured: {0} - {1}", ex.GetType().ToString(), ex.Message);
-                Console.WriteLine("In: {0}", memberName);
+                Helper.Settings.Instance.Logger.AddMessage(ex);
             }
         }
     }

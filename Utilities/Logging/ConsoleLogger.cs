@@ -79,6 +79,8 @@ namespace Utilities.Logging
         {
             if (Level.HasFlag(type))
             {
+                string line = String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}:{2}", timestamp, type.ToString(), message);
+                appendLine(line, type);
             }
         }
 
@@ -112,6 +114,21 @@ namespace Utilities.Logging
         {
             if (Level.HasFlag(type))
             {
+                StringBuilder sb = new StringBuilder();
+
+                string line = String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}:{2} in {3} ({4})", timestamp, type.ToString(), ex.ToString(), ex.TargetSite.Name, ex.Message);
+                sb.AppendLine(line);
+
+                Exception tmp = ex;
+
+                while (tmp.InnerException != null)
+                {
+                    line = String.Format("\tInner exception: {0} in {1} ({2})", tmp.ToString(), tmp.TargetSite.Name, tmp.Message);
+                    sb.AppendLine(line);
+                    tmp = tmp.InnerException;
+                }
+
+                appendLine(sb.ToString(), type);
             }
         }
 
@@ -144,7 +161,6 @@ namespace Utilities.Logging
 
         private static void recolor()
         {
-            Random r = new Random();
             Array values = Enum.GetValues(typeof(ConsoleColor));
             Random random = new Random();
             Console.BackgroundColor = (ConsoleColor)values.GetValue(random.Next(values.Length));

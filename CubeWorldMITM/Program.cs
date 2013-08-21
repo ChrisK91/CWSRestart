@@ -332,7 +332,7 @@ namespace CubeWorldMITM
                         if (!c.SendPreset(filename, true))
                         {
                             File.Delete(filename);
-                            Console.WriteLine("Could not send preset.");
+                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.WARNING, String.Format("Could not send preset."));
                         }
 
                         break;
@@ -422,7 +422,7 @@ namespace CubeWorldMITM
             }
             else
             {
-                Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.ERROR, String.Format("The file {0} already exists.", output))
+                Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.ERROR, String.Format("The file {0} already exists.", output));
             }
         }
 
@@ -484,7 +484,7 @@ namespace CubeWorldMITM
 
                     IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
 
-                    Console.WriteLine("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString());
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString()));
 
                     MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
 
@@ -519,7 +519,7 @@ namespace CubeWorldMITM
                         if (!playerAllowed(h.Level, h.HP))
                         {
                             h.Disconnect();
-                            Console.WriteLine("{0} was kicked, because his character is not allowed (HP:{2}, Level:{1}).", h.Name, h.Level, h.HP);
+                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{0} was kicked, because his character is not allowed (HP:{2}, Level:{1}).", h.Name, h.Level, h.HP));
                         }
                     });
 
@@ -541,9 +541,9 @@ namespace CubeWorldMITM
             catch (Exception ex)
             {
                 if (ex is SocketException)
-                    Console.WriteLine("An error occured while connecting to your server. Is the CubeWorld server running?");
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.ERROR, String.Format("An error occured while connecting to your server. Is the CubeWorld server running?"));
                 else
-                    Console.WriteLine("An error occured: {0}", ex.Message);
+                    Helper.Settings.Instance.Logger.AddMessage(ex);
 
                 if(client != null && client.Connected)
                     client.Close();

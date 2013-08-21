@@ -41,9 +41,15 @@ namespace CubeWorldMITM.Helper
             private set;
         }
 
-        private Settings() {
+        private Settings()
+        {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "CubeWorldMITM.exe.config");
+
+            Logger = new Utilities.Logging.MultiLogger();
             settings = new Utilities.Settings(path);
+
+            Utilities.Logging.ConsoleLogger clog = new Utilities.Logging.ConsoleLogger();
+            Utilities.Logging.FileLogger flog = new Utilities.Logging.FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "mitm.log"));
 
             MinLevel = settings.GetAppSettingWithStandardValue("MinLevel", -1);
             MaxLevel = settings.GetAppSettingWithStandardValue("MaxLevel", -1);
@@ -54,13 +60,14 @@ namespace CubeWorldMITM.Helper
             ServerLocation = settings.GetAppSettingWithStandardValue("ServerLocation", "");
             AutoIdentifyPlayers = settings.GetAppSettingWithStandardValue("AutoIdentifyPlayers", false);
             PrivateSlots = settings.GetAppSettingWithStandardValue("PrivateSlots", 0);
+            clog.Level = settings.GetAppSettingWithStandardValue("ConsoleLoggingLevel", Utilities.Logging.Verbosity.Detailed);
+            flog.Level = settings.GetAppSettingWithStandardValue("FileLoggingLevel", Utilities.Logging.Verbosity.Minimal);
 
-            Logger = new Utilities.Logging.MultiLogger();
-            Utilities.Logging.ConsoleLogger clog = new Utilities.Logging.ConsoleLogger();
-            Utilities.Logging.FileLogger flog = new Utilities.Logging.FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "mitm.log"));
+            if (settings.GetAppSettingWithStandardValue("ConsoleLoggingEnabled", true))
+                Logger.Add(clog);
 
-            Logger.Add(clog);
-            Logger.Add(flog);
+            if (settings.GetAppSettingWithStandardValue("FileLoggingEnabled", true))
+                Logger.Add(flog);
         }
 
         /// <summary>

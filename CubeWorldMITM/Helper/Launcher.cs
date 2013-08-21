@@ -35,7 +35,7 @@ namespace CubeWorldMITM.Helper
             {
                 if (_configurators == null)
                 {
-                    Console.WriteLine("Loading configurators");
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Loading configurators"));
 
                     _configurators = new Dictionary<string, List<IConfigurator>>();
 
@@ -54,7 +54,7 @@ namespace CubeWorldMITM.Helper
                         }
                         _configurators[configurator.MD5].Add(configurator);
 
-                        Console.WriteLine("Loaded \"{0}\" for MD5 \"{1}\"", configurator.Name, configurator.MD5);
+                        Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Loaded \"{0}\" for MD5 \"{1}\"", configurator.Name, configurator.MD5));
                     }
 
                     //TODO: Add plugin loading for external configurators
@@ -81,7 +81,7 @@ namespace CubeWorldMITM.Helper
             }
 
             string hash = BitConverter.ToString(md5).Replace("-", "");
-            Console.WriteLine("MD5: {0}", hash);
+            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.DEBUG, String.Format("MD5: {0}", hash));
 
             if (Configurators.ContainsKey(hash))
             {
