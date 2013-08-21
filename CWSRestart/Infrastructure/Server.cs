@@ -281,6 +281,13 @@ namespace CWSRestart.Infrastructure
                                                             else
                                                                 sendReply(CWSProtocol.Commands.Command.PLAYERIDENTIFICATION, "DISABLED", serverStream);
                                                             break;
+
+                                                        case CWSProtocol.Commands.Command.PREMIUMSLOTS:
+                                                            if (Helper.Settings.Instance.PremiumslotsEnabled)
+                                                                sendReply(CWSProtocol.Commands.Command.PREMIUMSLOTS, "ENABLED", serverStream);
+                                                            else
+                                                                sendReply(CWSProtocol.Commands.Command.PREMIUMSLOTS, "DISABLED", serverStream);
+                                                            break;
                                                     }
 
                                                     break;
@@ -406,6 +413,15 @@ namespace CWSRestart.Infrastructure
 
                                                             Helper.Logging.OnLogMessage("Now ready to identify players...", ServerService.MessageType.Info);
 
+                                                            break;
+
+                                                        case CWSProtocol.Commands.Command.PREMIUMSLOTS:
+                                                            if (message.ToLowerInvariant() == "enable")
+                                                                Helper.Settings.Instance.PremiumslotsEnabled = true;
+                                                            else
+                                                                Helper.Settings.Instance.PremiumslotsEnabled = false;
+
+                                                            Helper.Logging.OnLogMessage(Helper.Settings.Instance.PremiumslotsEnabled ? "Premium slots are enabled" : "Premium slots are disabled", ServerService.MessageType.Info);
                                                             break;
 
                                                     }

@@ -11,9 +11,9 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 
-namespace CWSWeb.Helper
+namespace CWSWeb.Helper.Users
 {
-    internal class Users : IUserMapper
+    internal class Authentication : IUserMapper
     {
         /// <summary>
         /// Contains the users in the following formate

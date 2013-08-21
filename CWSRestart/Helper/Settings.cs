@@ -159,6 +159,8 @@ namespace CWSRestart.Helper
 
         public bool PlayeridentificationEnabled;
 
+        public bool PremiumslotsEnabled;
+
         public uint WatcherTimeout
         {
             get

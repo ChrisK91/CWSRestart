@@ -31,7 +31,7 @@ namespace CWSWeb.Modules
 
             Post["/login"] = parameters =>
             {
-                var userGuid = Helper.Users.ValidateUser((string)Request.Form.Username, (string)Request.Form.Password);
+                var userGuid = Helper.Users.Authentication.ValidateUser((string)Request.Form.Username, (string)Request.Form.Password);
 
                 if (userGuid == null)
                     return Response.AsRedirect("/login");

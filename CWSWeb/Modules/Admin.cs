@@ -19,8 +19,11 @@ namespace CWSWeb.Modules
             : base("/admin")
         {
             CWSProtocol.Client c = new CWSProtocol.Client("AdminModule");
+            IReadOnlyList<string> requiredClaims = new List<string> { "administration" };
+
 
             this.RequiresAuthentication();
+            this.RequiresClaims(requiredClaims);
 
             Get["/"] = parameters =>
             {

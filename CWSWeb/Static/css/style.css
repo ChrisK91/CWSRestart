@@ -364,3 +364,53 @@ button {
         border: 1px solid #B28053;
         text-decoration: none;
     }
+
+@keyframes color-rotation{
+    0% {
+        color: #002550;
+    }
+
+    10% {
+        color: #003B7F;
+    }
+
+    20% {
+        color: #0076FF;
+    }
+
+    30% {
+        color: #006AE5;
+    }
+
+    40% {
+        color: #001D40;
+    }
+
+    50% {
+        color: gold;
+    }
+
+    60% {
+        color: #001D40;
+    }
+
+    70% {
+        color: #006AE5;
+    }
+
+    80% {
+        color: #0076FF;
+    }
+
+    90% {
+        color: #003B7F;
+    }
+
+    100% {
+        color: #002550;
+    }
+}
+
+.premium {
+    animation: color-rotation 15s infinite ease-in-out;
+}

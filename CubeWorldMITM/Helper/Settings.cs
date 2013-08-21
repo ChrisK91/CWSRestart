@@ -85,10 +85,32 @@ namespace CubeWorldMITM.Helper
         /// </summary>
         public int PlayerLimit { get; private set; }
 
+        private int privateSlots;
         /// <summary>
         /// The number of private slots on this server
         /// </summary>
-        public int PrivateSlots { get; private set; }
+        public int PrivateSlots
+        {
+            get
+            {
+                return privateSlots;
+            }
+            set
+            {
+                if (value != privateSlots)
+                {
+                    CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
+                    int i = 0;
+                    do
+                    {
+                        i++;
+                    } while (!c.SetPremiumslots(value > 0) && i < 10);
+
+                    privateSlots = value;
+                    settings.SetAppSetting("PrivateSlots", value);
+                }
+            }
+        }
 
         /// <summary>
         /// Indicates if the server should be started, see also ServerLocation

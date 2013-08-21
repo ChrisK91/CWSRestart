@@ -20,3 +20,7 @@
         @:Something bad happened :(
     }
 }</p>
+@if (Model.ErrorCode == "403" && CWSWeb.Helper.CachedVariables.PremiumslotsEnabled)
+{ 
+    <p class="message"><a href="@Url.Content("~/premium/")" class="premium">Click here, if you are looking for the premium player login.</a></p>
+}

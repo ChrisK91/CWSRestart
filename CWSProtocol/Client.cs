@@ -555,6 +555,38 @@ namespace CWSProtocol
             return false;
         }
 
+        /// <summary>
+        /// Enables/disables premium slots in CWSRestart. This is mainly used to communicate with other modules.
+        /// </summary>
+        /// <param name="enabled">True if identification should be enabled, otherwise false</param>
+        /// <returns></returns>
+        public bool SetPremiumslots(bool enabled)
+        {
+            if (sendCommand(Commands.Command.PREMIUMSLOTS, enabled ? "ENABLE" : "DISABLE", Commands.Action.POST))
+            {
+                disconnectClient();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Retreives the status of the premium slots (enabled/disabled
+        /// </summary>
+        /// <returns>True if identification is enabled, otherwise false</returns>
+        public bool GetPremiumslots()
+        {
+            if (sendCommand(Commands.Command.PREMIUMSLOTS))
+            {
+                Tuple<Commands.Command, string> answer = readResponse();
+                disconnectClient();
+
+                return answer != null && answer.Item2.ToLowerInvariant() == "enabled" ? true : false;
+            }
+
+            return false;
+        }
+
         public void Dispose()
         {
             if (client != null)

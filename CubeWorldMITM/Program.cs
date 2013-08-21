@@ -192,6 +192,7 @@ namespace CubeWorldMITM
 
             while (shouldExit != true)
             {
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("Enter one of the following options");
                 Console.WriteLine("c - to receive a list of every currently connected player");
                 Console.WriteLine("n - to receive a list of every name that we know and the corresponding IP");
@@ -200,7 +201,9 @@ namespace CubeWorldMITM
                 Console.WriteLine("t - to enable/disable autosaving of playernames");
                 Console.WriteLine("x - to configure CWSRestart via CWSProtocol");
                 Console.WriteLine("d - to enable sharing connected players with CWSRestart");
+                Console.WriteLine("p - to set the number of premium slots");
                 Console.WriteLine("quit - to quit");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 string action = Console.ReadLine();
                 Console.Clear();
@@ -338,8 +341,22 @@ namespace CubeWorldMITM
                         break;
 
                     case "d":
-
                         EnablePlayerIdentification(c);
+                        break;
+
+                    case "p":
+                        int i = 0;
+
+                        centerText("--------------------------");
+                        centerText("Premium slots");
+                        centerText("--------------------------");
+                        Console.WriteLine();
+                        Console.WriteLine("Premium slots are added to the number of maximum players. Please enter the number of premium slots:");
+
+                        if (Int32.TryParse(Console.ReadLine(), out i) && i >= 0)
+                        {
+                            Helper.Settings.Instance.PrivateSlots = i;
+                        }
 
                         break;
 

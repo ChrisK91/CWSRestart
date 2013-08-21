@@ -15,7 +15,7 @@ namespace CWSWeb
 
         static void Main(string[] args)
         {
-            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
 
             Console.Clear();
@@ -40,7 +40,7 @@ namespace CWSWeb
 
             Helper.CacheUpdater updater = new Helper.CacheUpdater();
 
-            Helper.Users.TryLoadUsersFromFile(usersDbFile);
+            Helper.Users.Authentication.TryLoadUsersFromFile(usersDbFile);
 
             host.Start();
             MessageLoop();
@@ -48,7 +48,7 @@ namespace CWSWeb
             updater.StopUpdater();
             host.Stop();
 
-            Helper.Users.TrySaveUsersToFile(usersDbFile);
+            Helper.Users.Authentication.TrySaveUsersToFile(usersDbFile);
         }
 
         private static void MessageLoop()
@@ -81,7 +81,7 @@ namespace CWSWeb
                         centerText("---------------------");
                         centerText("Admin list");
                         centerText("---------------------");
-                        List<string> names = Helper.Users.GetUserNames();
+                        List<string> names = Helper.Users.Authentication.GetUserNames();
 
                         foreach (string s in names)
                             Console.WriteLine(s);
@@ -100,7 +100,7 @@ namespace CWSWeb
 
                         if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(password))
                         {
-                            if (Helper.Users.AddUser(name, password))
+                            if (Helper.Users.Authentication.AddUser(name, password))
                             {
                                 Console.WriteLine("User added succesfully");
                             }
@@ -120,7 +120,7 @@ namespace CWSWeb
                         centerText("---------------------");
                         Console.WriteLine("Please enter the username you want to delete");
                         name = Console.ReadLine();
-                        if (!String.IsNullOrEmpty(name) && Helper.Users.RemoveUser(name))
+                        if (!String.IsNullOrEmpty(name) && Helper.Users.Authentication.RemoveUser(name))
                         {
                             Console.WriteLine("User was removed");
                         }
@@ -130,10 +130,10 @@ namespace CWSWeb
                         }
                         break;
                     case "save":
-                        Helper.Users.TrySaveUsersToFile(usersDbFile);
+                        Helper.Users.Authentication.TrySaveUsersToFile(usersDbFile);
                         break;
                     case "load":
-                        Helper.Users.TryLoadUsersFromFile(usersDbFile);
+                        Helper.Users.Authentication.TryLoadUsersFromFile(usersDbFile);
                         break;
                 }
 

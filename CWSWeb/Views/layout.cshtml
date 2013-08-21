@@ -6,7 +6,7 @@
     <title>@{
         if (ViewBag.Title != "")
         {
-            @Html.Raw(ViewBag.Title);
+        @Html.Raw(ViewBag.Title);
         }
         else
         { 
@@ -31,18 +31,27 @@
         <h1>@{ 
             if (ViewBag.Title != "")
             { 
-                @Html.Raw(@ViewBag.Title);
+            @Html.Raw(@ViewBag.Title);
             }
         }
         </h1>
         @{
             if (Url.RenderContext.Context.CurrentUser != null)
             { 
-            <span class="userbar">
-                Logged in as @(((CWSWeb.Helper.Administrator)Url.RenderContext.Context.CurrentUser).UserName) | <a href="/admin/logout">Logout</a>
+            <span class="userbar">Logged in as @(((CWSWeb.Helper.Users.Administrator)Url.RenderContext.Context.CurrentUser).UserName) | <a href="/admin/logout">Logout</a>
             </span>
-            <span class="navigation"><a href="/admin/">Controlpanel</a> | <a href="/admin/access">Access control</a> | <a href="/admin/statistics">Statistics</a></span>
             }
+            
+            <span class="navigation">
+                @if (Url.RenderContext.Context.CurrentUser != null)
+                { 
+                    @:<a href="/admin/">Controlpanel</a> | <a href="/admin/access">Access control</a> | <a href="/admin/statistics">Statistics</a> | 
+                }
+                @if (CWSWeb.Helper.CachedVariables.PremiumslotsEnabled)
+                { 
+                    @:<a href="/premium/" class="premium">Premium login</a>
+                }
+            </span>
         }
     </header>
     <div id="container">

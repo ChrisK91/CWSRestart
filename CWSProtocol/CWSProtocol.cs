@@ -49,7 +49,9 @@ namespace CWSProtocol
             ACCESSLIST,
             PRESET,
             PLAYERSDATABASE,
-            PLAYERIDENTIFICATION
+            PLAYERIDENTIFICATION,
+            PREMIUMSLOTS,
+            PREMIUMDATABASE
         }
     }
 }

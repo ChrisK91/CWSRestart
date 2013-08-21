@@ -93,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
-    <Compile Include="Helper\Administrator.cs" />
+    <Compile Include="Helper\Users\Administrator.cs" />
     <Compile Include="Helper\CachedVariables.cs" />
     <Compile Include="Helper\CacheUpdater.cs" />
     <Compile Include="Helper\DataContainer.cs" />
@@ -101,7 +101,8 @@
     <Compile Include="Helper\PlayerIdentification.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\UserbarCreator.cs" />
-    <Compile Include="Helper\Users.cs" />
+    <Compile Include="Helper\Users\Authentication.cs" />
+    <Compile Include="Helper\Users\PremiumUser.cs" />
     <Compile Include="Models\Admin\Access.cs" />
     <Compile Include="Models\Error.cs" />
     <Compile Include="Models\User\Admin.cs" />

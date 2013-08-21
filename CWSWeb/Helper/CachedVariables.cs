@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CWSWeb.Helper
 {
 
-    internal static class CachedVariables
+    public static class CachedVariables
     {
         internal static void UpdateCachedVariables()
         {
@@ -40,6 +40,8 @@ namespace CWSWeb.Helper
 
                     PlayeridentificationEnabled = Helper.Settings.Instance.Client.GetPlayerIdentification();
 
+                    PremiumslotsEnabled = Helper.Settings.Instance.Client.GetPremiumslots();
+
                     if (PlayeridentificationEnabled)
                         KnownPlayersLocation = Helper.Settings.Instance.Client.GetPlayersDatabase();
                 }
@@ -54,6 +56,8 @@ namespace CWSWeb.Helper
         private static string knownPlayersLocation;
 
         public static bool PlayeridentificationEnabled { get; private set; }
+        public static bool PremiumslotsEnabled { get; private set; }
+
         public static ServerService.Database.KnownPlayers KnownPlayers { get; private set; }
 
         public static string KnownPlayersLocation
