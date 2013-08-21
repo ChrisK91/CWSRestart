@@ -1,4 +1,6 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase
+
+@using System.Linq
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -38,12 +40,12 @@
         @{
             if (Url.RenderContext.Context.CurrentUser != null)
             { 
-            <span class="userbar">Logged in as @(((CWSWeb.Helper.Users.Administrator)Url.RenderContext.Context.CurrentUser).UserName) | <a href="/admin/logout">Logout</a>
+            <span class="userbar">Logged in as @(((CWSWeb.Helper.Users.User)Url.RenderContext.Context.CurrentUser).UserName) | <a href="/logout">Logout</a>
             </span>
             }
             
             <span class="navigation">
-                @if (Url.RenderContext.Context.CurrentUser != null)
+                @if (Url.RenderContext.Context.CurrentUser != null && (Url.RenderContext.Context.CurrentUser as CWSWeb.Helper.Users.User).Claims.Any(c => String.Compare(c, CWSWeb.Helper.Users.Authentication.ADMINISTRATOR) == 0))
                 { 
                     @:<a href="/admin/">Controlpanel</a> | <a href="/admin/access">Access control</a> | <a href="/admin/statistics">Statistics</a> | 
                 }

@@ -79,12 +79,12 @@ namespace CWSWeb
                         break;
                     case "list":
                         centerText("---------------------");
-                        centerText("Admin list");
+                        centerText("User list");
                         centerText("---------------------");
-                        List<string> names = Helper.Users.Authentication.GetUserNames();
+                        List<Tuple<string, string>> names = Helper.Users.Authentication.GetUserNames();
 
-                        foreach (string s in names)
-                            Console.WriteLine(s);
+                        foreach (Tuple<string, string> t in names)
+                            Console.WriteLine("{0} - can access: {1}", t.Item1, t.Item2);
                         break;
                     case "add":
                         centerText("---------------------");
@@ -100,7 +100,7 @@ namespace CWSWeb
 
                         if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(password))
                         {
-                            if (Helper.Users.Authentication.AddUser(name, password))
+                            if (Helper.Users.Authentication.AddUser(name, password, Helper.Users.Authentication.ADMINISTRATOR))
                             {
                                 Console.WriteLine("User added succesfully");
                             }
@@ -114,6 +114,36 @@ namespace CWSWeb
                             Console.WriteLine("Please enter both the username and password");
                         }
                         break;
+
+                    case "prem":
+                        centerText("---------------------");
+                        centerText("Add premium user");
+                        centerText("---------------------");
+
+                        Console.WriteLine("Enter the username");
+                        name = Console.ReadLine();
+
+                        Console.WriteLine("Enter the password");
+                        password = Console.ReadLine();
+
+                        if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(password))
+                        {
+                            if (Helper.Users.Authentication.AddUser(name, password, Helper.Users.Authentication.PREMIUM))
+                            {
+                                Console.WriteLine("User added succesfully");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Could not add user. A user with this name already exists");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please enter both the username and password");
+                        }
+
+                        break;
+
                     case "remove":
                         centerText("---------------------");
                         centerText("Remove user");
@@ -144,6 +174,7 @@ namespace CWSWeb
                 Console.WriteLine("Enter \"test\" to test communicating with CWSRestart");
                 Console.WriteLine("Enter \"list\" to list all admins");
                 Console.WriteLine("Enter \"add\" to add an admin");
+                Console.WriteLine("Enter \"prem\" to add a premium user");
                 Console.WriteLine("Enter \"remove\" to remove an admin");
                 Console.WriteLine("Enter \"save\" to save users");
                 Console.WriteLine("Enter \"load\" to restore users");

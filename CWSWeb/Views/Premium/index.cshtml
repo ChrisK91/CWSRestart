@@ -1,0 +1,24 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Models.Admin.ControlPanel>
+@{
+    ViewBag.Title = "Premium &raquo; Control panel";
+    Layout = "layout.cshtml";
+}
+@if (ViewBag.ToggleMessage != null)
+{
+    if (ViewBag.RequiresDelay != null)
+    {
+    @:<a href="@Url.Content("~/premium/")">
+}
+
+    <p class="message">@ViewBag.ToggleMessage</p>
+
+    if (ViewBag.RequiresDelay != null)
+    {
+        @:</a>
+    }
+}
+@if (ViewBag.RequiresDelay == null)
+{ 
+    <h2>Control panel</h2>
+    <p>Hello @(((CWSWeb.Helper.Users.User)Url.RenderContext.Context.CurrentUser).UserName). You are now authorised as premium player on this server. If every premium slot is occupied, you might need to wait a few minutes until you can join.</p>
+}

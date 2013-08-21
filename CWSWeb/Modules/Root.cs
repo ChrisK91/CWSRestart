@@ -11,7 +11,8 @@ namespace CWSWeb.Modules
 {
     public class Root : NancyModule
     {
-        public Root() : base()
+        public Root()
+            : base()
         {
             Get["/"] = parameters =>
             {
@@ -39,10 +40,15 @@ namespace CWSWeb.Modules
                 return this.LoginAndRedirect(userGuid.Value, null, "/admin");
             };
 
+            Get["/logout"] = parameters =>
+            {
+                return this.LogoutAndRedirect("~/");
+            };
+
             Get["/notavailable"] = parameters =>
-                {
-                    return View["notavailable"];
-                };
+            {
+                return View["notavailable"];
+            };
         }
     }
 }

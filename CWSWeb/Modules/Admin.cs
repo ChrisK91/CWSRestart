@@ -19,7 +19,7 @@ namespace CWSWeb.Modules
             : base("/admin")
         {
             CWSProtocol.Client c = new CWSProtocol.Client("AdminModule");
-            IReadOnlyList<string> requiredClaims = new List<string> { "administration" };
+            IReadOnlyList<string> requiredClaims = new List<string> { Helper.Users.Authentication.ADMINISTRATOR };
 
 
             this.RequiresAuthentication();
@@ -61,11 +61,6 @@ namespace CWSWeb.Modules
                 }
 
                 return View["index.cshtml", m];
-            };
-
-            Get["/logout"] = parameters =>
-            {
-                return this.LogoutAndRedirect("~/");
             };
 
             Get["/toggle/{action}"] = parameters =>

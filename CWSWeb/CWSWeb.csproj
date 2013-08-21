@@ -93,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
-    <Compile Include="Helper\Users\Administrator.cs" />
+    <Compile Include="Helper\Users\User.cs" />
     <Compile Include="Helper\CachedVariables.cs" />
     <Compile Include="Helper\CacheUpdater.cs" />
     <Compile Include="Helper\DataContainer.cs" />
@@ -102,13 +102,13 @@
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\UserbarCreator.cs" />
     <Compile Include="Helper\Users\Authentication.cs" />
-    <Compile Include="Helper\Users\PremiumUser.cs" />
     <Compile Include="Models\Admin\Access.cs" />
     <Compile Include="Models\Error.cs" />
     <Compile Include="Models\User\Admin.cs" />
     <Compile Include="Models\Admin\ControlPanel.cs" />
     <Compile Include="Modules\Admin.cs" />
     <Compile Include="Modules\API.cs" />
+    <Compile Include="Modules\Premium.cs" />
     <Compile Include="Modules\Root.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -131,6 +131,7 @@
     <EmbeddedResource Include="Views\Root\notavailable.cshtml" />
     <EmbeddedResource Include="Views\Error\error.cshtml" />
     <EmbeddedResource Include="Views\Admin\access.cshtml" />
+    <EmbeddedResource Include="Views\Premium\index.cshtml" />
     <None Include="web.config">
       <SubType>Designer</SubType>
     </None>
