@@ -44,6 +44,9 @@ namespace CWSWeb.Helper
 
                     if (PlayeridentificationEnabled)
                         KnownPlayersLocation = Helper.Settings.Instance.Client.GetPlayersDatabase();
+
+                    if (PremiumslotsEnabled)
+                        PremiumplayersLocation = Helper.Settings.Instance.Client.GetPremiumDatabase();
                 }
 
                 statsLastUpdated = DateTime.Now;
@@ -54,11 +57,13 @@ namespace CWSWeb.Helper
         private static DateTime statsLastUpdated;
         private static long[] memoryUsage;
         private static string knownPlayersLocation;
+        private static string premiumPlayersLocation;
 
         public static bool PlayeridentificationEnabled { get; private set; }
         public static bool PremiumslotsEnabled { get; private set; }
 
         public static ServerService.Database.KnownPlayers KnownPlayers { get; private set; }
+        public static ServerService.Database.PremiumPlayers PremiumPlayers { get; private set; }
 
         public static string KnownPlayersLocation
         {
@@ -74,6 +79,25 @@ namespace CWSWeb.Helper
                     {
                         knownPlayersLocation = value;
                         KnownPlayers = new ServerService.Database.KnownPlayers(value);
+                    }
+                }
+            }
+        }
+
+        public static string PremiumplayersLocation
+        {
+            get
+            {
+                return premiumPlayersLocation;
+            }
+            set
+            {
+                if (premiumPlayersLocation != value)
+                {
+                    if (File.Exists(value))
+                    {
+                        premiumPlayersLocation = value;
+                        PremiumPlayers = new ServerService.Database.PremiumPlayers(value);
                     }
                 }
             }

@@ -72,6 +72,7 @@ namespace CWSWeb.Helper.Users
             return new User()
             {
                 UserName = userRow.Item1,
+                UserId = userRow.Item4,
                 Claims = userRow.Item5.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries)
             };
         }

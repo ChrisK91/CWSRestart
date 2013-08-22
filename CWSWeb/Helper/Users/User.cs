@@ -10,6 +10,7 @@ namespace CWSWeb.Helper.Users
     public class User : IUserIdentity 
     {
         public string UserName { get; set; }
+        public Guid UserId { get; set; }
 
         public IEnumerable<string> Claims { get; set; }
     }

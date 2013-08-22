@@ -23,7 +23,11 @@ namespace CWSWeb.Modules
             Get["/"] = parameters =>
             {
                 if (CachedVariables.PremiumslotsEnabled)
+                {
+                    if (Helper.CachedVariables.PremiumPlayers != null)
+                        Helper.CachedVariables.PremiumPlayers.AddPremiumPlayerAsync(Request.UserHostAddress, (Context.CurrentUser as Helper.Users.User).UserId);
                     return View["index"];
+                }
                 else
                     return new Response()
                     {

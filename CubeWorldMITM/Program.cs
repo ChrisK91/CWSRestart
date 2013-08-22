@@ -52,6 +52,11 @@ namespace CubeWorldMITM
         private static Dictionary<string, MITMMessageHandler> ConnectedPlayers = new Dictionary<string, MITMMessageHandler>();
 
         /// <summary>
+        /// Contains the connected premium players
+        /// </summary>
+        private static Dictionary<string, MITMMessageHandler> PremiumPlayers = new Dictionary<string, MITMMessageHandler>();
+
+        /// <summary>
         /// The port of the MITM
         /// </summary>
         private static uint port = 12345;
@@ -80,6 +85,11 @@ namespace CubeWorldMITM
         /// The database where player identification is stored
         /// </summary>
         private static KnownPlayers knownPlayers;
+
+        /// <summary>
+        /// The database where premium player information is stored
+        /// </summary>
+        private static PremiumPlayers premiumPlayers;
 
         static void Main(string[] args)
         {
@@ -357,6 +367,7 @@ namespace CubeWorldMITM
                         {
                             Helper.Settings.Instance.PrivateSlots = i;
                         }
+                        EnablePremiumPlayers(c);
 
                         break;
 
@@ -366,6 +377,19 @@ namespace CubeWorldMITM
                 }
 
                 Console.WriteLine();
+            }
+        }
+
+        private static void EnablePremiumPlayers(CWSProtocol.Client c)
+        {
+            string database;
+
+            if ((database = c.GetPremiumDatabase()) != null && c.SetPremiumslots(true))
+            {
+                Helper.Settings.Instance.Logger.AddMessage(MessageType.INFO, String.Format("Premium database: {0}", database));
+                premiumPlayers = new PremiumPlayers(database);
+
+                premiumPlayers.ClearPremiumPlayers();
             }
         }
 
@@ -379,7 +403,7 @@ namespace CubeWorldMITM
 
             if ((database = c.GetPlayersDatabase()) != null && c.SetPlayerIdentification(true))
             {
-                Console.WriteLine("Playerdatabase: {0}", database);
+                Helper.Settings.Instance.Logger.AddMessage(MessageType.INFO, String.Format("Playerdatabase: {0}", database));
                 knownPlayers = new KnownPlayers(database);
 
                 knownPlayers.ClearConnectedPlayers();
@@ -489,62 +513,17 @@ namespace CubeWorldMITM
             try
             {
                 client = mitm.EndAcceptTcpClient(ar);
-                if (Helper.Settings.Instance.PlayerLimit < 0 || ConnectedPlayers.Count <= Helper.Settings.Instance.PlayerLimit)
+                if (Helper.Settings.Instance.PrivateSlots > 0 && PremiumPlayers.Count < Helper.Settings.Instance.PrivateSlots)
                 {
-                    wait.Set();
+                    MITMMessageHandler handler = prepareClient(client);
 
-                    TcpClient toServer = new TcpClient();
-                    toServer.Connect(cubeWorldIP, (int)serverPort);
+                    PremiumPlayers.Add(handler.IP, handler);
 
-                    NetworkStream clientStream = client.GetStream();
-                    NetworkStream serverStream = toServer.GetStream();
-
-                    IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
-
-                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString()));
-
-                    MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
-
-                    handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
-                    {
-                        if (ConnectedPlayers.ContainsKey(h.IP))
-                            ConnectedPlayers.Remove(h.IP);
-
-                        if (knownPlayers != null)
-                            knownPlayers.RemoveConnectedPlayer(h.IP);
-                    });
-
-                    handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
-                    {
-                        if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
-                            KnownNames[h.IP].Add(h.Name);
-                        else if (!KnownNames.ContainsKey(h.IP))
-                        {
-                            List<string> tmp = new List<string>();
-                            tmp.Add(h.Name);
-                            KnownNames.Add(h.IP, tmp);
-                        }
-
-                        if (knownPlayers != null)
-                        {
-                            if (ConnectedPlayers.ContainsKey(h.IP))
-                                knownPlayers.AddConnectedPlayer(h.IP, h.Name);
-
-                            knownPlayers.AddKnownPlayer(h.IP, h.Name);
-                        }
-
-                        if (!playerAllowed(h.Level, h.HP))
-                        {
-                            h.Disconnect();
-                            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{0} was kicked, because his character is not allowed (HP:{2}, Level:{1}).", h.Name, h.Level, h.HP));
-                        }
-                    });
-
-                    if (ConnectedPlayers.ContainsKey(handler.IP))
-                    {
-                        ConnectedPlayers[handler.IP].Disconnect();
-                        ConnectedPlayers.Remove(handler.IP);
-                    }
+                    establishedConnections.Add(handler);
+                }
+                else if (Helper.Settings.Instance.PlayerLimit < 0 || ConnectedPlayers.Count <= Helper.Settings.Instance.PlayerLimit)
+                {
+                    MITMMessageHandler handler = prepareClient(client);
 
                     ConnectedPlayers.Add(handler.IP, handler);
 
@@ -565,6 +544,68 @@ namespace CubeWorldMITM
                 if(client != null && client.Connected)
                     client.Close();
             }
+        }
+
+        private static MITMMessageHandler prepareClient(TcpClient client)
+        {
+            wait.Set();
+
+            TcpClient toServer = new TcpClient();
+            toServer.Connect(cubeWorldIP, (int)serverPort);
+
+            NetworkStream clientStream = client.GetStream();
+            NetworkStream serverStream = toServer.GetStream();
+
+            IPAddress clientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
+
+            Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{1} connected to {0}", client.Client.LocalEndPoint.ToString(), clientIP.ToString()));
+
+            MITMMessageHandler handler = new MITMMessageHandler(clientStream, serverStream, clientIP.ToString());
+
+            handler.OnClientDisconnected = new Action<MITMMessageHandler>(h =>
+            {
+                if (ConnectedPlayers.ContainsKey(h.IP))
+                    ConnectedPlayers.Remove(h.IP);
+
+                if (PremiumPlayers.ContainsKey(h.IP))
+                    PremiumPlayers.Remove(h.IP);
+
+                if (knownPlayers != null)
+                    knownPlayers.RemoveConnectedPlayer(h.IP);
+            });
+
+            handler.OnClientIdentified = new Action<MITMMessageHandler>(h =>
+            {
+                if (KnownNames.ContainsKey(h.IP) && !KnownNames[h.IP].Contains(h.Name))
+                    KnownNames[h.IP].Add(h.Name);
+                else if (!KnownNames.ContainsKey(h.IP))
+                {
+                    List<string> tmp = new List<string>();
+                    tmp.Add(h.Name);
+                    KnownNames.Add(h.IP, tmp);
+                }
+
+                if (knownPlayers != null)
+                {
+                    if (ConnectedPlayers.ContainsKey(h.IP))
+                        knownPlayers.AddConnectedPlayer(h.IP, h.Name);
+
+                    knownPlayers.AddKnownPlayer(h.IP, h.Name);
+                }
+
+                if (!playerAllowed(h.Level, h.HP))
+                {
+                    h.Disconnect();
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{0} was kicked, because his character is not allowed (HP:{2}, Level:{1}).", h.Name, h.Level, h.HP));
+                }
+            });
+
+            if (ConnectedPlayers.ContainsKey(handler.IP))
+            {
+                ConnectedPlayers[handler.IP].Disconnect();
+                ConnectedPlayers.Remove(handler.IP);
+            }
+            return handler;
         }
 
         /// <summary>

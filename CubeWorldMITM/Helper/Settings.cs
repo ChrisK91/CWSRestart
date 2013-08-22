@@ -99,13 +99,6 @@ namespace CubeWorldMITM.Helper
             {
                 if (value != privateSlots)
                 {
-                    CWSProtocol.Client c = new CWSProtocol.Client("CubeWorldMITM");
-                    int i = 0;
-                    do
-                    {
-                        i++;
-                    } while (!c.SetPremiumslots(value > 0) && i < 10);
-
                     privateSlots = value;
                     settings.SetAppSetting("PrivateSlots", value);
                 }

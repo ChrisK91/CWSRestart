@@ -587,6 +587,21 @@ namespace CWSProtocol
             return false;
         }
 
+        /// <summary>
+        /// Retreives the location of the premium identification database
+        /// </summary>
+        /// <returns></returns>
+        public string GetPremiumDatabase()
+        {
+            if (sendCommand(Commands.Command.PREMIUMDATABASE))
+            {
+                Tuple<Commands.Command, string> answer = readResponse();
+                disconnectClient();
+                return answer == null ? null : answer.Item2;
+            }
+            return null;
+        }
+
         public void Dispose()
         {
             if (client != null)

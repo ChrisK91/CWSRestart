@@ -288,6 +288,11 @@ namespace CWSRestart.Infrastructure
                                                             else
                                                                 sendReply(CWSProtocol.Commands.Command.PREMIUMSLOTS, "DISABLED", serverStream);
                                                             break;
+
+                                                        case CWSProtocol.Commands.Command.PREMIUMDATABASE:
+                                                            Helper.Settings.Instance.SetUpPremiumdatabase();
+                                                            sendReply(CWSProtocol.Commands.Command.PREMIUMDATABASE, Helper.Settings.Instance.PremiumLocation, serverStream);
+                                                            break;
                                                     }
 
                                                     break;

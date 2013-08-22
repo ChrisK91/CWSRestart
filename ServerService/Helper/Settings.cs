@@ -127,6 +127,25 @@ namespace ServerService.Helper
             }
         }
 
+        public Database.PremiumPlayers PremiumPlayers { get; private set; }
+
+        public string PremiumPlayersLocation
+        {
+            get
+            {
+                return PremiumPlayers.DatabaseFile;
+            }
+            set
+            {
+                if (File.Exists(value))
+                {
+                    PremiumPlayers = new Database.PremiumPlayers(value);
+                    notifyPropertyChanged();
+                    notifyPropertyChanged("PremiumPlayers");
+                }
+            }
+        }
+
         private int saveStatisticsEvery;
         public int SaveStatisticsEvery
         {

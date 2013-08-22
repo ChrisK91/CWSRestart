@@ -22,6 +22,7 @@ namespace CWSRestart.Helper
         private static Settings instance = new Settings();
         Utilities.Settings settings;
         public string KnownPlayersLocation { get; private set; }
+        public string PremiumLocation { get; private set; }
 
         private Settings()
         {
@@ -181,6 +182,12 @@ namespace CWSRestart.Helper
         {
             KnownPlayersLocation = Path.Combine(Directory.GetCurrentDirectory(), "players.db");
             ServerService.Helper.Settings.Instance.KnownPlayersLocation = KnownPlayersLocation;
+        }
+
+        public void SetUpPremiumdatabase()
+        {
+            PremiumLocation = Path.Combine(Directory.GetCurrentDirectory(), "premium.db");
+            ServerService.Helper.Settings.Instance.PremiumPlayersLocation = PremiumLocation;
         }
     }
 }

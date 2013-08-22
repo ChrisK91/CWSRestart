@@ -80,6 +80,7 @@
     <Compile Include="Access\AccessControl.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\KnownPlayers.cs" />
+    <Compile Include="Database\PremiumPlayers.cs" />
     <Compile Include="Database\Statistics.cs" />
     <Compile Include="Access\Entries\AccessIP.cs" />
     <Compile Include="Access\Entries\AccessIPRange.cs" />
