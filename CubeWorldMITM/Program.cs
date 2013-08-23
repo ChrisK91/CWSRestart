@@ -507,19 +507,21 @@ namespace CubeWorldMITM
         /// A callback for when a client attempts a connection
         /// </summary>
         /// <param name="ar"></param>
-        private static void OnConnect(IAsyncResult ar)
+        private static async void OnConnect(IAsyncResult ar)
         {
             TcpClient client = null;
             try
             {
                 client = mitm.EndAcceptTcpClient(ar);
-                if (Helper.Settings.Instance.PrivateSlots > 0 && PremiumPlayers.Count < Helper.Settings.Instance.PrivateSlots)
+                if (Helper.Settings.Instance.PrivateSlots > 0 && PremiumPlayers.Count < Helper.Settings.Instance.PrivateSlots && premiumPlayers != null && await premiumPlayers.CheckPremiumPlayerAsync(((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()))
                 {
                     MITMMessageHandler handler = prepareClient(client);
 
                     PremiumPlayers.Add(handler.IP, handler);
 
                     establishedConnections.Add(handler);
+
+                    Helper.Settings.Instance.Logger.AddMessage(MessageType.INFO, String.Format("Premium player joined from {0}", handler.IP));
                 }
                 else if (Helper.Settings.Instance.PlayerLimit < 0 || ConnectedPlayers.Count <= Helper.Settings.Instance.PlayerLimit)
                 {

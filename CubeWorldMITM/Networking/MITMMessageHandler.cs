@@ -196,7 +196,7 @@ namespace CubeWorldMITM.Networking
                     Array.Copy(packageIntReceiveBuffer, 0, packageIntSendBuffer, 0, numBytes);
 
                     int id = BitConverter.ToInt32(packageIntReceiveBuffer, 0);
-                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Received package {0}", id));
+                    Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.DEBUG, String.Format("Received package {0}", id));
 
                     //server.BeginWrite(packageIntSendBuffer, 0, numBytes, ServerIDSentCallback, null);
 
@@ -288,7 +288,7 @@ namespace CubeWorldMITM.Networking
 
                     if (length > 0)
                     {
-                        Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Length: {0}", length));
+                        Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.DEBUG, String.Format("Length: {0}", length));
 
                         server.BeginWrite(packageIntSendBuffer, 0, numBytes, ServerLengthSentCallback, null);
 
@@ -354,7 +354,7 @@ namespace CubeWorldMITM.Networking
             try
             {
                 int numBytes = client.EndRead(ar);
-               Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("Received {0} bytes", numBytes));
+               Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.DEBUG, String.Format("Received {0} bytes", numBytes));
 
                 Array.Copy(clientReceiveBuffer, 0, serverSendBuffer, 0, numBytes);
 

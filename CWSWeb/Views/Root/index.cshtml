@@ -1,17 +1,10 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<CWSWeb.Helper.CachedVariables.Statistics>
-<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>A CubeWorld Server Status Page</title>
+@{
+    ViewBag.Title = "A CubeWorld Server Status Page";
+    Layout = "layout.cshtml";
+}
 
-    <script src="/static/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-    <script src="/static/js/jquery.flot.js" type="text/javascript"></script>
-    <script src="/static/js/jquery.flot.time.js" type="text/javascript"></script>
-    <script src="/static/js/jquery.flot.selection.js" type="text/javascript"></script>
-
-    <link href="@Url.Content("~/static/css/style.css")" rel="stylesheet" />
-
+@section js {
     <script type="text/javascript">
         $(document).ready(function () {
             setInterval(function () {
@@ -19,14 +12,14 @@
             { 
                 @:GeneratePlayerActivity();          
             }
-                UpdateServerStats();
-            }, 5000);
+                    UpdateServerStats();
+                }, 5000);
 
             @if (CWSWeb.Helper.CachedVariables.Stats != null && CWSWeb.Helper.CachedVariables.Stats.Keys != null && CWSWeb.Helper.CachedVariables.Stats.Keys.Length >= 2)
             {
                 @:GeneratePlayerActivity();
             }
-        });
+            });
 
         function UpdateServerStats() {
             $.getJSON("/API/stats/", function (data) {
@@ -171,49 +164,38 @@
             return ret;
         }
     </script>
-</head>
-<body>
-    <header>
-        <h1>CubeWorld Server Statistics</h1>
-    </header>
-    <div id="container">
-        <section>
-            @if (Model.IsAlive)
-            { 
-                <ul class="table">
-                    <li>
-                        <h6>Active players</h6>
-                        <p id="active">@Model.PlayerStats.Current.ToString()</p>
-                    </li>
-                    <li>
-                        <h6>Total players</h6>
-                        <p id="total">@Model.PlayerStats.Total.ToString()</p>
-                    </li>
-                    <li>
-                        <h6>Runtime</h6>
-                        <p id="runtime">@Model.FormatedRuntime</p>
-                    </li>
-                </ul>
+}
+
+
+@if (Model.IsAlive)
+{ 
+    <ul class="table">
+        <li>
+            <h6>Active players</h6>
+            <p id="active">@Model.PlayerStats.Current.ToString()</p>
+        </li>
+        <li>
+            <h6>Total players</h6>
+            <p id="total">@Model.PlayerStats.Total.ToString()</p>
+        </li>
+        <li>
+            <h6>Runtime</h6>
+            <p id="runtime">@Model.FormatedRuntime</p>
+        </li>
+    </ul>
                 
-                if (CWSWeb.Helper.CachedVariables.Stats != null && CWSWeb.Helper.CachedVariables.Stats.Keys != null && CWSWeb.Helper.CachedVariables.Stats.Keys.Length >= 2)
-                { 
-                <h2>Player activity</h2>
-                <div id="activity" class="graph"></div>
-                <div id="activityoverview" class="graph" style="height: 150px"></div>
-                }
-                else
-                { 
-                <p class="message">The graphs are not available at this time.</p>
-                }
-            }
-            else
-            { 
-                <p class="message">The server is offline</p>
-            }
-        </section>
-    </div>
-    <footer>
-        <p>This data is gathered using <a href="http://chrisk91.github.io/CWSRestart/">CWSRestart</a>. Underlying data is updated every five seconds.</p>
-    </footer>
-</body>
-</html>
+    if (CWSWeb.Helper.CachedVariables.Stats != null && CWSWeb.Helper.CachedVariables.Stats.Keys != null && CWSWeb.Helper.CachedVariables.Stats.Keys.Length >= 2)
+    { 
+    <h2>Player activity</h2>
+    <div id="activity" class="graph"></div>
+    <div id="activityoverview" class="graph" style="height: 150px"></div>
+    }
+    else
+    { 
+    <p class="message">The graphs are not available at this time.</p>
+    }
+}
+else
+{ 
+    <p class="message">The server is offline</p>
+}
