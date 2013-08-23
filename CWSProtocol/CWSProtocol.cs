@@ -51,7 +51,8 @@ namespace CWSProtocol
             PLAYERSDATABASE,
             PLAYERIDENTIFICATION,
             PREMIUMSLOTS,
-            PREMIUMDATABASE
+            PREMIUMDATABASE,
+            EXTERNALACCESSCONTROL
         }
     }
 }

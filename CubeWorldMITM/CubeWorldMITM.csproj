@@ -80,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\AccessManager.cs" />
     <Compile Include="Helper\Launcher.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\ZLibHelper.cs" />

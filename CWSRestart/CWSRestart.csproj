@@ -156,6 +156,7 @@
   <ItemGroup>
     <Compile Include="Helper\AllBoolsTrueConverter.cs" />
     <Compile Include="Helper\BooleanToInverseBooleanConverter.cs" />
+    <Compile Include="Helper\OneBoolTrueConverter.cs" />
     <Compile Include="Helper\LogMessage.cs" />
     <Compile Include="Helper\Settings.cs" />
     <Compile Include="Helper\StringIsNotEmpty.cs" />

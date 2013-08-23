@@ -136,6 +136,18 @@ namespace ServerService.Access
             return false;
         }
 
+        public bool PlayerInList(string ip)
+        {
+            foreach (AccessListEntry e in accessList)
+            {
+                if (e.Matches(IPAddress.Parse(ip)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private AccessMode mode = AccessMode.Blacklist;
         public AccessMode Mode
         {

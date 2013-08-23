@@ -15,6 +15,7 @@
         <Helper:IPAddressToStringConverter x:Key="IPAddressToStringConverter"/>
         <Helper:BooleanToInverseBooleanConverter x:Key="BooleanToInverseBooleanConverter" />
         <Helper:AllBoolsTrueConverter x:Key="AllBoolsTrueConverter" />
+        <Helper:OneBoolTrueConverter x:Key="OneBoolTrueConverter" />
         <Helper:StringIsNotEmpty x:Key="StringIsNotEmpty" />
     </Window.Resources>
     <Window.Background>
@@ -98,7 +99,14 @@
                     </StackPanel>
                 </GroupBox>
                 <GroupBox DockPanel.Dock="Top" Header="Access" Margin="2,0">
-                    <Button Height="26" IsEnabled="{Binding Stats.Enabled, ElementName=FrontEndControl}" x:Name="IpFilterButton" Click="IpFilterButton_Click">IP Filter</Button>
+                    <Button Height="26" x:Name="IpFilterButton" Click="IpFilterButton_Click" Content="IP Filter">
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource OneBoolTrueConverter}">
+                                <Binding ElementName="FrontEndControl" Path="Stats.Enabled" />
+                                <Binding Path="ExternalAccessControl" Source="{x:Static ssh:Settings.Instance}" />
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
                 </GroupBox>
                 <TextBlock Width="Auto" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="2,4"><Hyperlink NavigateUri="http://chrisk91.github.io/CWSRestart/" RequestNavigate="Hyperlink_RequestNavigate">Visit project website</Hyperlink></TextBlock>
                 <GroupBox Header="Server" Margin="2,1" DockPanel.Dock="Bottom">

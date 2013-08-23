@@ -38,7 +38,8 @@ namespace ServerService.Helper
         private static readonly Settings instance = new Settings();
         private Utilities.Settings settings;
 
-        private Settings() {
+        private Settings()
+        {
             string file = Path.Combine(Directory.GetCurrentDirectory(), "ServerService.dll.config");
             settings = new Utilities.Settings(file);
 
@@ -124,8 +125,8 @@ namespace ServerService.Helper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Database.KnownPlayers KnownPlayers {get; private set;}
-        
+        public Database.KnownPlayers KnownPlayers { get; private set; }
+
         public string KnownPlayersLocation
         {
             get
@@ -603,6 +604,26 @@ namespace ServerService.Helper
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private bool externalAccessControl = false;
+        /// <summary>
+        /// True if access control is managed by an external program, otherwise false
+        /// </summary>
+        public bool ExternalAccessControl
+        {
+            get
+            {
+                return externalAccessControl;
+            }
+            set
+            {
+                if (externalAccessControl != value)
+                {
+                    externalAccessControl = value;
+                    notifyPropertyChanged();
+                }
+            }
         }
     }
 }

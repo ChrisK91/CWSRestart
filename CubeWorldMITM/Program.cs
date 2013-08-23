@@ -91,6 +91,11 @@ namespace CubeWorldMITM
         /// </summary>
         private static PremiumPlayers premiumPlayers;
 
+        /// <summary>
+        /// Manages the blacklist/whitelist
+        /// </summary>
+        private static Helper.AccessManager accessManager;
+
         static void Main(string[] args)
         {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
@@ -130,6 +135,7 @@ namespace CubeWorldMITM
                 Console.WriteLine();
             }
 
+            accessManager = new Helper.AccessManager(ref ConnectedPlayers, ref PremiumPlayers);
             mitm = new TcpListener(mitmIP, (int)port);
 
             Thread listenerThread = new Thread(new ThreadStart(ConnectionLoop));
@@ -212,6 +218,7 @@ namespace CubeWorldMITM
                 Console.WriteLine("x - to configure CWSRestart via CWSProtocol");
                 Console.WriteLine("d - to enable sharing connected players with CWSRestart");
                 Console.WriteLine("p - to set the number of premium slots");
+                Console.WriteLine("l - to enable/disable blacklist/whitelist usage from inside MITM");
                 Console.WriteLine("quit - to quit");
                 Console.ForegroundColor = ConsoleColor.White;
 
@@ -373,6 +380,24 @@ namespace CubeWorldMITM
 
                     case "quit":
                         shouldExit = true;
+                        break;
+
+                    case "l":
+
+                        if (!accessManager.Working)
+                        {
+                            if (accessManager.Enabled)
+                                accessManager.StopTimer();
+                            else
+                                accessManager.StartTimer();
+
+                            Helper.Settings.Instance.Logger.AddMessage(MessageType.INFO, String.Format("Access manager {0}", accessManager.Enabled ? "is running" : "is stopped"));
+                        }
+                        else
+                        {
+                            Helper.Settings.Instance.Logger.AddMessage(MessageType.INFO, "The access manager is currently working. Please retry in a few seconds.");
+                        }
+
                         break;
                 }
 
@@ -595,7 +620,7 @@ namespace CubeWorldMITM
                     knownPlayers.AddKnownPlayer(h.IP, h.Name);
                 }
 
-                if (!playerAllowed(h.Level, h.HP))
+                if (!playerAllowed(h.Level, h.HP, h.IP))
                 {
                     h.Disconnect();
                     Helper.Settings.Instance.Logger.AddMessage(Utilities.Logging.MessageType.INFO, String.Format("{0} was kicked, because his character is not allowed (HP:{2}, Level:{1}).", h.Name, h.Level, h.HP));
@@ -616,7 +641,7 @@ namespace CubeWorldMITM
         /// <param name="level">The level of the player</param>
         /// <param name="hp">The hp of the player</param>
         /// <returns>True if the player is allowed, otherwise false</returns>
-        private static bool playerAllowed(uint level, float hp)
+        private static bool playerAllowed(uint level, float hp, string ip)
         {
             bool ret = true;
 
@@ -628,6 +653,11 @@ namespace CubeWorldMITM
             if (ret && (Helper.Settings.Instance.MinHP < Helper.Settings.Instance.MaxHP))
             {
                 ret = (hp >= Helper.Settings.Instance.MinHP) && (hp <= Helper.Settings.Instance.MaxHP);
+            }
+
+            if (ret && accessManager.Enabled)
+            {
+                ret = accessManager.PlayerAllowed(ip);
             }
 
             return ret;

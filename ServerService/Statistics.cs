@@ -331,7 +331,8 @@ namespace ServerService
 
                 if ((loggingIndicator % Settings.Instance.SaveStatisticsEvery) == 0)
                 {
-                    AccessControl.Instance.Enforce();
+                    if(!Helper.Settings.Instance.ExternalAccessControl)
+                        AccessControl.Instance.Enforce();
 
                     if (StatisticsDB != null)
                     {

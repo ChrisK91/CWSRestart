@@ -131,7 +131,7 @@ namespace CWSRestart.Infrastructure
                                                     switch (c)
                                                     {
                                                         case CWSProtocol.Commands.Command.IDENTIFY:
-                                                            Helper.Logging.OnLogMessage(String.Format("{0} has said hello", message), ServerService.MessageType.Info);
+                                                            Helper.Logging.OnLogMessage(String.Format("{0} said hello", message), ServerService.MessageType.Info);
                                                             sendReply(CWSProtocol.Commands.Command.ACK, "", serverStream);
                                                             break;
 
@@ -248,7 +248,7 @@ namespace CWSRestart.Infrastructure
 
                                                             List<AccessListEntry> entries = new List<AccessListEntry>(AccessControl.Instance.AccessList);
 
-                                                            if (Statistics.Enabled && entries.Count > 0)
+                                                            if ((Statistics.Enabled || ServerService.Helper.Settings.Instance.ExternalAccessControl) && entries.Count > 0)
                                                             {
                                                                 StreamWriter writer = new StreamWriter(serverStream, System.Text.Encoding.UTF8, 2048, true);
 
@@ -427,6 +427,15 @@ namespace CWSRestart.Infrastructure
                                                                 Helper.Settings.Instance.PremiumslotsEnabled = false;
 
                                                             Helper.Logging.OnLogMessage(Helper.Settings.Instance.PremiumslotsEnabled ? "Premium slots are enabled" : "Premium slots are disabled", ServerService.MessageType.Info);
+                                                            break;
+
+                                                        case CWSProtocol.Commands.Command.EXTERNALACCESSCONTROL:
+                                                            if (message.ToLowerInvariant() == "enable")
+                                                                ServerService.Helper.Settings.Instance.ExternalAccessControl = true;
+                                                            else
+                                                                ServerService.Helper.Settings.Instance.ExternalAccessControl = false;
+
+                                                            Helper.Logging.OnLogMessage(ServerService.Helper.Settings.Instance.ExternalAccessControl ? "Access is controlled by an external program." : "Access to your server is controlled by CWSRestart.", ServerService.MessageType.Info);
                                                             break;
 
                                                     }

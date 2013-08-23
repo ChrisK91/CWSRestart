@@ -419,7 +419,7 @@ namespace CWSProtocol
                 string line;
                 StreamReader reader = new StreamReader(client, System.Text.Encoding.UTF8, true, 2048, true);
 
-                while (String.IsNullOrEmpty(line = reader.ReadLine()))
+                while ((line = reader.ReadLine()) != null)
                     ret.Add(line);
             }
 
@@ -600,6 +600,21 @@ namespace CWSProtocol
                 return answer == null ? null : answer.Item2;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Notifies CWSRestart that access is controlled by an external program
+        /// </summary>
+        /// <param name="enabled">True if access is handled by an external program, otherwise false</param>
+        /// <returns></returns>
+        public bool SetExternalAccesscontrol(bool enabled)
+        {
+            if (sendCommand(Commands.Command.EXTERNALACCESSCONTROL, enabled ? "ENABLE" : "DISABLE", Commands.Action.POST))
+            {
+                disconnectClient();
+                return true;
+            }
+            return false;
         }
 
         public void Dispose()
