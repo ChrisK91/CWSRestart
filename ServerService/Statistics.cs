@@ -96,9 +96,20 @@ namespace ServerService
             {
                 if (logFolder != value)
                 {
-                    logFolder = value;
-                    notifyPropertyChanged();
-                    StatisticsDB = new Database.Statistics(Path.Combine(LogFolder, "statistics.db"));
+                    if (String.IsNullOrEmpty(value))
+                    {
+                        logFolder = "";
+                        notifyPropertyChanged();
+                        StatisticsDB = null;
+                        Logging.OnLogMessage(String.Format("Statistics saving disabled."), MessageType.Info);
+                    }
+                    else
+                    {
+                        logFolder = value;
+                        notifyPropertyChanged();
+                        StatisticsDB = new Database.Statistics(Path.Combine(LogFolder, "statistics.db"));
+                        Logging.OnLogMessage(String.Format("Statistics file: {0}", StatisticsDB.DatabaseFile), MessageType.Info);
+                    }
                 }
             }
         }
@@ -408,6 +419,8 @@ namespace ServerService
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+
+            Settings.Instance.SaveStatisticsConfig(this);
         }
     }
 }

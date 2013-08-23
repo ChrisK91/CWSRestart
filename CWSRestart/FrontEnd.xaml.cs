@@ -51,7 +51,11 @@ namespace CWSRestart
             ServerService.Logging.LogMessage += Logging_LogMessage;
             Helper.Logging.LogMessage += Logging_LogMessage;
 
-            Stats = new Statistics( false);
+            Stats = new Statistics(false);
+
+            ServerService.Helper.Settings.Instance.ConfigureStatistics(ref stats);
+            notifyPropertyChanged("Stats");
+
             Infrastructure.Server.Instance.Statistics = Stats;
 
             Infrastructure.Server.Instance.GetLog = () =>
@@ -241,10 +245,17 @@ namespace CWSRestart
         private void StatsFolderButton_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog logFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            logFolderDialog.Description = "Please select the folder, where you want to store the statistics.";
 
-            if (logFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            System.Windows.Forms.DialogResult result = logFolderDialog.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
                 Stats.LogFolder = logFolderDialog.SelectedPath;
+            }
+            else if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
+                Stats.LogFolder = "";
             }
         }
 

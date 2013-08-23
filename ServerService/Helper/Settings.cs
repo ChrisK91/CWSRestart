@@ -69,6 +69,20 @@ namespace ServerService.Helper
             Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
             SessionActive = settings.GetAppSettingWithStandardValue("SessionActiveDefault", true);
             BypassSendQuit = settings.GetAppSettingWithStandardValue("BypassSendQuit", false);
+
+            LogFolder = settings.GetAppSettingValue("LogFolder");
+        }
+
+        public void ConfigureStatistics(ref Statistics stats)
+        {
+            if (!String.IsNullOrEmpty(LogFolder))
+                stats.LogFolder = LogFolder;
+        }
+
+        public void SaveStatisticsConfig(Statistics stats)
+        {
+            if (stats.LogFolder != null)
+                settings.SetAppSetting("LogFolder", stats.LogFolder);
         }
 
         void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
@@ -94,6 +108,8 @@ namespace ServerService.Helper
                 Logging.OnLogMessage("A remote connection has been initiated", MessageType.Info);
             }
         }
+
+        public string LogFolder { get; private set; }
 
         public bool SessionActive { get; private set; }
 
