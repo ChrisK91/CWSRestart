@@ -9,7 +9,7 @@ layout: default
 {% assign author = site.authors[post.author] %}
 <div class="row">
     <div class="large-12 columns">
-        <h3>{{ post.title }} <small>from {{ post.date | date_to_long_string }} by {{ author.name }}</small></h3>
+        <h3><a href="{{ site.newsbase }}{{ post.url }}" style="color: #222222">{{ post.title }}</a> <small>from {{ post.date | date_to_long_string }} by {{ author.name }}</small></h3>
         <p>{{ post.excerpt | truncatewords: 150 }}</p>
         <p><a href="{{ site.newsbase }}{{ post.url }}">Read more...</a></p>
     </div>
