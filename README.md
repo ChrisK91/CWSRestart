@@ -1,3 +1,5 @@
+This project is no longer being updated or maintained. Use it at your own risk.
+
 CWSRestart
 ==========
 
